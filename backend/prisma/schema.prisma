@@ -24,10 +24,3 @@ model Account {
 
   @@map("accounts")
 }
-
-model Bartender {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  email String
-  password String
-  
-}

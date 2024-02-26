@@ -1,21 +1,21 @@
+import { PrismaPromise } from "@prisma/client";
 import prismaClient from "../prisma";
-// import { CreateAccountProps } from "../types/CreateAccountProps";
+import { AppError } from "../errors/AppError";
 
-interface DeleteAccountProp {
+interface DeleteAccountDTO {
   id: string;
 }
 
-class DeleteAccountService {
-
-  async execute({ id }: DeleteAccountProp) {
-
+class DeleteAccountServive {
+  async execute({ id }: DeleteAccountDTO) {
+    
     if (!id) {
-      throw new Error("Não encontrado")
+      throw new AppError(`This id was not found.`, 400);
     }
 
     const findAccount = await prismaClient.account.findFirst({
       where: {
-        id: id
+        id,
       },
     });
 
@@ -25,9 +25,8 @@ class DeleteAccountService {
       },
     });
 
-    
-    return { message: "deletado" };
+    return { message: "Account deleted Sucefull!" };
   }
 }
 
-export { DeleteAccountService };
+export { DeleteAccountServive };

@@ -1,12 +1,12 @@
 import prismaClient from "../prisma";
 
-class ListAccountService{
-
+class ListAccountService {
   async execute() {
-    const account = await prismaClient.account.findMany()
+    
+    const result = await prismaClient.account.findMany();
 
-    return account;
+    return result;
   }
 }
 
-export { ListAccountService }
+export { ListAccountService };
