@@ -1,26 +1,31 @@
-import express, { Express, NextFunction, Request, Response } from "express"
+import express, { Express, NextFunction, Request, Response } from "express";
 import { config } from "dotenv";
-import "express-async-errors"
+import "express-async-errors";
+import { GetUserController } from "./src/controllers/get-users/get-users";
+import { MongoGetUsersRepository } from "./src/reporitories/get-users/mongo-get-users";
+import { MongoClient } from "./src/database/mongo";
 
-config();
-const app: Express = express()
-const port = process.env.PORT || 8000
+// const app: Express = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send("Rodando Comanda Fácil")
-})
+const main = async () => {
+  config();
+  
+  const app = express();
+  const port = process.env.PORT || 8000;
+  await MongoClient.connect();
 
-app.use(express.json())
+  app.get("/users", async (req: Request, res: Response) => {
+    const mongoGetUsersRepository = new MongoGetUsersRepository();
+    const getUsersController = new GetUserController(mongoGetUsersRepository);
 
+    const { body, statusCode } = await getUsersController.handle();
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    res.send(body).status(statusCode);
+  });
 
-  return res.status(500).json({
-    status: "error",
-    message: `Internal server error - ${err.message}`
-  })
-})
+  app.listen(port, () => {
+    console.log(`Aplicação Rodando na porta: ${port}`);
+  });
+};
 
-app.listen(port, () => {
-  console.log(`Aplicação Rodando na porta: ${port}`)
-})
+main();
