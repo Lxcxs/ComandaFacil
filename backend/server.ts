@@ -1,10 +1,10 @@
 import express, { Express, NextFunction, Request, Response } from "express"
+import { config } from "dotenv";
 import "express-async-errors"
-import { routes } from "./src/routes"
-import { AppError } from "./src/errors/AppError"
 
+config();
 const app: Express = express()
-const port = 7070
+const port = process.env.PORT || 8000
 
 app.get('/', (req: Request, res: Response) => {
   res.send("Rodando Comanda Fácil")
@@ -12,15 +12,8 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(express.json())
 
-app.use(routes)
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if(err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      status: "error",
-      message: err.message
-    })
-  }
 
   return res.status(500).json({
     status: "error",
