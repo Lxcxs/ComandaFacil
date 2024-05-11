@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ListAccountController } from "../controller/ListAccountController";
+import { ListAccountController } from "../../controller/User/ListAccountController";
 
 const listAccountController = new ListAccountController()
 

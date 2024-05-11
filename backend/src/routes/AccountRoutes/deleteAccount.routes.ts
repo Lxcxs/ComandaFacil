@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { DeleteAccountController } from "../controller/DeleteAccountController";
+import { DeleteAccountController } from "../../controller/User/DeleteAccountController";
 
 const deleteAccount = new DeleteAccountController();
 

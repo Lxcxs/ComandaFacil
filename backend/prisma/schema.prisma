@@ -14,24 +14,17 @@ datasource db {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   userName        String
-  userEmail       String           @unique
+  userEmail       String        @unique
   userPassword    String
   userBrand       String
   userTableAmount Int
-  userDocuments   Identification[]
+  userDocument    String        @unique
   userCategories  Category[]
   userItems       Item[]
   orders          CostumerTab[]
-  createdAt      DateTime?        @default(now())
-}
-
-model Identification {
-  id     Int @id @default(autoincrement())
-  type   String
-  User   User?  @relation(fields: [userId], references: [id])
-  userId Int?
+  createdAt       DateTime?     @default(now())
 }
 
 model Category {

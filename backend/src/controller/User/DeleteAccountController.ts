@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { DeleteAccountServive } from "../services/DeleteAccountService";
+import { DeleteAccountServive } from "../../services/AccountServices/DeleteAccountService";
 
 class DeleteAccountController {
   async handle(req: Request, res: Response) {
-    const { id } = req.query as { id: undefined };
+    const { id } = req.body;
 
     const accountService = new DeleteAccountServive();
 

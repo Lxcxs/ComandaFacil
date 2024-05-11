@@ -1,8 +1,8 @@
 import { PrismaPromise } from "@prisma/client";
-import prismaClient from "../prisma";
+import prismaClient from "../../prisma";
 
 interface DeleteAccountDTO {
-  id: undefined;
+  id: number;
 }
 
 class DeleteAccountServive {
@@ -18,13 +18,18 @@ class DeleteAccountServive {
       },
     });
 
-    await prismaClient.user.delete({
-      where: {
-        id: findUser?.id,
-      },
-    });
+    if (!findUser) {
+      throw new Error("User not found.")
+    } else {
 
-    return { message: "Account deleted Sucefull!" };
+      await prismaClient.user.delete({
+        where: {
+          id: findUser?.id,
+        },
+      });
+  
+      return { message: "Account deleted Sucefull!" };
+    }
   }
 }
 

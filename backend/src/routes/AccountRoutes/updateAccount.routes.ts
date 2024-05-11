@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { UpdateAccountController } from "../controller/UpdateAccountController";
+import { UpdateAccountController } from "../../controller/User/UpdateAccountController";
 
 const updateAccountController = new UpdateAccountController();
 

@@ -4,4 +4,5 @@ export interface CreateAccountDTO {
   userPassword: string;
   userBrand: string;
   userTableAmount: number;
+  userDocument: string;
 }

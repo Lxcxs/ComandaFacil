@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UpdateAccountService } from "../services/UpdateAccountService";
+import { UpdateAccountService } from "../../services/AccountServices/UpdateAccountService";
 
 class UpdateAccountController {
   async handle(req: Request, res: Response) {
