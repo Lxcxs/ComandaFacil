@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,55 +7,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              Int           @id @default(autoincrement())
-  userName        String
-  userEmail       String        @unique
-  userPassword    String
-  userBrand       String
-  userTableAmount Int
-  userDocument    String        @unique
-  userCategories  Category[]
-  userItems       Item[]
-  orders          CostumerTab[]
-  createdAt       DateTime?     @default(now())
-}
-
-model Category {
+model category {
   id           Int    @id @default(autoincrement())
   categoryName String
-  items        Item[]
-  User         User?  @relation(fields: [userId], references: [id])
   userId       Int?
+  user         user?  @relation(fields: [userId], references: [id], map: "Category_userId_fkey")
+  item         item[]
+
+  @@index([userId], map: "Category_userId_fkey")
 }
 
-model Item {
-  id              Int    @id @default(autoincrement())
+model costumer {
+  id            Int     @id @default(autoincrement())
+  costumerName  String
+  costumerTable Int
+  userId        Int?
+  user          user?   @relation(fields: [userId], references: [id], map: "Costumer_userId_fkey")
+  order         order[]
+
+  @@index([userId], map: "Costumer_userId_fkey")
+}
+
+model item {
+  id              Int       @id @default(autoincrement())
   itemName        String
   itemDescription String
   itemValue       Int
+  userId          Int?
+  categoryId      Int?
+  category        category? @relation(fields: [categoryId], references: [id], map: "Item_categoryId_fkey")
+  user            user?     @relation(fields: [userId], references: [id], map: "Item_userId_fkey")
 
-  User       User?     @relation(fields: [userId], references: [id])
-  userId     Int?
-  Category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId Int?
+  @@index([categoryId], map: "Item_categoryId_fkey")
+  @@index([userId], map: "Item_userId_fkey")
 }
 
-model Costumer {
-  id              Int           @id @default(autoincrement())
-  costumerName    String
-  userTable       Int
+model order {
+  id           Int      @id @default(autoincrement())
+  name         String
+  value        Int
+  quantity     Int
+  description  String
+  note         String
+  costumerName String
+  userId       Int
+  costumerId   Int
+  costumer     costumer @relation(fields: [costumerId], references: [id])
+  user         user     @relation(fields: [userId], references: [id])
+
+  @@index([costumerId], map: "order_costumerId_fkey")
+  @@index([userId], map: "order_userId_fkey")
+}
+
+model user {
+  id              Int        @id @default(autoincrement())
+  userName        String
+  userEmail       String     @unique(map: "User_userEmail_key")
+  userPassword    String
+  userBrand       String
   userTableAmount Int
-  userTabs        CostumerTab[]
-}
-
-model CostumerTab {
-  id        Int    @id @default(autoincrement())
-  tabStatus String
-  order     String
-
-  User       User?     @relation(fields: [userId], references: [id])
-  userId     Int?
-  Costumer   Costumer? @relation(fields: [costumerId], references: [id])
-  costumerId Int?
+  createdAt       DateTime?  @default(now())
+  userDocument    String     @unique(map: "User_userDocument_key")
+  category        category[]
+  costumer        costumer[]
+  item            item[]
+  orders          order[]
 }
