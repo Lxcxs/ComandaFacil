@@ -10,22 +10,34 @@ datasource db {
 model category {
   id           Int    @id @default(autoincrement())
   categoryName String
-  userId       Int?
-  user         user?  @relation(fields: [userId], references: [id], map: "Category_userId_fkey")
+  storeId      Int?
   item         item[]
+  store        store? @relation(fields: [storeId], references: [id], map: "Category_storeId_fkey")
 
-  @@index([userId], map: "Category_userId_fkey")
+  @@index([storeId], map: "Category_storeId_fkey")
+}
+
+model table {
+  id          Int        @id @default(autoincrement())
+  tableNumber String
+  tableStatus String
+  costumer    costumer[]
+  order       order[]
+  store       store?     @relation(fields: [storeId], references: [id])
+  storeId     Int?
 }
 
 model costumer {
   id            Int     @id @default(autoincrement())
   costumerName  String
   costumerTable Int
-  userId        Int?
-  user          user?   @relation(fields: [userId], references: [id], map: "Costumer_userId_fkey")
+  tableId       Int?
+  storeId       Int?
   order         order[]
+  table         table?  @relation(fields: [tableId], references: [id])
+  store         store?  @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
 
-  @@index([userId], map: "Costumer_userId_fkey")
+  @@index([storeId], map: "Costumer_storeId_fkey")
 }
 
 model item {
@@ -33,43 +45,58 @@ model item {
   itemName        String
   itemDescription String
   itemValue       Int
-  userId          Int?
+  itemStatus      String
+  itemImage       String
   categoryId      Int?
+  storeId         Int?
   category        category? @relation(fields: [categoryId], references: [id], map: "Item_categoryId_fkey")
-  user            user?     @relation(fields: [userId], references: [id], map: "Item_userId_fkey")
+  store           store?    @relation(fields: [storeId], references: [id], map: "Item_storeId_fkey")
 
   @@index([categoryId], map: "Item_categoryId_fkey")
-  @@index([userId], map: "Item_userId_fkey")
+  @@index([storeId], map: "Item_storeId_fkey")
 }
 
 model order {
-  id           Int      @id @default(autoincrement())
-  name         String
-  value        Int
-  quantity     Int
-  description  String
-  note         String
-  costumerName String
-  userId       Int
+  id           Int       @id @default(autoincrement())
+  itemName     String
+  itemImage    String
+  itemAmount   Int
+  costumerNote String
+  orderValue   Int
+  orderStatus  String
+  createdAt    DateTime? @default(now())
   costumerId   Int
-  costumer     costumer @relation(fields: [costumerId], references: [id])
-  user         user     @relation(fields: [userId], references: [id])
+  tableId      Int?
+  costumer     costumer  @relation(fields: [costumerId], references: [id])
+  table        table?    @relation(fields: [tableId], references: [id])
+  store        store?    @relation(fields: [storeId], references: [id])
+  storeId      Int?
 
   @@index([costumerId], map: "order_costumerId_fkey")
-  @@index([userId], map: "order_userId_fkey")
+  @@index([storeId], map: "order_storeId_fkey")
+}
+
+model store {
+  id               Int        @id @default(autoincrement())
+  storeName        String
+  storeStatus      String
+  storeImage       String
+  storeTableAmount Int
+  category         category[]
+  costumer         costumer[]
+  item             item[]
+  orders           order[]
+  tables           table[]
+  userId           Int
+  user             user       @relation(fields: [userId], references: [id])
 }
 
 model user {
-  id              Int        @id @default(autoincrement())
-  userName        String
-  userEmail       String     @unique(map: "User_userEmail_key")
-  userPassword    String
-  userBrand       String
-  userTableAmount Int
-  createdAt       DateTime?  @default(now())
-  userDocument    String     @unique(map: "User_userDocument_key")
-  category        category[]
-  costumer        costumer[]
-  item            item[]
-  orders          order[]
+  id           Int       @id @default(autoincrement())
+  userName     String
+  userEmail    String    @unique(map: "User_userEmail_key")
+  userPassword String
+  userDocument String    @unique(map: "User_userDocument_key")
+  createdAt    DateTime? @default(now())
+  store        store[]
 }
