@@ -18,13 +18,14 @@ model category {
 }
 
 model table {
-  id          Int        @id @default(autoincrement())
-  tableNumber String
-  tableStatus String
-  costumer    costumer[]
-  order       order[]
-  store       store?     @relation(fields: [storeId], references: [id])
-  storeId     Int?
+  id                Int        @id @default(autoincrement())
+  tableNumber       String
+  tableStatus       String
+  tablePeopleAmount Int
+  costumer          costumer[]
+  order             order[]
+  store             store?     @relation(fields: [storeId], references: [id])
+  storeId           Int?
 }
 
 model costumer {
