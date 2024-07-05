@@ -10,9 +10,9 @@ datasource db {
 model category {
   id           Int    @id @default(autoincrement())
   categoryName String
-  storeId      Int?
+  storeId      Int 
   item         item[]
-  store        store? @relation(fields: [storeId], references: [id], map: "Category_storeId_fkey")
+  store        store  @relation(fields: [storeId], references: [id], map: "Category_storeId_fkey")
 
   @@index([storeId], map: "Category_storeId_fkey")
 }
@@ -22,21 +22,22 @@ model table {
   tableNumber       String
   tableStatus       String
   tablePeopleAmount Int
+  storeId           Int
   costumer          costumer[]
   order             order[]
-  store             store?     @relation(fields: [storeId], references: [id])
-  storeId           Int?
+  store             store      @relation(fields: [storeId], references: [id])
 }
 
 model costumer {
-  id            Int     @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   costumerName  String
   costumerTable Int
-  tableId       Int?
-  storeId       Int?
+  tableId       Int
+  storeId       Int
   order         order[]
-  table         table?  @relation(fields: [tableId], references: [id])
-  store         store?  @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
+  tab           costumerTab[]
+  table         table         @relation(fields: [tableId], references: [id])
+  store         store         @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
 
   @@index([storeId], map: "Costumer_storeId_fkey")
 }
@@ -48,48 +49,62 @@ model item {
   itemValue       Int
   itemStatus      String
   itemImage       String
-  categoryId      Int?
-  storeId         Int?
-  category        category? @relation(fields: [categoryId], references: [id], map: "Item_categoryId_fkey")
-  store           store?    @relation(fields: [storeId], references: [id], map: "Item_storeId_fkey")
+  categoryId      Int
+  storeId         Int
+  category        category  @relation(fields: [categoryId], references: [id], map: "Item_categoryId_fkey")
+  store           store     @relation(fields: [storeId], references: [id], map: "Item_storeId_fkey")
 
   @@index([categoryId], map: "Item_categoryId_fkey")
   @@index([storeId], map: "Item_storeId_fkey")
 }
 
 model order {
-  id           Int       @id @default(autoincrement())
-  itemName     String
-  itemImage    String
-  itemAmount   Int
-  costumerNote String
-  orderValue   Int
-  orderStatus  String
-  createdAt    DateTime? @default(now())
-  costumerId   Int
-  tableId      Int?
-  costumer     costumer  @relation(fields: [costumerId], references: [id])
-  table        table?    @relation(fields: [tableId], references: [id])
-  store        store?    @relation(fields: [storeId], references: [id])
-  storeId      Int?
+  id            Int          @id @default(autoincrement())
+  itemName      String
+  itemImage     String
+  itemAmount    Int
+  costumerNote  String
+  orderValue    Int
+  orderStatus   String
+  createdAt     DateTime     @default(now())
+  storeId       Int
+  costumerId    Int
+  tableId       Int
+  costumerTabId Int?
+  costumer      costumer     @relation(fields: [costumerId], references: [id])
+  table         table        @relation(fields: [tableId], references: [id])
+  store         store        @relation(fields: [storeId], references: [id])
+  costumerTab   costumerTab? @relation(fields: [costumerTabId], references: [id])
 
   @@index([costumerId], map: "order_costumerId_fkey")
   @@index([storeId], map: "order_storeId_fkey")
 }
 
+model costumerTab {
+  id         Int      @id @default(autoincrement())
+  tabValue   Int
+  tabStatus  String
+  costumerId Int
+  storeId    Int
+  orders     order[]
+  costumer   costumer @relation(fields: [costumerId], references: [id])
+  store      store   @relation(fields: [storeId], references: [id])
+}
+
 model store {
-  id               Int        @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   storeName        String
   storeStatus      String
   storeImage       String
   storeTableAmount Int
+  userId           Int
   category         category[]
   costumer         costumer[]
   item             item[]
   orders           order[]
   tables           table[]
-  userId           Int
-  user             user       @relation(fields: [userId], references: [id])
+  storeTabs        costumerTab[]
+  user             user          @relation(fields: [userId], references: [id])
 }
 
 model user {
