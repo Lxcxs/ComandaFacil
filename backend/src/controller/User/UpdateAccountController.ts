@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { UpdateAccountService } from "../../services/AccountServices/UpdateAccountService";
+import { UpdateUserService } from "../../services/UserServices/UpdateUserService";
 
-class UpdateAccountController {
+class UpdateUserController {
   async handle(req: Request, res: Response) {
     const { id, userEmail } = req.body;
 
-    const accountService = new UpdateAccountService();
+    const accountService = new UpdateUserService();
 
     const result = await accountService.execute({ id, userEmail });
 
@@ -13,4 +13,4 @@ class UpdateAccountController {
   }
 }
 
-export { UpdateAccountController };
+export { UpdateUserController };
