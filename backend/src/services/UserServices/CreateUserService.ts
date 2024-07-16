@@ -1,37 +1,43 @@
+import bcrypt from "bcrypt";
 import prismaClient from "../../prisma";
 import { CreateUserDTO } from "../../DTOs/userDTO";
 
 class CreateUserService {
-  async execute({ userName, userEmail, userPassword, userDocument }: CreateUserDTO) {
+  async execute({
+    userName,
+    userEmail,
+    userPassword,
+    userDocument,
+  }: CreateUserDTO) {
+    const accountType: string = "admin";
 
-    const accountType:string = "admin";
-
-    if (!userName || !userEmail || !userPassword || !userDocument ) {
+    if (!userName || !userEmail || !userPassword || !userDocument) {
       throw new Error("Error: Please fill in all fields");
     }
 
-    const [documentAlreadyExists, emailAlreadyExists] = await Promise.all([
-      prismaClient.user.findFirst({
-        where: { userDocument },
-      }),
-      prismaClient.user.findFirst({
-        where: { userEmail },
-      }),
-    ]);
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        OR: [{ userDocument }, { userEmail }],
+      },
+    });
 
-    if (documentAlreadyExists) {
-      throw new Error("Error: This document is already in use.");
+    if (existingUser) {
+      if (existingUser.userDocument === userDocument) {
+        throw new Error("Error: This document is already in use.");
+      }
+      if (existingUser.userEmail === userEmail) {
+        throw new Error("Error: This email is already in use.");
+      }
     }
 
-    if (emailAlreadyExists) {
-      throw new Error("Error: This email is already in use.");
-    }
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(userPassword, saltRounds);
 
     const user = await prismaClient.user.create({
       data: {
         userName,
         userEmail,
-        userPassword,
+        userPassword: hashedPassword,
         userDocument,
         accountType,
       },

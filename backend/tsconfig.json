@@ -9,7 +9,7 @@
     "emitDecoratorMetadata": true,                 /* Emite metadados de tipo para decoradores. */
     "esModuleInterop": true,                        /* Permite a interoperabilidade com módulos CommonJS. */
     "forceConsistentCasingInFileNames": true,       /* Garante que o casing dos nomes dos arquivos seja consistente. */
-
+    "typeRoots": ["./src/types", "./node_modules/@types"],
     /* Modules */
     "moduleResolution": "node",                     /* Define a resolução de módulos como 'node'. */
     "baseUrl": "./",                               /* Define o diretório base para resolução de módulos não-relativos. */
