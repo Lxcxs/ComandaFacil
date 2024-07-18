@@ -13,10 +13,8 @@ class CreateUserService {
     userPassword,
     userDocument,
   }: CreateUserDTO) {
-    // Validação dos campos obrigatórios
     validateFields({ userName, userEmail, userPassword, userDocument }, ['userName', 'userEmail', 'userPassword', 'userDocument']);
 
-    // Verifica se o usuário já existe
     const existingUser = await prismaClient.user.findFirst({
       where: { OR: [{ userDocument }, { userEmail }] },
     });
@@ -30,10 +28,8 @@ class CreateUserService {
       }
     }
 
-    // Criptografa a senha
     const hashedPassword = await bcrypt.hash(userPassword, CreateUserService.SALT_ROUNDS);
 
-    // Cria o usuário
     return prismaClient.user.create({
       data: {
         userName,
