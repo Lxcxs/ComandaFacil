@@ -25,7 +25,6 @@ model waiter {
   waiterPassword String
   accountType    String
   storeId        Int
-  tableId        Int
   orders         order[]
   tables         table[]
   store          store   @relation(fields: [storeId], references: [id])
