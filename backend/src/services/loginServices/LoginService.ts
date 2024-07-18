@@ -1,37 +1,65 @@
 import prismaClient from "../../prisma";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const SECRET_KEY = process.env.JWT_SECRET_KEY || ""
+const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
+
+if (!SECRET_KEY) {
+  throw new Error("JWT Secret Key is not defined");
+}
 
 interface AuthenticateUserServiceParams {
-  userEmail: string;
-  userPassword: string;
+  loginEmail: string;
+  loginPassword: string;
+  accountType: "admin" | "employee";
 }
 
 class AuthenticateUserService {
-  async execute({ userEmail, userPassword }: AuthenticateUserServiceParams) {
+  async execute({ loginEmail, loginPassword,accountType }: AuthenticateUserServiceParams) {
 
-    const user = await prismaClient.user.findUnique({ where: { userEmail } });
+    if (!loginEmail || !loginPassword || !accountType) {
+      throw new Error("Please fill in all fields");
+    }
 
-    if (!user) {
+    let user;
+    let userPassword;
+    let userType;
+
+    switch (accountType) {
+      case "admin":
+        user = await prismaClient.user.findUnique({
+          where: { userEmail: loginEmail },
+        });
+        userPassword = user?.userPassword;
+        userType = "admin";
+        break;
+
+      case "employee":
+        user = await prismaClient.waiter.findUnique({
+          where: { waiterEmail: loginEmail },
+        });
+        userPassword = user?.waiterPassword;
+        userType = "employee";
+        break;
+
+      default:
+        throw new Error("Invalid account type");
+    }
+
+    if (!user || !userPassword) {
       throw new Error("Invalid email or password");
     }
 
-    const passwordMatch:boolean = await bcrypt.compare(userPassword, user.userPassword)
-    // console.log(passwordMatch)
-
+    const passwordMatch = await bcrypt.compare(loginPassword, userPassword);
     if (!passwordMatch) {
       throw new Error("Invalid password");
     }
 
-    const token = jwt.sign({ userId: user.id }, SECRET_KEY as string, {
+    const token = jwt.sign({ userId: user.id, userType }, SECRET_KEY, {
       expiresIn: "5m",
     });
-    // console.log(jwt.verify(token, SECRET_KEY) as JwtPayload)
 
     return { token, user };
   }
 }
-
 export { AuthenticateUserService };
