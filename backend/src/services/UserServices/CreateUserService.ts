@@ -13,7 +13,7 @@ class CreateUserService {
     userPassword,
     userDocument,
   }: CreateUserDTO) {
-    validateFields({ userName, userEmail, userPassword, userDocument }, ['userName', 'userEmail', 'userPassword', 'userDocument']);
+    validateFields({ userName, userEmail, userPassword, userDocument });
 
     const existingUser = await prismaClient.user.findFirst({
       where: { OR: [{ userDocument }, { userEmail }] },

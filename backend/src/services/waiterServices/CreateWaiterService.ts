@@ -11,10 +11,7 @@ class CreateWaiterService {
 
   async execute({ waiterName, waiterEmail, waiterPassword, storeId, token }: CreateWaiterDTO) {
 
-    validateFields(
-      { waiterName, waiterEmail, waiterPassword, storeId },
-      ['waiterName', 'waiterEmail', 'waiterPassword', 'storeId']
-    );
+    validateFields( { waiterName, waiterEmail, waiterPassword, storeId } );
 
     const existingStore = await prismaClient.store.findFirst({
       where: { id: storeId },

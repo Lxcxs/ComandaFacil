@@ -1,10 +1,10 @@
 type FieldValue = string | number | boolean | undefined;
 
-export function validateFields(fields: Record<string, FieldValue>, requiredFields: string[]) {
-  requiredFields.forEach(field => {
-    const value = fields[field];
+export function validateFields(fields: Record<string, FieldValue>, customErrorMessages?: Record<string, string>) {
+  Object.entries(fields).forEach(([field, value]) => {
     if (value === undefined || value === null || value === '') {
-      throw new Error(`Please fill in the ${field}.`);
+      const errorMessage = customErrorMessages?.[field] || `Please fill in the ${field}.`;
+      throw new Error(errorMessage);
     }
   });
 }

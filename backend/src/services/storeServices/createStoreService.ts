@@ -1,3 +1,4 @@
+import { validateFields } from "../../utils/validateFields";
 import prismaClient from "../../prisma";
 
 interface CreateStoreDTO {
@@ -9,9 +10,7 @@ interface CreateStoreDTO {
 class CreateStoreService {
   async execute({ storeName, storeImage, storeTableAmount, userId }: CreateStoreDTO) {
 
-    if (!storeName || !storeTableAmount || !userId ) {
-      throw new Error("Error: Please fill in all fields");
-    }
+    validateFields({ storeName, storeImage, storeTableAmount, userId });
 
     const store = await prismaClient.store.create({
       data: {
