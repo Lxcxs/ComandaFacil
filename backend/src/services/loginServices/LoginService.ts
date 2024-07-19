@@ -39,25 +39,27 @@ class AuthenticateUserService {
       throw new Error("Invalid email or password");
     }
 
-    let userPassword: string | undefined;
+    let passwordEntered: string | undefined;
     if (accountType === "admin") {
-      userPassword = (user as any).userPassword;
+      passwordEntered = (user as any).userPassword;
 
     } else if (accountType === "employee") {
-      userPassword = (user as any).waiterPassword; 
+      passwordEntered = (user as any).waiterPassword; 
 
     } else {
       throw new Error("Invalid account type");
     }
 
-    if (!userPassword || !(await bcrypt.compare(loginPassword, userPassword))) {
+    if (!passwordEntered || !(await bcrypt.compare(loginPassword, passwordEntered))) {
       throw new Error("Invalid password");
     }
 
     const userId = accountType === "admin" ? user.id : (user as any).storeId;
+    const findStore = await prismaClient.store.findFirst({ where: { userId: user.id } });
+    const storeId = findStore?.id;
 
-    const token = jwt.sign({ userId, userType: accountType }, SECRET_KEY, {
-      expiresIn: "5m",
+    const token = jwt.sign({ userId, storeId }, SECRET_KEY, {
+      expiresIn: "1h",
     });
 
     return { token, user };
