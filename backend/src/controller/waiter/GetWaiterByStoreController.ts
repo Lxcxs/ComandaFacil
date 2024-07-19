@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { GetWaiterByStoreService } from "../../services/wainterServices/GetWaiterByStoreService";
+import { GetWaiterByStoreService } from "../../services/waiterServices/GetWaiterByStoreService";
 import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../../autentication/Auth";
 

@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { CreateWaiterService } from "../../services/wainterServices/CreateWaiterService";
+import { CreateWaiterService } from "../../services/waiterServices/CreateWaiterService";
 
 class CreateWaiterController {
   async handle(req: Request, res: Response) {
