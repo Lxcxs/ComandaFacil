@@ -6,7 +6,7 @@ class GetStoreCategoryController {
     const { storeId } = req.body;
     const categoryService = new GetStoreCategoryService();
 
-    const result = categoryService.execute({ storeId });
+    const result = await categoryService.execute({ storeId });
     return res.status(201).json(result);
   }
 };

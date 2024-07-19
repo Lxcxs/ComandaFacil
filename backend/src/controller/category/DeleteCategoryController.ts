@@ -5,7 +5,7 @@ class DeleteCategoryController {
   async handle(req: Request, res: Response) {
     const { id } = req.body;
     const categoryService = new DeleteCategoryService();
-    const result = categoryService.execute({ id });
+    const result = await categoryService.execute({ id });
     return res.status(201).json(result)
   }
 }

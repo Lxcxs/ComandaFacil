@@ -6,7 +6,7 @@ class CreateCategoryController {
     const { categoryName, storeId } = req.body;
     const categoryService = new CreateCategoryService();
 
-    const result = categoryService.execute({ categoryName, storeId });
+    const result = await categoryService.execute({ categoryName, storeId });
 
     return res.status(201).json(result);
   }
