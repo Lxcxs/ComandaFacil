@@ -61,7 +61,7 @@ model item {
   id              Int      @id @default(autoincrement())
   itemName        String
   itemDescription String
-  itemValue       Float
+  itemValue       Decimal @db.Decimal(10, 2)
   itemStatus      String
   itemImage       String
   categoryId      Int
@@ -104,7 +104,7 @@ model costumer {
 
 model costumerTab {
   id         Int      @id @default(autoincrement())
-  tabValue   Float
+  tabValue   Decimal @db.Decimal(10, 2)
   tabStatus  String
   costumerId Int
   storeId    Int
@@ -121,7 +121,7 @@ model order {
   itemImage     String
   itemAmount    Int
   costumerNote  String
-  orderValue    Float
+  orderValue    Decimal @db.Decimal(10, 2)
   orderStatus   String
   createdAt     DateTime     @default(now())
   storeId       Int
