@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import prismaClient from "../../prisma";
 import { validateFields } from "../../utils/validateFields"; // Atualize o caminho conforme necessário
 import { CreateWaiterDTO } from "../../DTOs/waiterDTO";
+import { validateStore } from "../../utils/validateStore";
 class CreateWaiterService {
   private static readonly SALT_ROUNDS = 10;
   private static readonly ACCOUNT_TYPE = "employee";
@@ -10,12 +11,7 @@ class CreateWaiterService {
 
     validateFields( { waiterName, waiterEmail, waiterPassword, storeId } );
 
-    const existingStore = await prismaClient.store.findFirst({
-      where: { id: storeId },
-    });
-    if (!existingStore) {
-      throw new Error('Store not found.');
-    }
+    const existingStore = await validateStore(storeId);
 
     const userStoreValidation = await prismaClient.store.findFirst({
       where: { userId: token?.userId },

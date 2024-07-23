@@ -1,3 +1,4 @@
+import { validateStore } from "../../utils/validateStore";
 import prismaClient from "../../prisma";
 
 interface GetById {
@@ -6,16 +7,10 @@ interface GetById {
 
 class GetWaiterByStoreService {
   async execute({ storeId }: GetById) {
-    const findStore = await prismaClient.store.findFirst({
-      where: {
-        id: storeId,
-      },
-    });
-    if (!storeId) throw new Error("Error: store not found.");
-
+    const existingStore = await validateStore(storeId);
     const waiters = await prismaClient.waiter.findMany({
       where: {
-        storeId: findStore?.id,
+        storeId: existingStore?.id,
       }
     })
 

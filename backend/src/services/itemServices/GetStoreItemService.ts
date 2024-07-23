@@ -1,5 +1,6 @@
 import { validateFields } from "../../utils/validateFields";
 import prismaClient from "../../prisma";
+import { validateStore } from "../../utils/validateStore";
 
 interface IGetStore {
   storeId: number;
@@ -8,12 +9,7 @@ interface IGetStore {
 class GetStoreItemService {
   async execute({ storeId }: IGetStore) {
     validateFields({ storeId })
-    const existingStore = await prismaClient.store.findUnique({
-      where: {
-        id: storeId,
-      }
-    });
-    if (!existingStore) throw new Error("Service: store not found.");
+    const existingStore = await validateStore(storeId);
 
     const items = await prismaClient.item.findMany({
       where: {

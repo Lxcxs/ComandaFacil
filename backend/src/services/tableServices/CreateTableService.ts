@@ -1,22 +1,32 @@
 import { validateFields } from "../../utils/validateFields";
 import { CreateTableDTO } from "../../DTOs/tableDTO";
 import prismaClient from "../../prisma";
+import { validateStore } from "../../utils/validateStore";
+import { validateTable } from "../../utils/validateTable";
 
 class CreateTableService {
   private static readonly TABLE_STATUS = "occupied";
   
   async execute({ tableNumber, tablePeopleAmount, storeId, waiterId }: CreateTableDTO) {
+
     validateFields({ tableNumber, tablePeopleAmount, storeId });
-    const store = await prismaClient.store.findUnique({
-      where: { id: storeId }
-    });
-    if (!store) throw new Error("Service: store not found.");
+
+    const existingStore = await validateStore(storeId);
+    validateTable(parseInt(tableNumber), 1, existingStore.storeTableAmount);
+    
+    const occupiedTable = await prismaClient.table.findFirst({
+      where: {
+        tableNumber,
+        tableStatus: CreateTableService.TABLE_STATUS,
+      }
+    })
+    if (occupiedTable) throw new Error("Service: this table is already occupied.");
 
     const tableData = {
       tableNumber,
       tablePeopleAmount,
       tableStatus: CreateTableService.TABLE_STATUS,
-      storeId,
+      storeId: existingStore.id,
       waiterId,
     };
 

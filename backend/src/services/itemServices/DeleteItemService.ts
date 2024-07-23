@@ -1,3 +1,4 @@
+import { validateStore } from "../../utils/validateStore";
 import prismaClient from "../../prisma";
 
 interface IDelete {
@@ -7,12 +8,7 @@ interface IDelete {
 
 class DeleteItemService {
   async execute({ id, storeId }: IDelete) {
-    const existingStore = await prismaClient.store.findUnique({
-      where: {
-        id: storeId,
-      }
-    });
-    if (!existingStore) throw new Error("Service: store not found.");
+    const existingStore = await validateStore(storeId);
 
     const findItem = await prismaClient.item.findUnique({
       where: {
