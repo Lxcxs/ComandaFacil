@@ -5,6 +5,7 @@ import { storeRouter } from "./storeRoutes/storeRouter.routes";
 import { waiterRouter } from "./WaiterRoutes/waiterRouter.routes";
 import { categoryRouter } from "./categoryRoutes/categoryRouter.routes";
 import { itemRouter } from "./itemRoutes/itemRouter.routes";
+import { tableRouter } from "./tableRoutes/tableRouter.routes";
 
 const routes = Router();
 
@@ -14,5 +15,6 @@ routes.use("/login", loginRouter);
 routes.use("/waiters", waiterRouter);
 routes.use("/categories", categoryRouter);
 routes.use("/items", itemRouter);
+routes.use("/tables", tableRouter);
 
 export { routes };
