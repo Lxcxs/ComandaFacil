@@ -1,17 +1,15 @@
 import { Request, Response } from "express";
-import { verifyToken } from "../../autentication/Auth";
-import { JwtPayload } from "jsonwebtoken";
 import { DeleteItemService } from "../../services/itemServices/DeleteItemService";
+import { findHeaders } from "../../utils/findHeaders";
 
 class DeleteItemController {
   async handle(req: Request, res: Response) {
-    const token = req.headers["authorization"]?.replace("Bearer ", "");
+    const token = findHeaders(req, "authorization");
     const { id } = req.body;
 
     const itemService = new DeleteItemService();
 
-    const decodedToken: JwtPayload | null = verifyToken(token as any);
-    const storeId = decodedToken?.storeId
+    const storeId = token?.storeId
     const result = await itemService.execute({ id, storeId });
     
     return res.status(200).json(result)

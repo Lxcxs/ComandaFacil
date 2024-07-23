@@ -1,6 +1,7 @@
 import prismaClient from "../../prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateFields } from "../../utils/validateFields";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
 
@@ -29,9 +30,7 @@ class AuthenticateUserService {
   }
 
   async execute({ loginEmail, loginPassword, accountType }: AuthenticateUserServiceParams) {
-    if (!loginEmail || !loginPassword || !accountType) {
-      throw new Error("Please fill in all fields");
-    }
+    validateFields({loginEmail, loginPassword, accountType});
 
     const user = await this.findUserByEmail(accountType, loginEmail);
 

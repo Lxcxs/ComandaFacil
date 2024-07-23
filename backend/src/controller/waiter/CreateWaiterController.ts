@@ -1,12 +1,10 @@
 import { Response, Request } from "express";
 import { CreateWaiterService } from "../../services/waiterServices/CreateWaiterService";
+import { findHeaders } from "../../utils/findHeaders";
 
 class CreateWaiterController {
   async handle(req: Request, res: Response) {
-    const token = req.headers["authorization"]?.replace("Bearer ", "")
-    if (!token) {
-      throw new Error("controller: Invalid token.")
-    }
+    const token = findHeaders(req, "authorization");
     const { waiterName, waiterEmail, waiterPassword, storeId } = req.body;
 
     const waiterService = new CreateWaiterService();

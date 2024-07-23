@@ -2,9 +2,6 @@ import bcrypt from "bcrypt";
 import prismaClient from "../../prisma";
 import { validateFields } from "../../utils/validateFields"; // Atualize o caminho conforme necessário
 import { CreateWaiterDTO } from "../../DTOs/waiterDTO";
-import { verifyToken } from "../../autentication/Auth";
-import { JwtPayload } from "jsonwebtoken";
-
 class CreateWaiterService {
   private static readonly SALT_ROUNDS = 10;
   private static readonly ACCOUNT_TYPE = "employee";
@@ -20,9 +17,8 @@ class CreateWaiterService {
       throw new Error('Store not found.');
     }
 
-    const decodedToken: JwtPayload | null = verifyToken(token); 
     const userStoreValidation = await prismaClient.store.findFirst({
-      where: { userId: decodedToken?.id },
+      where: { userId: token?.userId },
     });
 
     if (userStoreValidation?.id !== existingStore.id) {
