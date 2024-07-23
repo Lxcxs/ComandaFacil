@@ -11,7 +11,8 @@ class CreateTableController {
     const tableService = new CreateTableService();
 
     const storeId = parseInt(token?.storeId);
-    return res.status(201).json(tableService.execute({ tableNumber, tablePeopleAmount, waiterId, storeId}))
+    const result = await tableService.execute({ tableNumber, tablePeopleAmount, waiterId, storeId});
+    return res.status(201).json(result);
   }
 }
 export { CreateTableController };
