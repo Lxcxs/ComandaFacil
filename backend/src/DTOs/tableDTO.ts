@@ -1,5 +1,5 @@
 export interface CreateTableDTO {
-  tableNumber: string;
+  tableNumber: number;
   tablePeopleAmount: number;
   storeId: number;
   waiterId: number | null;

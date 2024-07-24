@@ -12,7 +12,7 @@ class CreateTableService {
     validateFields({ tableNumber, tablePeopleAmount, storeId });
 
     const existingStore = await validateStore(storeId);
-    validateTable(parseInt(tableNumber), 1, existingStore.storeTableAmount);
+    validateTable(tableNumber, 1, existingStore.storeTableAmount);
     
     const occupiedTable = await prismaClient.table.findFirst({
       where: {
