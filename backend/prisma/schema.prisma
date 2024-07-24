@@ -75,7 +75,7 @@ model item {
 
 model table {
   id                Int           @id @default(autoincrement())
-  tableNumber       String
+  tableNumber       Int
   tableStatus       String
   tablePeopleAmount Int
   storeId           Int
