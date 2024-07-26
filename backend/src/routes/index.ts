@@ -7,6 +7,7 @@ import { categoryRouter } from "./categoryRoutes/categoryRouter.routes";
 import { itemRouter } from "./itemRoutes/itemRouter.routes";
 import { tableRouter } from "./tableRoutes/tableRouter.routes";
 import { costumerRouter } from "./costumerRoutes/costumerRouter.routes";
+import { tabRouter } from "./tabRoutes/tabRouter.routes";
 
 const routes = Router();
 
@@ -18,5 +19,6 @@ routes.use("/categories", categoryRouter);
 routes.use("/items", itemRouter);
 routes.use("/tables", tableRouter);
 routes.use("/costumers", costumerRouter);
+routes.use("/tabs", tabRouter);
 
 export { routes };
