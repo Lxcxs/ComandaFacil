@@ -41,7 +41,7 @@ class SigninCostumerService {
 
     const token = jwt.sign(
       {
-        costumerId: costumer.id.toString(),
+        costumerId: costumer.id,
         costumerName: costumerName,
         table: table.tableNumber,
         peopleAmount: table.tablePeopleAmount,
