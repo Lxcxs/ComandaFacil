@@ -4,6 +4,7 @@ import { validateStore } from "../../utils/validateStore";
 import prismaClient from "../../prisma";
 import { CreateTableService } from "../tableServices/CreateTableService";
 import jwt from "jsonwebtoken";
+import { CreateTabService } from "../tabServices/CreateTabService";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY || "";
 
@@ -22,6 +23,8 @@ class SigninCostumerService {
     const store = await validateStore(storeId);
 
     const tableService = new CreateTableService();
+    const tabService = new CreateTabService();
+
     const table = await tableService.execute({
       tableNumber,
       tablePeopleAmount,
@@ -39,19 +42,24 @@ class SigninCostumerService {
       },
     });
 
+    const tab = await tabService.execute(
+      costumer.id,
+      storeId,
+      table.id
+    );
+
     const token = jwt.sign(
       {
         costumerId: costumer.id,
         costumerName: costumerName,
-        table: table.tableNumber,
+        table: table.id,
         peopleAmount: table.tablePeopleAmount,
       },
       SECRET_KEY,
       { expiresIn: "1h" }
     );
 
-    return { token, table, costumer };
+    return { token, table, costumer, tab };
   }
 }
-
 export { SigninCostumerService };
