@@ -2,28 +2,26 @@ import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../autentication/Auth";
 
-function findHeaders(req: Request, headerName: string): JwtPayload | null {
+export function findHeaders(req: Request, headerName: string): JwtPayload {
   const authHeader = req.headers[headerName];
 
   if (!authHeader) {
-    console.error("Header not found:", headerName);
-    return null;
+    throw new Error(`Header not found: ${headerName}`);
   }
 
   const token = (authHeader as string).replace("Bearer ", "");
 
   if (!token) {
-    console.error("Token not found after replacement");
-    return null;
+    throw new Error("Token not found after replacement");
   }
 
   try {
     const decodedToken: JwtPayload | null = verifyToken(token);
+    if (!decodedToken) {
+      throw new Error("Invalid token");
+    }
     return decodedToken;
   } catch (error) {
-    console.error("Invalid token:", error);
-    return null;
+    throw new Error(`Invalid token: ${error instanceof Error ? error.message : 'An unexpected error occurred'}`);
   }
 }
-
-export { findHeaders };

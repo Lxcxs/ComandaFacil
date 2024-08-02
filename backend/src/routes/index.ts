@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { userRouter } from "./UserRoutes/userRoutes.routes";
-import { loginRouter } from "./LoginRoutes/login.routes";
-import { storeRouter } from "./storeRoutes/storeRouter.routes";
-import { waiterRouter } from "./WaiterRoutes/waiterRouter.routes";
-import { categoryRouter } from "./categoryRoutes/categoryRouter.routes";
-import { itemRouter } from "./itemRoutes/itemRouter.routes";
-import { tableRouter } from "./tableRoutes/tableRouter.routes";
-import { costumerRouter } from "./costumerRoutes/costumerRouter.routes";
-import { tabRouter } from "./tabRoutes/tabRouter.routes";
-import { orderRouter } from "./orderRoutes/orderRouter.routes";
+import { userRouter } from "./user/userRoutes.routes";
+import { loginRouter } from "./login/login.routes";
+import { storeRouter } from "./store/storeRouter.routes";
+import { waiterRouter } from "./waiter/waiterRouter.routes";
+import { categoryRouter } from "./category/categoryRouter.routes";
+import { itemRouter } from "./item/itemRouter.routes";
+import { tableRouter } from "./table/tableRouter.routes";
+import { costumerRouter } from "./costumer/costumerRouter.routes";
+import { tabRouter } from "./costumerTab/tabRouter.routes";
+import { orderRouter } from "./order/orderRouter.routes";
 
 const routes = Router();
 
