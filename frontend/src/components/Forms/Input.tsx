@@ -1,7 +1,8 @@
 import React from 'react';
-import { InputEl } from './styles';
+import { InputEl, InputField } from './styles';
 
 interface FormProps {
+  label: string;
   id?: string | null;
   type: string;
   placeholder: string;
@@ -13,9 +14,10 @@ interface FormProps {
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
 }
 
-const Input = ({ placeholder, required, type, name, value, error, onChange, onBlur }: FormProps) => {
+const Input = ({ label, placeholder, required, type, name, value, error, onChange, onBlur }: FormProps) => {
   return (
-    <div>
+    <InputField>
+      <label>{label}</label>
       <InputEl
         id={name}
         name={name}
@@ -25,9 +27,10 @@ const Input = ({ placeholder, required, type, name, value, error, onChange, onBl
         onBlur={onBlur}
         placeholder={placeholder}
         required={required}
+        
        />
       {error && <p>{error}</p>}
-    </div>
+    </InputField>
   );
 };
 

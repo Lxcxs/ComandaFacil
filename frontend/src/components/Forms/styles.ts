@@ -1,22 +1,44 @@
 import styled from "styled-components";
 
-export const InputEl = styled.input`
+
+export const InputField = styled.div`
   width: 100%;
   border: 1px solid gray;
-  background: #ffffff11;
-  padding: 5px 7px;
+  background: transparent;
+  padding: 10px 10px;
+  border-radius: 1em;
+
+  label {
+    color: #9f9f9f;
+    font-size: .9em;
+    font-weight: 600;
+  }
+  p {
+    color: #9fb5ff;
+    font-style: italic;
+    /* font-weight: 200; */
+    font-size: 85%;
+  }
+
+`
+export const InputEl = styled.input`
+  width: 100%;
+  background-color: transparent;
+  border: none;
   font-size: 1.2em;
-  border-radius: 3px;
   transition: .4s;
+  border-bottom: 1px solid transparent;
 
   &:focus,
   &:hover {
     outline: none;
-    border-color: #d6313b;
-    background: white;
-    box-shadow: 0 0 0 1px #d6313b;
+    background-color: #ffffff13;
+    border-bottom: 1px solid #D6313B;
     transition: .2s;
-    color: #000;
+  }
+
+  @media (max-width: 700px) {
+    font-size: 1em;
   }
 `;
 
