@@ -5,9 +5,13 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    color: #141414;
-    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+    font-family: "Inter", sans-serif;
 
+  }
+
+  body {
+    background-color: #141414;
   }
 
 `;
