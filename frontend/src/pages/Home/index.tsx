@@ -4,7 +4,7 @@ function Home() {
   return ( 
     <>
       <nav>
-        <Link to="SignIn">Cadastrar</Link>
+        <Link to="Login">Cadastrar</Link>
         <Link to="Dashboard">Dashboard</Link>
       </nav>
     </>
