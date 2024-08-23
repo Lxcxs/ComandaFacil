@@ -5,7 +5,7 @@ interface IToggle {
 }
 
 export const Container = styled.section`
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   max-height: auto;
   display: flex;
@@ -58,10 +58,10 @@ export const Form = styled.form`
     padding: 1em;
     border-radius: 1em;
     h3 {
-    color: #9f9f9f;
-    font-size: .9em;
-    font-weight: 600;
-    padding-bottom: .3em;
+      color: #9f9f9f;
+      font-size: 0.9em;
+      font-weight: 600;
+      padding-bottom: 0.3em;
     }
     select {
       width: 100%;
@@ -95,7 +95,7 @@ export const Button = styled.button`
   cursor: pointer;
   width: 100%;
   height: auto;
-  padding: .8em 0;
+  padding: 0.8em 0;
   text-align: center;
   font-size: 1em;
   text-transform: capitalize;
@@ -138,7 +138,7 @@ export const ToggleBtn = styled.div<IToggle>`
   min-height: 65px;
   border-radius: 2em;
   background: #ffffff34;
-  padding: .5em;
+  padding: 0.5em;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -155,8 +155,46 @@ export const ToggleBtn = styled.div<IToggle>`
     height: 80%;
     border-radius: 2em;
     position: absolute;
-    transform: ${(props) => props.status ? "translateX(0)" : "translateX(90%)"};
-    transition: .5s ease-out;
+    transform: ${(props) =>
+      props.status ? "translateX(0)" : "translateX(90%)"};
+    transition: 0.5s ease-out;
     z-index: -1;
+  }
+`;
+
+export const Modal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #00000080;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  div#modal-content {
+    width: auto;
+    height: auto;
+    padding: 1em;
+    background-color: #2c2c2c;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    border-radius: 1.5em;
+  }
+  div.select-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    img {
+      width: 10em;
+      border-radius: 50%;
+    }
+  }
+  div.closeModal {
+    width: fit-content;
+    cursor: pointer;
   }
 `;

@@ -1,11 +1,18 @@
-import { Button, Form, InputContent, NoticeError, TitleForm } from "../styles";
+import { Form, InputContent, NoticeError, TitleForm } from "../styles";
 import Input from "../../../components/Forms/Input";
 import useForm from "../../../Hooks/useForm";
 import { RiAlertFill } from "react-icons/ri";
 import * as React from "react";
+import { Button } from "../../../styles/Button/styles";
+import { AddPhotoModal } from "../modal";
+
+
+
 
 function SignUp() {
-
+  const [isFinished, setIsFinished] = React.useState<true | false>(false);
+  const [modal, setModal] = React.useState<true | false>(false);
+  const [error, setError] = React.useState<string | null>(null);
   const fields = {
     username: useForm(null),
     email: useForm("email"),
@@ -15,8 +22,8 @@ function SignUp() {
     password: useForm("password"),
     passwordCheck: useForm("password"),
   };
-
-  const [error, setError] = React.useState<string | null>(null);
+  const closeModal = () => setModal(false);
+  const completeRegistration = () => setIsFinished(true);
 
   function handleForm(event: React.FormEvent) {
     event.preventDefault();
@@ -44,20 +51,20 @@ function SignUp() {
       storeImage: "",
       storeTableAmount: parseInt(storeTable.value),
     }
-
-    localStorage.setItem('userData', JSON.stringify(userData));
-    localStorage.setItem('storeData', JSON.stringify(storeData));
-    Object.values(fields).forEach((field) => field.setValue(""));
-    setError(null);
+    if (isFinished) {
+      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('storeData', JSON.stringify(storeData));
+      Object.values(fields).forEach((field) => field.setValue(""));
+      setError(null);
+    }
+    setModal(!modal);
   }
 
   return (
-
     <Form onSubmit={handleForm}>
       <TitleForm>
         <h1>Cadastre sua Loja</h1>
       </TitleForm>
-
       <InputContent>
         <Input type="text" label="Nome" name="username" placeholder="Digite seu nome" required {...fields.username} />
         <Input type="email" label="Email" name="email" placeholder="Ex: email@gmail.com" required {...fields.email} />
@@ -69,8 +76,15 @@ function SignUp() {
         {error && <NoticeError><RiAlertFill color="red" /> {error}</NoticeError>}
       </InputContent>
 
+
+      {modal && (
+
+        <AddPhotoModal isOpen={modal} onClose={closeModal} handleSubmit={completeRegistration} />
+      )}
+
+
       <Button type="submit">
-        Cadastrar
+        Continuar
       </Button>
     </Form>
   );

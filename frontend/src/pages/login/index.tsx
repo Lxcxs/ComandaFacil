@@ -1,7 +1,7 @@
 import React from "react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import { Container, Content, Header, ToggleBtn } from "./styles";
+import { Container, Content, ToggleBtn } from "./styles";
 
 
 function Login() {
@@ -14,7 +14,6 @@ function Login() {
 
   return (
     <Container>
-        <Header>Comanda Facil</Header>
       <Content>
         <ToggleBtn status={accessType} onClick={toggleAccess}>
           <div>
