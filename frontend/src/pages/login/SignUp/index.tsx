@@ -4,15 +4,13 @@ import useForm from "../../../Hooks/useForm";
 import { RiAlertFill } from "react-icons/ri";
 import * as React from "react";
 import { Button } from "../../../styles/Button/styles";
-import { AddPhotoModal } from "../modal";
-
-
-
+import { useRegister } from "../../../Hooks/useRegister";
+import { useNavigate } from "react-router-dom";
 
 function SignUp() {
-  const [isFinished, setIsFinished] = React.useState<true | false>(false);
-  const [modal, setModal] = React.useState<true | false>(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const navigate = useNavigate();
+  const { createUser, createStore, isUserCreated, isStoreCreated, error, loading } = useRegister();
+
   const fields = {
     username: useForm(null),
     email: useForm("email"),
@@ -22,42 +20,34 @@ function SignUp() {
     password: useForm("password"),
     passwordCheck: useForm("password"),
   };
-  const closeModal = () => setModal(false);
-  const completeRegistration = () => setIsFinished(true);
 
-  function handleForm(event: React.FormEvent) {
+  async function handleForm(event: React.FormEvent) {
     event.preventDefault();
 
-    const { username, password, passwordCheck, storeTable, document, email, storeName } = fields;
-
-    if (Object.values(fields).some((field) => !field.value)) {
-      setError("Preencha todos os campos!");
-      return;
-    }
-
-    if (password.value !== passwordCheck.value) {
-      setError("As senhas não são iguais!");
-      return;
-    }
-
+    const { username, password, storeTable, document, email, storeName } = fields;
     const userData = {
       userName: username.value,
       userEmail: email.value,
       userPassword: password.value,
       userDocument: document.value,
     };
-    const storeData = {
-      storeName: storeName.value,
-      storeImage: "",
-      storeTableAmount: parseInt(storeTable.value),
+
+    const userResponse = await createUser(userData);
+    if (userResponse && isUserCreated) {
+      const storeData = {
+        storeName: storeName.value,
+        storeImage: "non",
+        storeTableAmount: parseInt(storeTable.value),
+        userId: userResponse.id,
+      };
+
+      await createStore(storeData);
+      if (isStoreCreated) {
+        navigate('/dashboard');
+      }
     }
-    if (isFinished) {
-      localStorage.setItem('userData', JSON.stringify(userData));
-      localStorage.setItem('storeData', JSON.stringify(storeData));
-      Object.values(fields).forEach((field) => field.setValue(""));
-      setError(null);
-    }
-    setModal(!modal);
+
+    Object.values(fields).forEach((field) => field.setValue(""));
   }
 
   return (
@@ -75,16 +65,8 @@ function SignUp() {
         <Input type="password" label="Confirmar senha" name="senha2" placeholder="Confirme sua senha" required {...fields.passwordCheck} />
         {error && <NoticeError><RiAlertFill color="red" /> {error}</NoticeError>}
       </InputContent>
-
-
-      {modal && (
-
-        <AddPhotoModal isOpen={modal} onClose={closeModal} handleSubmit={completeRegistration} />
-      )}
-
-
-      <Button type="submit">
-        Continuar
+      <Button type="submit" disabled={loading}>
+        {loading ? "Carregando..." : "Continuar"}
       </Button>
     </Form>
   );

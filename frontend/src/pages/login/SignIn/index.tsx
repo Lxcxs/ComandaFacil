@@ -2,18 +2,11 @@ import Input from "../../../components/Forms/Input";
 import { TitleForm, Form, InputContent, NoticeError, Button } from "../styles";
 import React from "react";
 import useForm from "../../../Hooks/useForm";
-import { client } from "../../../services/axios";
-import { useNavigate } from "react-router";
+import { useLogin } from "../../../Hooks/login";
 
-interface ILogin {
-  loginEmail: string,
-  loginPassword: string,
-  accountType: string,
-}
 
 function SignIn() {
-  const navigate = useNavigate();
-  const [loading, setLoading] = React.useState<boolean>(false)
+  const { login, loading } = useLogin();
   const [error, setNewError] = React.useState<string | null>(null);
   const [accountType, setAccountType] = React.useState<string>('admin');
   const handleAccountTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -39,24 +32,7 @@ function SignIn() {
       loginPassword: password.value,
       accountType,
     }
-    async function login(data: ILogin) {
-      try {
-        setLoading(true)
-        const response = await client.post(`/login/`, data);
-        console.log("login successful");
-        const token = response.data.token;
-
-        localStorage.setItem('authorization', token)
-        navigate('/Dashboard')
-        setLoading(false)
-      } catch (err) {
-        console.log(err)
-      }
-
-
-    }
     login(data)
-
     setNewError(null)
   }
 
