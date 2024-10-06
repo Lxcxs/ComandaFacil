@@ -5,28 +5,29 @@ interface IMenu {
 }
 
 export const DMenu = styled.div<IMenu>`
-  width: ${(props) => (props.menu ? "300px" : "70px")};
-  height: 100%;
+  width: ${(props) => (props.menu ? "260px" : "80px")};
+  height: 100vh;
+  padding: 0.5em;
   display: flex;
+  justify-content: flex-start;
   flex-direction: column;
-  gap: 2em;
+  gap: 1em;
   position: fixed;
   top: 0;
   left: 0;
   background-color: #191919;
   box-shadow: 2px 0 3px #00000059;
-  transition: 0.3s ease-in-out;
+  transition: 0.1s ease-in-out;
   overflow-y: auto;
   overflow-x: hidden;
+  z-index: 1000;
 
   &::-webkit-scrollbar {
     width: 12px;
   }
-
   &::-webkit-scrollbar-track {
     background: #191919;
   }
-
   &::-webkit-scrollbar-thumb {
     background-color: #353535;
     border-radius: 20px;
@@ -34,63 +35,147 @@ export const DMenu = styled.div<IMenu>`
   }
 
   div.header {
+    cursor: pointer;
     width: 100%;
     display: flex;
-    flex-direction: column;
+    justify-content: ${(props) => (props.menu ? "space-between" : "center")};
     align-items: center;
-    gap: 1em;
-
-    img {
-      width: 70%;
-      height: auto;
-      padding: ${(props) => (props.menu ? "2em" : ".5em")};
-      transition: 1s;
-      border-radius: 50%;
+    padding: 1em;
+    border-radius: 0.5em;
+    position: relative;
+    &::after {
+      content: "";
+      display: block;
+      width: 80%;
+      height: 1px;
+      background: #ffffff2d;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
     }
 
-    div.profile {
-      width: 100%;
-      padding: 0 1em;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-
-      h1 {
-        display: ${(props) => (props.menu ? "block" : "none")};
-      }
-
-      p {
-        display: flex;
-        align-items: center;
-        gap: 0.3em;
-      }
+    img {
+      display: ${(props) => (props.menu ? "block" : "none")};
+      width: ${(props) => (props.menu ? "14%" : "100%")};
+      /* background-color: #fff; */
+      border-radius: 0.5em;
+    }
+    h4 {
+      /* font-size: .8em; */
+      white-space: nowrap;
+      display: ${(props) => (props.menu ? "block" : "none")};
+      opacity: ${(props) => (props.menu ? "1" : "0")};
+      transition: 1s ease-in-out;
+    }
+    &:hover {
+      background-color: #ffffff2d;
     }
   }
 
   div.navigator {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2em;
+    border-radius: 0.5em;
+  }
+
+  div.footer {
+    width: 100%;
+    height: 70px;
+    padding: ${(props) => (props.menu ? "0 .5em" : "0")};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000000;
+    border-radius: 0.7em;
+
+    img {
+      width: 40px;
+      height: 40px;
+      transition: 1s;
+      border-radius: 0.5em;
+      display: ${(props) => (props.menu ? "block" : "none")};
+    }
+
+    div.profile {
+      h4 {
+        display: ${(props) => (props.menu ? "block" : "none")};
+      }
+
+      p {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.3em;
+      }
+    }
+    div#profile {
+      display: ${(props) => (props.menu ? "flex" : "none")};
+      gap: 0.5em;
+      align-items: center;
+    }
+    a#logout {
+      cursor: pointer;
+      width: ${(props) => (props.menu ? "40px" : "100%")};
+      height: ${(props) => (props.menu ? "100%" : "100%")};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  div.list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    position: relative;
+    &::after {
+      content: "";
+      display: block;
+      width: 80%;
+      height: 1px;
+      background: #ffffff2d;
+      position: absolute;
+      left: 50%;
+      bottom: -2em;
+      transform: translateX(-50%);
+    }
 
     a {
       width: 100%;
-      padding: 1em 1.4em;
-      color: #fff;
+      padding: ${(props) => (props.menu ? "1em" : "1em")};
+      color: #e3e3e3;
       text-decoration: none;
       display: flex;
-      justify-content: space-between;
-      border-bottom: ${(props) => (props.menu ? "1px solid gray" : "none")};
+      justify-content: ${(props) => (props.menu ? "flex-start" : "center")};
+      align-items: center;
+      gap: 0.3em;
+      border-radius: 0.3em;
       transition: all 0.1s ease-in;
 
-      &:hover {
-        color: #d6313b;
-        background-color: #212121;
+      &.active {
+        color: #e3e3e3;
+        font-weight: bold;
+        background-color: #d6313b;
+        &:hover {
+          color: #e3e3e3;
+          font-weight: bold;
+          background-color: #d6313b;
+        }
       }
 
-      span {
-        display: flex;
+      &:hover {
+        background-color: #d6d6d636;
+      }
+
+      span#text {
+        display: ${(props) => (props.menu ? "flex" : "none")};
         align-items: center;
         gap: 1.5em;
       }
@@ -101,57 +186,110 @@ export const DMenu = styled.div<IMenu>`
     cursor: pointer;
     width: fit-content;
     height: fit-content;
-    position: fixed;
-    top: 50%;
     left: ${(props) => (props.menu ? "300px" : "70px")};
-    transform: ${(props) => (props.menu ? "0" : "rotateY(190deg)")};
+    /* transform: ${(props) => (props.menu ? "rotateY(190deg)" : "0")}; */
     transition: 0.3s ease-in-out;
+  }
+
+  span#comandafacil {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    color: #525252;
+    font-style: italic;
+    display: flex;
+    opacity: ${(props) => (props.menu ? "1" : "0")};
+    align-items: center;
+    justify-content: center;
+    &::before {
+      content: "";
+      display: block;
+      width: 80%;
+      height: 1px;
+      background: #ffffff2d;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+    }
+  }
+  img#logo {
+    display: block;
+    align-self: center;
+    width: 50px;
   }
 
   @media (max-width: 760px) {
     width: 100%;
     height: auto;
+    padding: 0;
     gap: 0;
-    transform: ${(props) => (props.menu ? "0" : "translateY(-400px)")};
+    transform: ${(props) => (props.menu ? "0" : "translateY(-302px)")};
+    flex-direction: column-reverse;
     border-bottom-left-radius: 2em;
     border-bottom-right-radius: 2em;
     box-shadow: 0 2px 3px #00000059;
-    overflow: visible;
+    overflow: hidden;
 
-    div.header {
-      flex-direction: row;
-      padding: 1em;
-      background-color: #101010;
-      img {
-        width: 25vw;
-        padding: 0;
+    span#comandafacil {
+      display: none;
+    }
+
+    div.navigator {
+      display: flex;
+      flex-direction: column-reverse;
+      border-radius: 0;
+      border: none;
+      padding: 0;
+      gap: 0;
+
+      div.header {
+        background-color: #d6313b;
+        border-radius: 0;
+        padding-left: 3em;
+        padding-right: 3em;
+        h4 {
+          display: block;
+          opacity: 1;
+        }
+        &::after {
+          display: none;
+        }
       }
-      div.profile {
-        h1 {
-          font-size: 1.2em;
+    }
+    div.list {
+      gap: 0;
+      &::after {
+        display: none;
+      }
+    }
+    div.footer {
+      padding: 0 1em;
+      border-radius: 0;
+      background-color: black;
+
+      div#profile {
+        h4 {
+          display: block;
         }
-        p {
-          font-size: 0.8em;
-        }
+      }
+    }
+    div.list {
+      a {
+        border-radius: 0;
       }
     }
     div.activeMenu {
       width: 100%;
-      height: fit-content;
-      position: ${(props) => (props.menu ? "relative" : "fixed")};
-      top: ${(props) => (props.menu ? "none" : "400px")};
-      left: 0;
+      display: none;
+      /* position: ${(props) => (props.menu ? "relative" : "fixed")}; */
       transform: none;
       text-align: center;
-      background-color: #212121;
       transition: 1s all ease-in-out;
       z-index: 1000;
-
-      svg {
-        transition: 1.5s ease-in-out;
-        transform: ${(props) =>
-          props.menu ? "rotate(-90deg)" : "rotate(90deg)"};
-      }
+    }
+    img#logo {
+      display: none;
     }
   }
 `;

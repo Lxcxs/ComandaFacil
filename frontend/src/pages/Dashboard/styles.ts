@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const Content = styled.div`
   width: 100%;
   height: 100vh;
-  padding-left: 350px;
+  padding-left: 200px;
   background-color: #121212;
 
   div.introduce {

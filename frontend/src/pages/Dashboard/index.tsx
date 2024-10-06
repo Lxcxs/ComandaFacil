@@ -1,5 +1,4 @@
 
-import Menu from "../../components/Menu";
 import { Content } from "./styles";
 
 function Dashboard() {
@@ -7,7 +6,6 @@ function Dashboard() {
 
   return (
     <>
-      <Menu />
       <Content>
         <div className="introduce">
           <h2>Olá "Nome de Usuário</h2>
