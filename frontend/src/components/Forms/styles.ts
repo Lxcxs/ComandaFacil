@@ -6,7 +6,7 @@ export const InputField = styled.div`
   border: 1px solid gray;
   background: transparent;
   padding: 10px 10px;
-  border-radius: 1em;
+  border-radius: 10px;
 
   label {
     color: #9f9f9f;

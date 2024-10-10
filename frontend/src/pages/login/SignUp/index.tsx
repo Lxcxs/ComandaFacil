@@ -1,10 +1,10 @@
 import { Form, InputContent, NoticeError, TitleForm } from "../styles";
 import Input from "../../../components/Forms/Input";
-import useForm from "../../../Hooks/useForm";
+import useForm from "../../../components/Hooks/useForm";
 import { RiAlertFill } from "react-icons/ri";
 import * as React from "react";
 import { Button } from "../../../styles/Button/styles";
-import { useRegister } from "../../../Hooks/useRegister";
+import { useRegister } from "../../../components/Hooks/useRegister";
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {

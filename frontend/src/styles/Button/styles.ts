@@ -10,12 +10,12 @@ export const Button = styled.button`
   text-transform: capitalize;
   font-weight: 500;
   border: none;
-  border-radius: .8em;
-  background: linear-gradient(to bottom, #d6313b, #a3232b);
-  color: #fff;
+  border-radius: 10px;
+  background: #d6313b;
+  color: #e3e3e3;
+  transition: 0.1s;
 
   &:hover {
-    transition: 0.1s;
-    background: linear-gradient(to bottom, #c72934, #861c24);
+    background:#ad232f;
   }
 `;

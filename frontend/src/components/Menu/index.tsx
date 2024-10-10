@@ -1,13 +1,11 @@
 import React from "react";
-import { FaCircle } from "react-icons/fa";
 import { IoIosCheckmark } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
+import { BiFoodMenu } from "react-icons/bi";
+import { VscListUnordered } from "react-icons/vsc";
 import {
-  MdOutlineSpaceDashboard,
-  MdListAlt,
-  MdOutlineFastfood,
   MdOutlineTableBar,
-  MdLogout,
+  MdHome 
 } from "react-icons/md";
 import { IoIosArrowForward } from "react-icons/io";
 import { DMenu } from "./styles";
@@ -31,19 +29,19 @@ export function Menu() {
         </div>
         <div className="list">
           <NavLink to="/">
-            <MdOutlineSpaceDashboard size={26} />
-            <span id="text">Dashboard</span>
+            <MdHome  className="icon" />
+            <span id="text">Início</span>
           </NavLink>
           <NavLink to="/pedidos">
-            <MdListAlt size={26} />
+            <VscListUnordered className="icon" />
             <span id="text">Pedidos</span>
           </NavLink>
           <NavLink to="/cardapio">
-            <MdOutlineFastfood size={26} />
+            <BiFoodMenu className="icon" />
             <span id="text">Cardápio</span>
           </NavLink>
-          <NavLink to="/none">
-            <MdOutlineTableBar size={26} />
+          <NavLink to="/mesas">
+            <MdOutlineTableBar className="icon" />
             <span id="text">Mesas</span>
           </NavLink>
         </div>
@@ -53,7 +51,7 @@ export function Menu() {
         <img id="logo" alt="comanda fácil" src="src\assets\comandalogo.png" />
       }
       
-      <div className="footer">
+      {/* <div className="footer">
         <div id="profile">
           <img src="https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg" />
 
@@ -67,7 +65,7 @@ export function Menu() {
         <NavLink to="/authentication" id="logout" style={{ color: "#fff" }}>
           <MdLogout size={24} />
         </NavLink>
-      </div>
+      </div> */}
 
     </DMenu>
   );

@@ -1,8 +1,8 @@
 import Input from "../../../components/Forms/Input";
 import { TitleForm, Form, InputContent, NoticeError, Button } from "../styles";
 import React from "react";
-import useForm from "../../../Hooks/useForm";
-import { useLogin } from "../../../Hooks/login";
+import useForm from "../../../components/Hooks/useForm";
+import { useLogin } from "../../../components/Hooks/login";
 
 
 function SignIn() {
