@@ -51,7 +51,7 @@ const ModalSelectItem: React.FC<ModalProps> = ({ item, isOpen, onClose }) => {
         </CloseButton>
         <ItemImage imgSrc={item.imageUrl} />
         <ModalContent>
-          <h2>{item.name}</h2>
+          <h3>{item.name}</h3>
           <p>{item.description}</p>
           <label>Alguma observação?</label>
           <textarea placeholder="Ex: Retirar passas, ponto da carne..." />

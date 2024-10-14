@@ -1,5 +1,18 @@
 import styled from "styled-components";
 
+export const CategoryLink = styled.a<{ active: boolean }>`
+    padding: 10px 15px;
+    text-decoration: none;
+    color: ${({ active }) => (active ? "#000" : "#555")};
+    border-bottom: ${({ active }) => (active ? "2px solid #000" : "none")};
+    cursor: pointer;
+
+    &:hover {
+        color: #000;
+    }
+`;
+
+
 export const Container = styled.main`
     margin: 0 auto;
     max-width: 100%;
@@ -10,7 +23,7 @@ export const Container = styled.main`
     justify-content: center;
     align-items: center;
     padding: 2vh 0;
-    background-color: #1c1c1c;
+    background-color: #121212F5;
     color: #f2f2f2;
 `;
 
@@ -21,7 +34,7 @@ export const Header = styled.div`
     justify-content: flex-start;
     gap: 10px;
     padding: 4vh 10px;
-    background-color: #2b2b2b;
+    background-color: #121212F5;
 
     img {
         width: 50px;
@@ -85,10 +98,10 @@ export const Categories = styled.nav`
         font-weight: bold;
         text-transform: uppercase;
         font-size: 14px;
-        padding: 8px 20px; /* Ajuste o padding para um espaçamento melhor */
+        padding: 8px 20px;
         white-space: nowrap;
         transition: background-color 0.2s ease-in-out;
-        flex-shrink: 0; /* Impede que os links encolham */
+        flex-shrink: 0;
     }
 
     a:hover {
@@ -108,12 +121,12 @@ export const MenuList = styled.div`
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 0px;
 
         div.section {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 0px;
         }
     }
 `;
@@ -136,13 +149,14 @@ export const SearchBar = styled.input`
 
 export const Item = styled.div`
     width: 100%;
-    border-radius: 10px;
-    border: 1px solid #444;
-    padding: 10px;
+    /* border-radius: 10px; */
+    border-bottom: 1px solid #222;
+    padding: 15px 10px;
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-between;
     gap: 10px;
-    background-color: #2b2b2b;
+    background-color: transparent;
     transition: background-color 0.3s ease-in-out;
 
     &:hover {
@@ -174,9 +188,18 @@ export const Item = styled.div`
             color: #aaa;
         }
 
-        h3 {
-            font-size: 16px;
-            color: #fff;
+        h4 {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        #price {
+            color: #e9abb5;
+            background-color: #742222;
+            padding: 2px 3px;
+            font-weight: 400;
+            width: fit-content;
+            align-self: flex-start;
         }
     }
 `;

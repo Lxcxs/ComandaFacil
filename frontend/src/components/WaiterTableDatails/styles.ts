@@ -41,7 +41,7 @@ export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 1000;
   animation: ${fadeIn} 0.3s ease forwards;
 
   @media (max-width: 760px) {
@@ -60,6 +60,7 @@ export const DetailsContainer = styled.div<{status?: boolean}>`
   flex-direction: column;
   position: relative;
   right: 0;
+  bottom: 0;
   box-shadow: 0 -3px 5px #0000008e;
   overflow: auto;
   animation: ${slideIn} 0.3s ease forwards;

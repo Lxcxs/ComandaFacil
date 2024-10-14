@@ -1,8 +1,8 @@
 import { useState } from "react";
-// import GarconList from "../../components/Garçom";
 import MesaGrid from "../../components/Table";
 import { Container } from "./styles";
 import WaiterTableDetails from "../../components/WaiterTableDatails";
+import WaiterTableFormModal from "../../components/WaiterModalSignin";
 
 interface Pedido {
   quantidade: number;
@@ -40,10 +40,13 @@ function WaiterTables() {
 
   const [mesaSelecionada, setMesaSelecionada] = useState<MesaSelecionada | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState<boolean>(false); // Novo estado para o modal de formulário
 
   const handleMesaClick = (numero: number, pessoas: number) => {
-    const mesa = mesas.find((m) => m.numero === numero && m.pessoas === pessoas);
-    if (mesa && pessoas !== 0) {
+    const mesa = mesas.find((m) => m.numero === numero);
+    if (mesa && mesa.status === "disponivel") {
+      setIsFormModalOpen(true); // Abre o modal do formulário
+    } else if (mesa && mesa.status === "ocupado") {
       const pedidos: Pedido[] = [
         { quantidade: 2, item: "Pizza Margherita", preco: 39.90, review: "", status: "waiting" },
         { quantidade: 1, item: "Espaguete à Bolonhesa", preco: 29.90, review: loremIpsum, status: "making" },
@@ -62,14 +65,24 @@ function WaiterTables() {
         pedidos,
         total,
       });
+      setIsModalOpen(true); // Abre o modal dos detalhes
     } else {
       setMesaSelecionada(null);
     }
-    setIsModalOpen(true);
   };
 
   const handleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const handleFormModal = () => {
+    setIsFormModalOpen(!isFormModalOpen);
+  };
+
+  const handleFormSubmit = (cliente: string, pessoas: number) => {
+    // Aqui você pode adicionar a lógica para lidar com os dados do formulário
+    console.log("Cliente:", cliente, "Pessoas:", pessoas);
+    setIsFormModalOpen(false); // Fecha o modal de formulário
   };
 
   return (
@@ -81,6 +94,13 @@ function WaiterTables() {
         <div style={{ width: "auto", height: "100%", position: "absolute", bottom: "-52px" }}>
           <WaiterTableDetails mesaSelecionada={mesaSelecionada} closeModal={handleModal} />
         </div>
+      )}
+      {isFormModalOpen && (
+        <WaiterTableFormModal
+          isOpen={isFormModalOpen}
+          onClose={handleFormModal}
+          onSubmit={handleFormSubmit}
+        />
       )}
     </Container>
   );

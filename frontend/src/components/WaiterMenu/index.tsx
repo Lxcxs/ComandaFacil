@@ -1,26 +1,21 @@
 import { BiFoodMenu } from "react-icons/bi";
-import { IoCartOutline } from "react-icons/io5";
 import { MdReorder } from "react-icons/md";
 import { Container } from "./styles";
 import { NavLink } from "react-router-dom";
 
-export function NavigationMenu() {
+export function WaiterMenu() {
 
   return (
     <Container>
       <div className="navigator">
         <div className="list">
-          <NavLink to="/restaurante/cliente/cardapio">
+          <NavLink to="/waiter/cardapio">
             <BiFoodMenu className="icon" />
             <span id="text">Cardápio</span>
           </NavLink>
-          <NavLink to="pedidos">
+          <NavLink to="tables">
             <MdReorder className="icon" />
-            <span id="text">Pedidos</span>
-          </NavLink>
-          <NavLink to="carrinho">
-            <IoCartOutline className="icon" />
-            <span id="text">Carrinho</span>
+            <span id="text">Mesas</span>
           </NavLink>
         </div>
       </div>
@@ -28,4 +23,4 @@ export function NavigationMenu() {
   );
 }
 
-export default NavigationMenu;
+export default WaiterMenu;

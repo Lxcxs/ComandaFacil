@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaCircle } from "react-icons/fa";
-import { Container, Header, MenuContent, Categories, SearchBar, MenuList, Item } from "./styles";
+import { Container, Header, MenuContent, Categories, SearchBar, MenuList, Item, CategoryLink } from "./styles";
 import ModalSelectItem from "../../components/ModalSelectItem";
 import { formatCurrency } from "../../utils/formatCurrency";
 
@@ -165,8 +165,9 @@ const categories: Category[] = [
 
 function CustomerMenu() {
     const [searchTerm, setSearchTerm] = React.useState("");
-    const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null); // Armazena o item selecionado
-    const [isModalOpen, setIsModalOpen] = useState(false); // Controla se o modal está aberto
+    const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null); 
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [activeCategory, setActiveCategory] = useState<number | null>(null); // Adiciona estado para categoria ativa
 
     const openModal = (item: MenuItem) => {
         setSelectedItem(item);
@@ -178,6 +179,10 @@ function CustomerMenu() {
         setIsModalOpen(false);
     };
 
+    const handleCategoryClick = (categoryId: number) => {
+        setActiveCategory(categoryId); // Atualiza a categoria ativa
+    };
+
     const filteredCategories = categories
         .map(category => ({
             ...category,
@@ -185,7 +190,7 @@ function CustomerMenu() {
                 item.name.toLowerCase().includes(searchTerm.toLowerCase())
             ),
         }))
-        .filter(category => category.items.length > 0); // Filtra categorias sem itens
+        .filter(category => category.items.length > 0);
 
     return (
         <Container>
@@ -196,16 +201,21 @@ function CustomerMenu() {
                     <span><FaCircle /> Aberto</span>
                 </div>
             </Header>
-                <Categories>
-                    {categories.map(category => (
-                        <a key={category.id} href={`#category${category.id}`}>
-                            {category.name}
-                        </a>
-                    ))}
-                </Categories>
+
+            <Categories>
+                {categories.map(category => (
+                    <CategoryLink
+                        key={category.id}
+                        href={`#category${category.id}`}
+                        onClick={() => handleCategoryClick(category.id)} // Define a categoria ativa ao clicar
+                        active={activeCategory === category.id} // Define a classe de estilo com base no estado
+                    >
+                        {category.name}
+                    </CategoryLink>
+                ))}
+            </Categories>
 
             <MenuContent>
-
                 <SearchBar
                     type="text"
                     placeholder="Buscar itens..."
@@ -219,11 +229,11 @@ function CustomerMenu() {
                             <h2 id={`category${category.id}`}>{category.name}</h2>
                             <div className="section">
                                 {category.items.map(item => (
-                                    <Item key={item.id} onClick={() => openModal(item)}> {/* Abre o modal ao clicar no item */}
+                                    <Item key={item.id} onClick={() => openModal(item)}>
                                         <div className="item_info">
-                                            <h3>{item.name}</h3>
+                                            <h4>{item.name}</h4>
                                             <p>{item.description}</p>
-                                            <h3>{formatCurrency(item.price)}</h3>
+                                            <h4 id="price">{formatCurrency(item.price)}</h4>
                                         </div>
                                         <img src={item.imageUrl} alt={item.name} />
                                     </Item>

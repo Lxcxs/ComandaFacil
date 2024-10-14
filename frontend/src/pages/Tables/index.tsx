@@ -4,6 +4,7 @@ import MesaGrid from "../../components/Table";
 import MesaDetails from "../../components/TableDetails";
 import { Container } from "./styles";
 import GarconList from "../../components/Waiter";
+import ModalPayment from "../../components/ModalPayment";
 
 interface Pedido {
   quantidade: number;
@@ -45,6 +46,7 @@ function Mesas() {
 
   const [mesaSelecionada, setMesaSelecionada] = useState<MesaSelecionada | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState<boolean>(true);
 
   const handleMesaClick = (numero: number, pessoas: number) => {
     const mesa = mesas.find((m) => m.numero === numero && m.pessoas === pessoas);
@@ -77,6 +79,10 @@ function Mesas() {
     setIsModalOpen(!isModalOpen);
   };
 
+  function handlePaymentModal() {
+    setIsPaymentOpen(!isPaymentOpen);
+    console.log(isPaymentOpen)
+  }
   return (
     <Container>
       <div className="content">
@@ -88,6 +94,10 @@ function Mesas() {
           <MesaDetails mesaSelecionada={mesaSelecionada} closeModal={handleModal} />
         </div>
       )}
+      {
+        isPaymentOpen &&
+        <ModalPayment onClose={handlePaymentModal} />
+      }
     </Container>
   );
 }

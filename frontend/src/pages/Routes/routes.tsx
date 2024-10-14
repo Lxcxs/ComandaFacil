@@ -10,6 +10,9 @@ import WaiterTables from "../Waiter";
 import { CustomerSignup } from "../CustomerSignUp";
 import { CustomerMenu } from "../CustomerMenu";
 import CustomerLayout from "../CustomerLayout/Index";
+import OrderList from "../CustomerOrderList";
+import WaiterLayout from "../WaiterLayout";
+import CustomerCart from "../CustomerCart";
 
 const router = createBrowserRouter([
   {
@@ -39,22 +42,40 @@ const router = createBrowserRouter([
     element: <Login />
   },
   {
-    path: "waiter",
-    element: <WaiterTables />
+    path: "/waiter",
+    element: <WaiterLayout />,
+    children: [
+      {
+        path: "tables",
+        element: <WaiterTables />
+      },
+      {
+        path: "cardapio",
+        element: <CustomerMenu />
+      },
+    ]
   },
 
   {
-    path: "restaurante/entrar",
+    path: "restaurante/enter",
     element: <CustomerSignup />
   },
   {
-    path: "/restaurante",
+    path: "/restaurante/cliente",
     element: <CustomerLayout />,
     children: [
       {
         path: "cardapio",
         element: <CustomerMenu />
       },
+      {
+        path: "pedidos",
+        element: <OrderList />
+      },
+      {
+        path: "carrinho",
+        element: <CustomerCart />
+      }
     ]
   },
 ]);

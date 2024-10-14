@@ -35,8 +35,8 @@ export const ModalBackground = styled.div`
 
 export const ModalContainer = styled.div`
   width: 100%;
-  max-width: 500px;
-  background-color: #222;
+  max-height: 90vh;
+  background-color: #222222;
   border-top-right-radius: 2em;
   border-top-left-radius: 2em;
   padding: 20px;
@@ -44,7 +44,7 @@ export const ModalContainer = styled.div`
   flex-direction: column;
   position: absolute;
   bottom: 40px;
-  overflow: hidden;
+  overflow: auto;
   animation: ${slideInMobile} 0.3s ease forwards;
 
 `;
@@ -53,7 +53,7 @@ export const CloseButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #222;
+  background: #00000088;
   padding: 7px;
   border-radius: 50%;
   display: flex;
@@ -66,8 +66,7 @@ export const CloseButton = styled.button`
 
 export const ItemImage = styled.div<{imgSrc: string}>`
   width: 100%;
-  height: 170px;
-  border-radius: 10px;
+  height: 230px;
   object-fit: cover;
   background: url(${(props) => props.imgSrc});
   background-position: center;
@@ -79,26 +78,30 @@ export const ItemImage = styled.div<{imgSrc: string}>`
 `;
 
 export const ModalContent = styled.div`
-  margin-top: 170px;
+  margin-top: 230px;
   color: #fff;
+  overflow-y: auto;
 
-  h2 {
-    margin-bottom: 10px;
+  h3 {
+    margin-bottom: 7px;
   }
 
   p {
     margin-bottom: 20px;
+    -webkit-line-clamp: 4;
+    font-size: 14px;
   }
 
   label {
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
+    font-size: 13px;
   }
 
   textarea {
     width: 100%;
-    height: 80px;
+    height: 60px;
     padding: 10px;
     background-color: #333;
     border: 1px solid #444;
