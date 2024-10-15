@@ -110,13 +110,9 @@ export const CategoryContainer = styled.div`
     div.header {
         display: flex;
         justify-content: space-between;
-        cursor: pointer;
         padding: 5px;
         border-radius: 5px;
 
-        &:hover {
-            background-color: #444;
-        }
     }
 
     input.search {

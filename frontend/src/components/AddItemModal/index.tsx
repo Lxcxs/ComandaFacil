@@ -1,30 +1,34 @@
 import React from "react";
-import { ModalContainer, DetailsContainer, Close, Add } from './styles'; // Importando os estilos do modal
+import { ModalContainer, DetailsContainer, Close, Add } from './styles';
 
 interface AddItemModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddItem: (name: string, description: string, price: number) => void;
+    onAddItem: (itemName: string, itemDescription: string, itemValue: number, itemStatus: string, categoryId: number) => void; // Adicionando categoryId
+    categoryId: number; // Nova propriedade
 }
 
-const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAddItem }) => {
+const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAddItem, categoryId }) => {
     const [itemName, setItemName] = React.useState("");
     const [itemDescription, setItemDescription] = React.useState("");
-    const [itemPrice, setItemPrice] = React.useState<number | null>(null); // Inicia como null
+    const [itemValue, setItemValue] = React.useState<number | null>(null);
+    const itemStatus = "available";
 
     if (!isOpen) return null;
+
     const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
             onClose();
         }
     };
+
     const handleAddItem = () => {
-        if (itemName.trim() === "" || itemPrice === null) {
+        if (itemName.trim() === "" || itemValue === null) {
             return;
         }
-        onAddItem(itemName, itemDescription, itemPrice);
+        onAddItem(itemName, itemDescription, itemValue, itemStatus, categoryId); // Passando o categoryId
         setItemName("");
-        setItemPrice(null);
+        setItemValue(null);
         setItemDescription("");
         onClose();
     };
@@ -45,14 +49,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAddItem 
                     <input
                         type="number"
                         placeholder="Preço do item"
-                        value={itemPrice !== null ? itemPrice : ''} // Converte null para string vazia
-                        onChange={(e) => setItemPrice(e.target.value ? parseFloat(e.target.value) : null)} // Converte string para número
+                        value={itemValue !== null ? itemValue : ''} 
+                        onChange={(e) => setItemValue(e.target.value ? parseFloat(e.target.value) : null)} 
                     />
-                                        <input
+                    <input
                         type="text"
                         placeholder="Descrição"
-                        value={itemDescription !== null ? itemDescription : ''} // Converte null para string vazia
-                        onChange={(e) => setItemDescription(e.target.value)} // Converte string para número
+                        value={itemDescription !== null ? itemDescription : ''} 
+                        onChange={(e) => setItemDescription(e.target.value)} 
                     />
                 </div>
                 <div className="footer">

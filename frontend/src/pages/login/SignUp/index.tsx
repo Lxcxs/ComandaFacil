@@ -5,11 +5,9 @@ import { RiAlertFill } from "react-icons/ri";
 import * as React from "react";
 import { Button } from "../../../styles/Button/styles";
 import { useRegister } from "../../../components/Hooks/useRegister";
-import { useNavigate } from "react-router-dom";
 
 function SignUp() {
-  const navigate = useNavigate();
-  const { createUser, createStore, isUserCreated, isStoreCreated, error, loading } = useRegister();
+  const { registerAndLogin, error, loading } = useRegister();
 
   const fields = {
     username: useForm(null),
@@ -32,21 +30,17 @@ function SignUp() {
       userDocument: document.value,
     };
 
-    const userResponse = await createUser(userData);
-    if (userResponse && isUserCreated) {
-      const storeData = {
-        storeName: storeName.value,
-        storeImage: "non",
-        storeTableAmount: parseInt(storeTable.value),
-        userId: userResponse.id,
-      };
+    const storeData = {
+      storeName: storeName.value,
+      storeImage: "non", // Imagem estática por enquanto
+      storeTableAmount: parseInt(storeTable.value), // Número de mesas
+      userId: 0, // Será preenchido após criar o usuário
+    };
 
-      await createStore(storeData);
-      if (isStoreCreated) {
-        navigate('/dashboard');
-      }
-    }
+    // Chamando a função registerAndLogin e criando as mesas após o registro
+    await registerAndLogin(userData, storeData, email.value, password.value);
 
+    // Limpar os campos após o envio
     Object.values(fields).forEach((field) => field.setValue(""));
   }
 

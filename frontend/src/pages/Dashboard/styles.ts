@@ -14,7 +14,14 @@ export const Content = styled.div`
     gap: 0.7em;
 
     p {
-      color: gray;
+      color: #999;
+    }
+    span#storeName {
+      background-color: #d6313b;
+      padding: 0 3px;
+      color: #fff;
+      font-style: italic;
+      text-shadow: 0 2px 3px #000;
     }
   }
   .container {

@@ -5,25 +5,18 @@ import { MdAttachMoney, MdOutlinePeopleAlt } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
 
-interface Pedido {
-  quantidade: number;
-  item: string;
-  preco: number;
-  review: string;
-  status: string;
-}
-
-interface MesaSelecionada {
-  numero: number;
-  pessoas: number;
-  cliente: string;
-  pedidos: Pedido[];
-  total: number;
+interface selectedTable {
+  id: number;
+  tableNumber: number;
+  tableStatus: string;
+  tablePeopleAmount: number;
+  storeId: number;
+  waiterId: number | null;
 }
 
 interface ModalOrderProps {
   closeModal: () => void;
-  mesaSelecionada: MesaSelecionada | null;
+  selectedTable: selectedTable | null;
 }
 
 function handleIcons(stts: string) {
@@ -39,10 +32,10 @@ function handleIcons(stts: string) {
   }
 }
 
-const MesaDetails = ({ mesaSelecionada, closeModal }: ModalOrderProps, ) => {
+const MesaDetails = ({ selectedTable, closeModal }: ModalOrderProps, ) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  if (!mesaSelecionada) return null;
+  if (!selectedTable) return null;
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -56,7 +49,7 @@ const MesaDetails = ({ mesaSelecionada, closeModal }: ModalOrderProps, ) => {
 
   const handleFecharConta = () => {
     // Adicione a lógica para fechar a conta aqui
-    alert(`Conta da mesa ${mesaSelecionada.numero} fechada!`);
+    alert(`Conta da mesa ${selectedTable.tableNumber} fechada!`);
     closeModal(); // Fecha o modal após fechar a conta
   };
 
@@ -65,19 +58,19 @@ const MesaDetails = ({ mesaSelecionada, closeModal }: ModalOrderProps, ) => {
       <DetailsContainer>
         <div className="details_header">
           <div className="title">
-            <h2>MESA {mesaSelecionada.numero}</h2>
-            <h2><MdOutlinePeopleAlt size={29} /> {mesaSelecionada.pessoas}</h2>
+            <h2>MESA {selectedTable.tableNumber}</h2>
+            <h2><MdOutlinePeopleAlt size={29} /> {selectedTable.tablePeopleAmount}</h2>
           </div>
-          <h3>Cliente: {mesaSelecionada.cliente}</h3>
+          <h3>Cliente: </h3>
         </div>
 
         <Total>
           <span>TOTAL: </span>
-          <span>R$ {mesaSelecionada.total.toFixed(2)}</span>
+          <span>R$ </span>
         </Total>
 
         <div className="item_list">
-          {mesaSelecionada.pedidos.map((pedido, index) => (
+          {selectedTable.pedidos.map((pedido, index) => (
             <ItemPedido onClick={handleModal} status={pedido.status} key={index}>
               <div className="item_container">
                 <img src="https://osterstatic.reciperm.com/webp/10334.webp" alt={pedido.item} />

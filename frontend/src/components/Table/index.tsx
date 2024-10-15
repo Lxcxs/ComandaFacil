@@ -1,26 +1,29 @@
 import { GridContainer, MesaButton } from "./styles";
 
-interface Mesa {
-  numero: number;
-  status: string;
-  pessoas: number;
+interface Table {
+  id: number;
+  tableNumber: number;
+  tableStatus: string;
+  tablePeopleAmount: number;
+  storeId: number;
+  waiterId: number | null;
 }
 
-interface MesaGridProps {
-  mesas: Mesa[];
-  onMesaClick: (numero: number, pessoas: number) => void;
+interface tableGridProps {
+  mesas: Table[];
+  onMesaClick: (tableNumber: number, tablePeopleAmount: number, tableStatus: string) => void;
 }
 
-const MesaGrid: React.FC<MesaGridProps> = ({ mesas, onMesaClick }) => {
+const MesaGrid: React.FC<tableGridProps> = ({ mesas, onMesaClick }) => {
   return (
     <GridContainer>
-      {mesas.map((mesa) => (
+      {mesas.map((table) => (
         <MesaButton
-          key={mesa.numero} 
-          status={mesa.status}
-          onClick={() => onMesaClick(mesa.numero, mesa.pessoas)}
+          key={table.id} 
+          status={table.tableStatus}
+          onClick={() => onMesaClick(table.tableNumber, table.tablePeopleAmount, table.tableStatus)}
         >
-          {mesa.numero}
+          {table.tableNumber}
         </MesaButton>
       ))}
     </GridContainer>

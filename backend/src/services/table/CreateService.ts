@@ -5,7 +5,7 @@ import { validateStore } from "../../utils/validateStore";
 import { validateTable } from "../../utils/validateTable";
 
 export class CreateTableService {
-  private static readonly TABLE_STATUS = "occupied";
+  private static readonly TABLE_STATUS = "available";
 
   async execute({ tableNumber, tablePeopleAmount, storeId, waiterId }: CreateTableDTO) {
     try {

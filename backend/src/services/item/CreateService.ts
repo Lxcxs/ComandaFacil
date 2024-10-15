@@ -15,7 +15,7 @@ export class CreateItemService {
     storeId
   }: itemDTO) {
     try {
-      validateFields({ itemName, itemDescription, itemValue, itemStatus, categoryId, storeId });
+      validateFields({ itemName, itemValue, itemStatus, categoryId, storeId });
       await validateStore(storeId);
 
       const existingCategory = await prismaClient.category.findFirst({
@@ -27,7 +27,7 @@ export class CreateItemService {
       const item = await prismaClient.item.create({
         data: {
           itemName,
-          itemDescription,
+          itemDescription: itemDescription || "no description",
           itemImage: itemImage || "no image available",
           itemStatus,
           itemValue: new Decimal(itemValue),

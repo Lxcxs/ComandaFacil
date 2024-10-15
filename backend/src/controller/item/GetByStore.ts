@@ -7,7 +7,7 @@ export class GetStoreItemController {
     try {
       const token = findHeaders(req, "authorization");
       const itemService = new GetStoreItemService();
-      const result = await itemService.execute({ storeId: parseInt(token.storeId) });
+      const result = await itemService.execute({ storeId: token.storeId });
 
       return res.status(200).json(result);
     } catch (error) {

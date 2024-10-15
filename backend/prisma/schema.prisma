@@ -61,7 +61,7 @@ model item {
   id              Int      @id @default(autoincrement())
   itemName        String
   itemDescription String
-  itemValue       Decimal @db.Decimal(10, 2)
+  itemValue       Decimal  @db.Decimal(10, 2)
   itemStatus      String
   itemImage       String
   categoryId      Int
@@ -88,29 +88,30 @@ model table {
 }
 
 model costumer {
-  id            Int           @id @default(autoincrement())
-  costumerName  String
-  costumerTable Int
-  accountType   String
-  tableId       Int
-  storeId       Int
-  order         order[]
-  tab           costumerTab[]
-  table         table         @relation(fields: [tableId], references: [id])
-  store         store         @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
+  id             Int           @id @default(autoincrement())
+  costumerName   String
+  costumerTable  Int
+  accountType    String
+  tableId        Int?
+  storeId        Int
+  costumerStatus String
+  order          order[]
+  tab            costumerTab[]
+  table          table?        @relation(fields: [tableId], references: [id])
+  store          store         @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
 
   @@index([storeId], map: "Costumer_storeId_fkey")
 }
 
 model costumerTab {
   id         Int      @id @default(autoincrement())
-  tabValue   Decimal @db.Decimal(10, 2)
+  tabValue   Decimal  @db.Decimal(10, 2)
   tabStatus  String
   costumerId Int
   storeId    Int
-  tableId    Int
+  tableId    Int?
   orders     order[]
-  table      table    @relation(fields: [tableId], references: [id])
+  table      table?   @relation(fields: [tableId], references: [id])
   costumer   costumer @relation(fields: [costumerId], references: [id])
   store      store    @relation(fields: [storeId], references: [id])
 }
@@ -121,15 +122,15 @@ model order {
   itemImage     String
   itemAmount    Int
   costumerNote  String
-  orderValue    Decimal @db.Decimal(10, 2)
+  orderValue    Decimal      @db.Decimal(10, 2)
   orderStatus   String
   createdAt     DateTime     @default(now())
   storeId       Int
   costumerId    Int
-  tableId       Int
+  tableId       Int?
   costumerTabId Int?
   costumer      costumer     @relation(fields: [costumerId], references: [id])
-  table         table        @relation(fields: [tableId], references: [id])
+  table         table?       @relation(fields: [tableId], references: [id])
   store         store        @relation(fields: [storeId], references: [id])
   costumerTab   costumerTab? @relation(fields: [costumerTabId], references: [id])
   waiter        waiter?      @relation(fields: [waiterId], references: [id])

@@ -11,7 +11,7 @@ interface OrderDTO {
   createdAt: Date;
   storeId: number;
   costumerId: number;
-  tableId: number;
+  tableId: number | null;
   costumerTabId: number | null;
   waiterId: number | null;
 }

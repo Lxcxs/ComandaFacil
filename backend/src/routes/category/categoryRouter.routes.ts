@@ -12,9 +12,9 @@ const deleteCategoryCtrl = new DeleteCategoryController();
 const getCategoryCtrl = new GetCategoryController();
 const getStoreCategoryCtrl = new GetStoreCategoryController();
 
-categoryRouter.post("/", authenticateToken, createCategoryCtrl.handle);
-categoryRouter.delete("/", authenticateToken, deleteCategoryCtrl.handle);
+categoryRouter.post("/", createCategoryCtrl.handle);
+categoryRouter.delete("/", deleteCategoryCtrl.handle);
 categoryRouter.get("/", getCategoryCtrl.handle);
-categoryRouter.get("/", authenticateToken, getStoreCategoryCtrl.handle);
+categoryRouter.get("/", getStoreCategoryCtrl.handle);
 
 export { categoryRouter };

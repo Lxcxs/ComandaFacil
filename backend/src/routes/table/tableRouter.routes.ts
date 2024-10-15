@@ -13,6 +13,6 @@ const tableRouter = Router();
 
 tableRouter.post("/", createTableCtrl.handle);
 tableRouter.get("/", getTableCtrl.handle);
-tableRouter.get("/:storeId", authenticateToken, getStoreTableCtrl.handle);
+tableRouter.get("/:storeId", getStoreTableCtrl.handle);
 
 export { tableRouter };

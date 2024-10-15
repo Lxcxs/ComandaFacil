@@ -10,23 +10,32 @@ interface ILogin {
 
 export function useLogin() {
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const navigate = useNavigate();
 
   async function login(data: ILogin) {
     try {
       setLoading(true);
-      const response = await client.post('/login/', data);
-      console.log("login successful");
-      const token = response.data.token;
+      setError(null);
+      
+      localStorage.removeItem('authorization');
 
+      const response = await client.post('/login/', data);
+      console.log("Login bem-sucedido");
+
+      const token = response.data.token;
       localStorage.setItem('authorization', token);
-      navigate('/dashboard');
+
+      if (data.accountType === "admin") {
+        navigate('/');
+      }
     } catch (err) {
-      console.log(err);
+      console.error("Erro durante o login", err);
+      setError("Erro ao fazer login. Verifique suas credenciais.");
     } finally {
       setLoading(false);
     }
   }
 
-  return { login, loading };
+  return { login, loading, error };
 }

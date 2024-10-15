@@ -20,12 +20,12 @@ export const MesaButton = styled.button<{ status: string }>`
   width: 250px;
   height: 150px;
   background-color: ${(props) =>
-    props.status === "disponivel" ? "#4CAF50" :
-    props.status === "ocupado" ? "#f44336" :
+    props.status === "available" ? "#4CAF50" :
+    props.status === "occupied" ? "#f44336" :
     "#ccc"};
   border: 1px solid ${(props) =>
-    props.status === "disponivel" ? "#66ca69" :
-    props.status === "ocupado" ? "#ff5f54" :
+    props.status === "available" ? "#66ca69" :
+    props.status === "occupied" ? "#ff5f54" :
     "#ccc"};;
   color: white;
   font-size: 24px;
@@ -35,8 +35,8 @@ export const MesaButton = styled.button<{ status: string }>`
 
   &:hover {
     background-color: ${(props) => 
-      props.status === "disponivel" ? "#398a3d" : 
-      props.status === "ocupado" ? "#d4312e" : 
+      props.status === "available" ? "#398a3d" : 
+      props.status === "occupied" ? "#d4312e" : 
       "#bbb"};
   }
 
