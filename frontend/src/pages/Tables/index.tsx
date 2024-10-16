@@ -3,8 +3,7 @@ import { client } from "../../services/axios";
 import MesaGrid from "../../components/Table";
 import MesaDetails from "../../components/TableDetails";
 import { Container } from "./styles";
-import TableAvailable from "../../components/TableAvailable";
-
+import { useAuthorization } from "../../components/Hooks/useAuthorization";
 interface ITable {
   id: number;
   tableNumber: number;
@@ -19,25 +18,27 @@ function Mesas() {
   const [loading, setLoading] = useState<true | false>(false);
   const [selectedTable, setSelectedTable] = useState<ITable | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
-  const [isAvailableOpen, setIsAvailableOpen] = useState<boolean>(false);
+
+  const { storeId } = useAuthorization();
 
   useEffect(() => {
     const fetchTables = async () => {
       try {
         setLoading(true);
-        const response = await client.get("/tables");
-        setTables(response.data); // Armazenando as mesas no estado
-        setLoading(false);
+        const response = await client.get(`/tables/${storeId}`);
+        setTables(response.data);
       } catch (error) {
-        setLoading(false);
         console.error("Erro ao buscar mesas:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchTables();
-
-  }, [])
+  
+    if (storeId) {
+      fetchTables();
+    }
+  }, [storeId]);
+  
 
   const handleMesaClick = (tableNumber: number, tablePeopleAmount: number) => {
     const mesa = tables.find((m) => m.tableNumber === tableNumber && m.tablePeopleAmount === tablePeopleAmount);
@@ -55,18 +56,10 @@ function Mesas() {
       setSelectedTable(null);
     }
     setIsDetailsOpen(true);
-
-    if (mesa?.tableStatus === "available") {
-      setIsAvailableOpen(true)
-    }
   };
 
   const handleDetailsModal = () => {
     setIsDetailsOpen(!isDetailsOpen);
-  };
-
-  const handleAvailableModal = () => {
-    setIsAvailableOpen(!isAvailableOpen);
   };
 
   return (
@@ -84,9 +77,6 @@ function Mesas() {
             closeModal={handleDetailsModal}
           />
         </div>
-      )}
-      {isAvailableOpen && (
-        <TableAvailable selectedTable={selectedTable} closeModal={handleAvailableModal} />
       )}
     </Container>
   );

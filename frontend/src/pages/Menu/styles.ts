@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -284,7 +284,25 @@ export const AddItemButton = styled.button`
         padding: 10px 0;
     }
 `;
+export const DeleteCategoryButton = styled.button`
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 
+  &:hover {
+    background-color: #e04343;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
 // Botão de edição
 export const EditButton = styled.button`
     background-color: #ffffff21;
@@ -356,8 +374,8 @@ export const ExpandButton = styled.button`
 `;
 
 // Switch de ativar/desativar
-export const Switch = styled.button<{ isActive: boolean }>`
-    background-color: ${(props) => (props.isActive ? '#3f97df' : '#cf4d43')};
+export const Switch = styled.button<{ isActive: string }>`
+    background-color: ${(props) => (props.isActive === "available" ? '#3f97df' : '#cf4d43')};
     border: none;
     width: 40px;
     height: 20px;
@@ -375,7 +393,7 @@ export const Switch = styled.button<{ isActive: boolean }>`
         background-color: white;
         border-radius: 50%;
         top: 1px;
-        left: ${(props) => (props.isActive ? '20px' : '1px')};
+        left: ${(props) => (props.isActive === "available" ?  '20px' : '1px')};
         transition: left 0.2s;
     }
     &:after {

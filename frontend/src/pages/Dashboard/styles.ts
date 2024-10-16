@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-
 export const Content = styled.div`
   width: 100%;
   height: 100vh;
@@ -102,3 +101,30 @@ export const Content = styled.div`
     }
   }
 `;
+
+export const ButtonStatus = styled.button<{ storeStatus: string }>`
+  cursor: pointer;
+  width: fit-content;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: ${(props) => (props.storeStatus === "online" ? "#fff" : "#fff")};
+  font-weight: bold;
+  border-radius: 12px;
+  background-color: ${(props) =>
+    props.storeStatus === "online" ? "#ff4d4f" : "#4caf50"};
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: ${(props) =>
+      props.storeStatus === "online" ? "#d63031" : "#388e3c"};
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+

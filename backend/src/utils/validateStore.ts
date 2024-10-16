@@ -1,7 +1,7 @@
 import prismaClient from "../prisma";
 
 async function validateStore(storeId: number) {
-  const store = await prismaClient.store.findUnique({
+  const store = await prismaClient.store.findFirst({
     where: {id: storeId}
   });
   if (!storeId) throw new Error("Invalid store id.");

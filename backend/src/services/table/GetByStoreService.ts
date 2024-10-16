@@ -3,7 +3,7 @@ import prismaClient from "../../prisma";
 export class GetStoreTableService {
   async execute(storeId: number) {
     try {
-      const existingStore = await prismaClient.store.findUnique({
+      const existingStore = await prismaClient.store.findFirst({
         where: { id: storeId },
       });
       if (!existingStore) throw new Error("Service: Store not found.");

@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
-import { findHeaders } from "../../utils/findHeaders";
-import { UpdateOrderStatusService } from "../../services/order/UpdateOrderService";
+import { UpdateOrderStatusService } from "../../services/order/UpdateOrderStatusService";
 
 export class UpdateOrderStatusController {
   async handle(req: Request, res: Response) {
     try {
-      const storeToken = findHeaders(req, "authorization");
-      const storeId = parseInt(storeToken.storeId);
-      const { status, tabId } = req.body;
+      const { newStatus, storeId, orderId } = req.body;
+      console.log({ newStatus, storeId, orderId }); // Verificação dos valores recebidos
       const orderService = new UpdateOrderStatusService();
-      const result = await orderService.execute(storeId, status, tabId);
+      // Chamar o método com a ordem correta dos parâmetros
+      const result = await orderService.execute(storeId, newStatus, orderId); 
 
       return res.status(200).json(result);
     } catch (error) {

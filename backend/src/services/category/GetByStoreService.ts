@@ -7,7 +7,7 @@ interface IGetCategory {
 export class GetStoreCategoryService {
   async execute({ storeId }: IGetCategory) {
     try {
-      const existingStore = await prismaClient.store.findUnique({ where: { id: storeId } });
+      const existingStore = await prismaClient.store.findFirst({ where: { id: storeId } });
       if (!existingStore) throw new Error("Service: Store not found.");
 
       return await prismaClient.category.findMany({ where: { storeId } });

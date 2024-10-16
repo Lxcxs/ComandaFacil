@@ -11,7 +11,7 @@ export class DeleteItemService {
     try {
       const existingStore = await validateStore(storeId);
 
-      const findItem = await prismaClient.item.findUnique({
+      const findItem = await prismaClient.item.findFirst({
         where: {
           id,
           storeId: existingStore.id,

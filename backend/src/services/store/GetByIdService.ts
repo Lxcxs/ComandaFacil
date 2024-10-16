@@ -1,14 +1,14 @@
 import prismaClient from "../../prisma";
 
 interface GetById {
-  userId: number;
+  storeId: number;
 }
 
 export class GetStoreByIdService {
-  async execute({ userId }: GetById) {
+  async execute({ storeId }: GetById) {
     try {
-      const result = await prismaClient.store.findMany({
-        where: { userId }
+      const result = await prismaClient.store.findFirst({
+        where: { id: storeId }
       });
 
       return result;

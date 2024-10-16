@@ -1,23 +1,60 @@
-import React, { useContext, useEffect } from "react";
-import { Content } from "./styles";
+import React, { useContext, useEffect, useState } from "react";
+import { ButtonStatus, Content } from "./styles";
 import { AdminContext } from "../../context/AdminContext";
+import { client } from "../../services/axios"; 
+import { useAuthorization } from "../../components/Hooks/useAuthorization";
+import socket from "../../services/socket";
 
 function Dashboard() {
   const context = useContext(AdminContext);
+  const [status, setStatus] = useState("offline");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   if (!context) {
     throw new Error("useAdminToken must be used within an AdminProvider");
   }
 
   const { userData, storeData, loading, fetchData } = context;
+  const { storeId, token } = useAuthorization();
 
   useEffect(() => {
     const loadData = async () => {
-      await fetchData(); // Chama a função que busca os dados
+      if (token) {
+        await fetchData();
+      }
+      if (storeData) {
+        setStatus(storeData.storeStatus);
+      }
     };
 
     loadData();
-  }, [fetchData]); // Dependência para garantir que o efeito não entre em loop
+  }, [fetchData, storeData]);
+
+  useEffect(() => {
+    socket.on("updateStoreStatus", (data) => {
+      console.log("Status da loja atualizado recebido: ", data);
+    });
+
+    return () => {
+      socket.off("updateStoreStatus");
+    };
+  }, []);
+
+  const handleToggleStatus = async () => {
+    const newStatus = status === "online" ? "offline" : "online";
+
+    try {
+      setIsUpdating(true);
+      await client.put(`/stores/${storeId}`, { storeStatus: newStatus, storeId: storeId });
+      setStatus(newStatus); 
+
+      socket.emit("updateStoreStatus", { storeId, storeStatus: newStatus });
+    } catch (error) {
+      console.error("Erro ao atualizar status da loja:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
 
@@ -25,9 +62,10 @@ function Dashboard() {
     <Content>
       <div className="introduce">
         <h2>Olá {userData?.userName}</h2>
-        <p>
-          Acompanhe suas estatísticas de hoje no(a) <span id="storeName">{storeData?.storeName}</span>.
-        </p>
+        <span>Sua loja está: {status}</span>
+        <ButtonStatus storeStatus={status} onClick={handleToggleStatus} disabled={isUpdating}>
+          {isUpdating ? "Aguarde..." : status === "online" ? "Ficar Offline" : "Ficar Online"}
+        </ButtonStatus>
       </div>
       <div className="container">
         <div className="performance">

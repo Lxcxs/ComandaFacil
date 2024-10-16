@@ -26,7 +26,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ isOpen, onClose, onAddItem,
         if (itemName.trim() === "" || itemValue === null) {
             return;
         }
-        onAddItem(itemName, itemDescription, itemValue, itemStatus, categoryId); // Passando o categoryId
+        onAddItem(itemName, itemDescription, itemValue, itemStatus, categoryId);
         setItemName("");
         setItemValue(null);
         setItemDescription("");

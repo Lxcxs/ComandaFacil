@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { findHeaders } from "../../utils/findHeaders";
-import { UpdateTabService } from "../../services/tab/UpdateService";
+import { UpdateOrderStatusService } from "../../services/order/UpdateOrderStatusService";
 
 export class UpdateOrderController {
   async handle(req: Request, res: Response) {
     try {
-      const costumerToken = findHeaders(req, "costumer");
-      const updateService = new UpdateTabService();
-      const result = await updateService.execute(costumerToken.costumerId);
+      const {storeId, tabId, status} = req.body
+      const updateService = new UpdateOrderStatusService();
+      const result = await updateService.execute(storeId, tabId, status);
 
       return res.status(200).json(result);
     } catch (error) {

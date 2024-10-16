@@ -1,243 +1,162 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaCircle } from "react-icons/fa";
-import { Container, Header, MenuContent, Categories, SearchBar, MenuList, Item, CategoryLink } from "./styles";
-import ModalSelectItem from "../../components/ModalSelectItem";
+import { Container, Header, MenuContent, Categories, MenuList, ItemSelf } from "./styles";
+import { client } from "../../services/axios";
 import { formatCurrency } from "../../utils/formatCurrency";
+import ModalSelectItem from "../../components/ModalSelectItem";
+import socket from "../../services/socket"; // Importando o socket
 
-interface MenuItem {
+// Interfaces
+interface Costumer {
+    accountType: string;
+    costumerName: string;
+    costumerStatus: string;
+    costumerTable: number;
     id: number;
-    name: string;
-    description: string;
-    price: number;
-    imageUrl: string;
+    storeId: number;
+    tableId: number;
 }
 
-interface Category {
+interface Store {
     id: number;
-    name: string;
-    items: MenuItem[];
+    storeImage: string;
+    storeName: string;
+    storeStatus: string;
+    storeTableAmount: number;
+    userId: number;
 }
 
-const categories: Category[] = [
-    {
-        id: 1,
-        name: "Burgers",
-        items: [
-            {
-                id: 1,
-                name: "Classic Cheeseburger",
-                description: "A juicy beef patty with melted cheddar cheese, lettuce, tomato, and our special sauce.",
-                price: 24.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 2,
-                name: "Bacon Deluxe",
-                description: "A double patty burger with crispy bacon, cheddar cheese, and BBQ sauce.",
-                price: 29.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 3,
-                name: "Veggie Burger",
-                description: "A grilled vegetable patty with avocado, lettuce, and tomato.",
-                price: 22.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 4,
-                name: "BBQ Chicken Burger",
-                description: "Grilled chicken breast topped with BBQ sauce and crispy onions.",
-                price: 27.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-        ],
-    },
-    {
-        id: 2,
-        name: "Pizzas",
-        items: [
-            {
-                id: 5,
-                name: "Pepperoni Pizza",
-                description: "A classic pepperoni pizza with a crispy crust and a rich tomato sauce.",
-                price: 39.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 6,
-                name: "Margarita Pizza",
-                description: "Fresh mozzarella, basil, and tomato on a thin, crispy crust.",
-                price: 35.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 7,
-                name: "Hawaiian Pizza",
-                description: "Pizza topped with ham and pineapple.",
-                price: 37.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 8,
-                name: "Four Cheese Pizza",
-                description: "A blend of mozzarella, cheddar, gorgonzola, and parmesan.",
-                price: 42.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-        ],
-    },
-    {
-        id: 3,
-        name: "Beverages",
-        items: [
-            {
-                id: 9,
-                name: "Coca-Cola",
-                description: "A refreshing 350ml can of Coca-Cola.",
-                price: 5.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 10,
-                name: "Orange Juice",
-                description: "Freshly squeezed orange juice, served chilled.",
-                price: 8.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 11,
-                name: "Lemonade",
-                description: "A refreshing lemonade made with fresh lemons.",
-                price: 6.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 12,
-                name: "Iced Tea",
-                description: "Chilled iced tea with a hint of lemon.",
-                price: 5.50,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-        ],
-    },
-    {
-        id: 4,
-        name: "Desserts",
-        items: [
-            {
-                id: 13,
-                name: "Chocolate Cake",
-                description: "A rich and moist chocolate cake topped with chocolate ganache.",
-                price: 12.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 14,
-                name: "Cheesecake",
-                description: "Creamy cheesecake with a graham cracker crust.",
-                price: 14.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-        ],
-    },
-    {
-        id: 5,
-        name: "Salads",
-        items: [
-            {
-                id: 15,
-                name: "Caesar Salad",
-                description: "Romaine lettuce, croutons, and parmesan cheese tossed in Caesar dressing.",
-                price: 15.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-            {
-                id: 16,
-                name: "Greek Salad",
-                description: "Mixed greens, tomatoes, cucumbers, olives, and feta cheese with olive oil dressing.",
-                price: 16.90,
-                imageUrl: "https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png",
-            },
-        ],
-    },
-];
+type Category = {
+    id: number;
+    categoryName: string;
+    storeId: number;
+};
+
+interface Item {
+    id: number;
+    itemName: string;
+    itemDescription: string;
+    itemValue: number;
+    itemStatus: string;
+    itemImage: string;
+    categoryId: number;
+    storeId: number;
+}
 
 function CustomerMenu() {
-    const [searchTerm, setSearchTerm] = React.useState("");
-    const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null); 
-    const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [activeCategory, setActiveCategory] = useState<number | null>(null); // Adiciona estado para categoria ativa
+    const [costumer, setCostumer] = useState<Costumer>({} as Costumer);
+    const [store, setStore] = useState<Store | null>(null);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [items, setItems] = useState<Item[]>([]);
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const openModal = (item: MenuItem) => {
+    useEffect(() => {
+        const localCostumer = JSON.parse(localStorage.getItem("costumer") || '{}') as Costumer;
+        setCostumer(localCostumer);
+
+        if (localCostumer.storeId) {
+            const fetchAllData = async () => {
+                try {
+                    const [storeResponse, categoryResponse, itemResponse] = await Promise.all([
+                        client.get(`/stores/${localCostumer.storeId}`),
+                        client.get(`/categories/${localCostumer.storeId}`),
+                        client.get(`/items/${localCostumer.storeId}`)
+                    ]);
+                    setStore(storeResponse.data);
+                    setCategories(categoryResponse.data);
+                    setItems(itemResponse.data);
+                } catch (error) {
+                    console.error("Erro ao buscar os dados:", error);
+                }
+            };
+
+            fetchAllData();
+        }
+    }, []);
+
+    const handleAddItem = async (item: Item, quantity: number, costumerNote: string) => {
+        try {
+            const response = await client.post("/orders", {
+                itemName: item.itemName,
+                itemImage: item.itemImage,
+                itemAmount: quantity,
+                orderValue: item.itemValue * quantity,
+                costumerNote: costumerNote,
+                costumerId: costumer.id,
+                storeId: costumer.storeId,
+                itemId: item.id,
+                tableId: costumer.tableId,
+            });
+            console.log("Pedido criado com sucesso:", response.data);
+            
+            socket.emit("newOrder", response.data);
+        } catch (error) {
+            console.error("Erro ao criar o pedido:", error);
+        }
+    };
+
+    const openModal = (item: Item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
 
+    const handleModalItem = (status: string, item: Item) => {
+        if (status === "available") {
+            openModal(item);
+        }
+    };
+
+    const handleItemAction = (storeStatus: string | undefined, itemStatus: string, item: Item) => {
+        if (storeStatus === undefined) return;
+        if (storeStatus === "online") {
+            handleModalItem(itemStatus, item);
+        } else {
+            alert("A loja está offline no momento. Não é possível realizar ações com itens.");
+        }
+    };
+
     const closeModal = () => {
-        setSelectedItem(null);
         setIsModalOpen(false);
+        setSelectedItem(null);
     };
-
-    const handleCategoryClick = (categoryId: number) => {
-        setActiveCategory(categoryId); // Atualiza a categoria ativa
-    };
-
-    const filteredCategories = categories
-        .map(category => ({
-            ...category,
-            items: category.items.filter(item =>
-                item.name.toLowerCase().includes(searchTerm.toLowerCase())
-            ),
-        }))
-        .filter(category => category.items.length > 0);
 
     return (
         <Container>
-            <Header>
+            <Header status={store?.storeStatus}>
                 <img src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg" alt="Restaurant Logo" />
                 <div className="header_info">
-                    <h3>Lorem Ipsum</h3>
-                    <span><FaCircle /> Aberto</span>
+                    <h3>{store?.storeName}</h3>
+                    <span id="storeStatus"><FaCircle /> {store?.storeStatus === "online" ? "Aberto" : "Fechado"}</span>
                 </div>
             </Header>
 
             <Categories>
                 {categories.map(category => (
-                    <CategoryLink
-                        key={category.id}
-                        href={`#category${category.id}`}
-                        onClick={() => handleCategoryClick(category.id)} // Define a categoria ativa ao clicar
-                        active={activeCategory === category.id} // Define a classe de estilo com base no estado
-                    >
-                        {category.name}
-                    </CategoryLink>
+                    <a key={category.id} href={`#category${category.id}`}>
+                        {category.categoryName}
+                    </a>
                 ))}
             </Categories>
 
             <MenuContent>
-                <SearchBar
-                    type="text"
-                    placeholder="Buscar itens..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-
                 <MenuList>
-                    {filteredCategories.map(category => (
-                        <div className="categories" key={category.id}>
-                            <h2 id={`category${category.id}`}>{category.name}</h2>
+                    {categories.map(category => (
+                        <div id={`category${category.id}`} className="categories" key={category.id}>
+                            <h2>{category.categoryName}</h2>
                             <div className="section">
-                                {category.items.map(item => (
-                                    <Item key={item.id} onClick={() => openModal(item)}>
-                                        <div className="item_info">
-                                            <h4>{item.name}</h4>
-                                            <p>{item.description}</p>
-                                            <h4 id="price">{formatCurrency(item.price)}</h4>
-                                        </div>
-                                        <img src={item.imageUrl} alt={item.name} />
-                                    </Item>
-                                ))}
+                                {items
+                                    .filter(item => item.categoryId === category.id)
+                                    .map(item => (
+                                        <ItemSelf itemStatus={item.itemStatus} key={item.id} onClick={() => handleItemAction(store?.storeStatus, item.itemStatus, item)}>
+                                            <div className="item_info">
+                                                <h3>{item.itemName} <span id="sold_out">Esgotado</span></h3>
+                                                <p>{item.itemDescription === "no description" ? "Sem descrição" : item.itemDescription}</p>
+                                                <h3 id="price">{formatCurrency(item.itemValue)}</h3>
+                                            </div>
+                                            <img src="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" alt={item.itemName} />
+                                        </ItemSelf>
+                                    ))}
                             </div>
                         </div>
                     ))}
@@ -245,10 +164,11 @@ function CustomerMenu() {
             </MenuContent>
 
             {selectedItem && (
-                <ModalSelectItem
+                <ModalSelectItem 
                     item={selectedItem}
                     isOpen={isModalOpen}
                     onClose={closeModal}
+                    onAddItem={handleAddItem}
                 />
             )}
         </Container>

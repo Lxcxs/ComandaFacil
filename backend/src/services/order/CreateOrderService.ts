@@ -3,17 +3,18 @@ import prismaClient from "../../prisma";
 import { validateStore } from "../../utils/validateStore";
 import { Decimal } from "@prisma/client/runtime/library";
 import { OrderDTO } from "../../DTOs/orderDTO";
+import { UpdateTabValueService } from "../tab/UpdateOrderValueService";
 
 interface DTO {
   itemName: string;
   itemImage: string;
   itemAmount: number;
   costumerNote: string;
-  orderValue: Decimal;
+  orderValue: number;
   storeId: number;
   costumerId: number;
   tableId: number;
-  costumerTabId: number;
+  itemId: number;
 }
 
 export class CreateOrderService {
@@ -29,6 +30,7 @@ export class CreateOrderService {
     itemImage,
     itemAmount,
     costumerNote,
+    itemId,
     storeId,
     costumerId,
     tableId,
@@ -37,15 +39,15 @@ export class CreateOrderService {
       validateFields({ itemAmount, itemName, storeId, costumerId, tableId });
       await validateStore(storeId);
 
-      const tab = await prismaClient.costumerTab.findFirst({
+      const costumerTab = await prismaClient.costumerTab.findFirst({
         where: { costumerId },
       });
       const item = await prismaClient.item.findFirst({
-        where: { itemName },
+        where: { id: itemId },
       });
 
       if (!item) throw new Error("Service: item not found.");
-      if (!tab) throw new Error("Service: tab not found.");
+      if (!costumerTab) throw new Error("Service: tab not found.");
 
       const newData = {
         itemName,
@@ -57,14 +59,20 @@ export class CreateOrderService {
         storeId,
         costumerId,
         tableId,
-        costumerTabId: tab.id,
+        costumerTabId: costumerTab.id,
       };
 
       const order = await prismaClient.order.create({ data: newData });
+      if (!order) throw new Error("Service: error creating order.");
 
-      return order;
+      const updateTabValueService = new UpdateTabValueService();
+      const tabValueUpdate = await updateTabValueService.execute(costumerId);
+
+      return { order, tabValueUpdate };
     } catch (error) {
-      throw new Error(`Service: ${error instanceof Error ? error.message : 'error creating order'}`);
+      throw new Error(
+        `Service: ${error instanceof Error ? error.message : "error creating order"}`
+      );
     }
   }
 }

@@ -1,80 +1,70 @@
-import React from "react";
+import React, { useEffect } from "react";
 import OrderColumn from "../../components/OrderColumn/Index";
 import { Container, Content } from "./styles";
 import { ModalOrder } from "../../components/OrderModal";
+import { useAuthorization } from "../../components/Hooks/useAuthorization";
+import { client } from "../../services/axios";
 
-// Tipos para definir a estrutura dos pedidos e itens
-type Item = {
-  nome: string;
-  preco: number;
-  quantidade: number;
-  observacao: string;
-};
-
-type Pedido = {
+interface Order {
   id: number;
-  numero: number;
-  cliente: string;
-  itens: Item[];
-};
+  itemName: string;
+  itemImage: string;
+  itemAmount: number;
+  costumerNote: string;
+  orderValue: string;
+  orderStatus: string;
+  createdAt: string;
+  storeId: number;
+  costumerId: number;
+  tableId: number;
+  costumerTabId: number;
+  waiterId: null;
+}
 
 function Pedidos() {
+  const { storeId } = useAuthorization();
+  const [orders, setOrders] = React.useState<Order[]>([]);
   const [columns, setColumns] = React.useState({
-    waiting: [
-      {
-        id: 1,
-        numero: 1,
-        cliente: "João",
-        itens: [
-          { nome: "Hambúrguer", preco: 20, quantidade: 3, observacao: "" },
-          { nome: "Refrigerante", preco: 5, quantidade: 2, observacao: "Sem gelo com um pouco de pimenta e alecrim com canela, pouco leite em pó" },
-          { nome: "Palmeiras", preco: 13.75, quantidade: 7, observacao: "Sem molho" }
-        ]
-      },
-      {
-        id: 2,
-        numero: 2,
-        cliente: "Maria",
-        itens: [
-          { nome: "Pizza", preco: 30, quantidade: 1, observacao: "" },
-          { nome: "Refrigerante", preco: 5, quantidade: 1, observacao: "" }
-        ]
-      }
-    ],
-    making: [
-      {
-        id: 3,
-        numero: 3,
-        cliente: "Carlos",
-        itens: [
-          { nome: "Salada", preco: 15, quantidade: 1, observacao: "" },
-          { nome: "Suco", preco: 7, quantidade: 2, observacao: "" }
-        ]
-      }
-    ],
-    finished: [
-      {
-        id: 4,
-        numero: 4,
-        cliente: "Ana",
-        itens: [
-          { nome: "Hambúrguer", preco: 20, quantidade: 4, observacao: "" },
-          { nome: "Batata Frita", preco: 10, quantidade: 3, observacao: "" }
-        ]
-      }
-    ]
+    waiting: [] as Order[],
+    producing: [] as Order[],
+    finished: [] as Order[],
   });
-
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [selectedOrder, setSelectedOrder] = React.useState<Pedido | null>(null);
+  const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: Pedido, column: string) => {
+  const fetchAllData = async () => {
+    if (!storeId) {
+      console.error("storeId is null");
+      return;
+    }
+
+    try {
+      const orderResponse = await client.get(`/orders/${storeId}`);
+      setOrders(orderResponse.data);
+
+      // Atualiza as colunas com as ordens
+      const updatedColumns = {
+        waiting: orderResponse.data.filter((order: Order) => order.orderStatus === "waiting"),
+        producing: orderResponse.data.filter((order: Order) => order.orderStatus === "producing"),
+        finished: orderResponse.data.filter((order: Order) => order.orderStatus === "finished"),
+      };
+      setColumns(updatedColumns);
+    } catch (error) {
+      console.error("Erro ao buscar os dados:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, [storeId]);
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: Order, column: string) => {
     e.dataTransfer.setData("item", JSON.stringify(item));
     e.dataTransfer.setData("column", column);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, destinationColumn: string) => {
-    const item = JSON.parse(e.dataTransfer.getData("item")) as Pedido;
+    const item = JSON.parse(e.dataTransfer.getData("item")) as Order;
     const sourceColumn = e.dataTransfer.getData("column");
 
     if (sourceColumn === destinationColumn) return;
@@ -96,43 +86,47 @@ function Pedidos() {
     e.preventDefault();
   };
 
-  const handleConfirm = (item: Pedido) => {
-    setColumns((prevState) => {
-      const updatedWaiting = prevState.waiting.filter((i) => i.id !== item.id);
-      const updatedMaking = [...prevState.making, item];
-      return {
-        ...prevState,
-        waiting: updatedWaiting,
-        making: updatedMaking,
-      };
-    });
+  const handleConfirm = async (order: Order) => {
+    try {
+      await client.put(`/orders/${order.id}`, {
+        storeId,
+        newStatus: "producing",
+        orderId: order.id
+      });
+      // Recarrega os dados após a confirmação
+      fetchAllData();
+    } catch (error) {
+      console.error("Erro ao confirmar pedido:", error);
+    }
   };
 
-  const handleAdvance = (item: Pedido) => {
-    setColumns((prevState) => {
-      const updatedMaking = prevState.making.filter((i) => i.id !== item.id);
-      const updatedFinished = [...prevState.finished, item];
-      return {
-        ...prevState,
-        making: updatedMaking,
-        finished: updatedFinished,
-      };
-    });
+  const handleAdvance = async (order: Order) => {
+    try {
+      await client.put(`/orders/${order.id}`, {
+        storeId,
+        newStatus: "finished",
+        orderId: order.id
+      });
+      // Recarrega os dados após avançar o pedido
+      fetchAllData();
+    } catch (error) {
+      console.error("Erro ao avançar pedido:", error);
+    }
   };
 
-  function handleModal(order: Pedido | null) {
+  function handleModal(order: Order | null) {
     setSelectedOrder(order);
     setIsModalOpen(!isModalOpen);
   }
 
-  const renderButtons = (item: Pedido) => {
+  const renderButtons = (item: Order) => {
     return (
       <>
         <button id="details_btn" onClick={() => handleModal(item)}>Detalhes</button>
         {columns.waiting.some(i => i.id === item.id) && (
           <button id="next_btn" onClick={() => handleConfirm(item)}>Confirmar</button>
         )}
-        {columns.making.some(i => i.id === item.id) && (
+        {columns.producing.some(i => i.id === item.id) && (
           <button id="next_btn" onClick={() => handleAdvance(item)}>Avançar</button>
         )}
       </>
@@ -145,7 +139,8 @@ function Pedidos() {
         <OrderColumn
           title="Aguardando Confirmação..."
           background="#DA804E"
-          items={columns.waiting}
+          columnStatus="waiting"
+          orders={orders}
           onDrop={(e) => handleDrop(e, "waiting")}
           onDragOver={handleDragOver}
           renderButtons={renderButtons}
@@ -154,23 +149,25 @@ function Pedidos() {
         <OrderColumn
           title="Em produção..."
           background="#DAC34E"
-          items={columns.making}
-          onDrop={(e) => handleDrop(e, "making")}
+          columnStatus="producing"
+          orders={orders}
+          onDrop={(e) => handleDrop(e, "producing")}
           onDragOver={handleDragOver}
           renderButtons={renderButtons}
-          onDragStart={(e, item) => handleDragStart(e, item, "making")}
+          onDragStart={(e, item) => handleDragStart(e, item, "producing")}
         />
         <OrderColumn
           title="Finalizado."
           background="#59DA4E"
-          items={columns.finished}
+          columnStatus="finished"
+          orders={orders}
           onDrop={(e) => handleDrop(e, "finished")}
           onDragOver={handleDragOver}
           renderButtons={renderButtons}
           onDragStart={(e, item) => handleDragStart(e, item, "finished")}
         />
       </Content>
-      {isModalOpen && <ModalOrder closeModal={() => handleModal(null)} order={selectedOrder} />}
+      {isModalOpen && <ModalOrder closeModal={() => handleModal(null)} order={selectedOrder} orders={orders} />}
     </Container>
   );
 }

@@ -2,14 +2,16 @@
 import styled from 'styled-components';
 
 export const Column = styled.div`
-  width: 450px; /* Largura da coluna */
+  min-width: 450px; /* Largura da coluna */
   height: 90vh;
   padding: 0; /* Padding interno */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra da coluna */
   display: flex;
   flex-direction: column;
+  flex: 1;
 
   @media (max-width: 760px) {
+    width: 100%;
     height: auto;
   }
 
@@ -95,8 +97,8 @@ export const Item = styled.div`
       font-size: 14px;
     }
     .list {
-      padding: 0 10px;
-      color: #cecece;
+      padding: 0 20px;
+      color: #c0c0c0;
     }
     .obs {
       padding-top: 1em;

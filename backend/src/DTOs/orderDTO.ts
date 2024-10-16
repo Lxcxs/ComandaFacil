@@ -6,7 +6,7 @@ interface OrderDTO {
   itemImage: string;
   itemAmount: number;
   costumerNote: string;
-  orderValue: Decimal;
+  orderValue: number;
   orderStatus: string;
   createdAt: Date;
   storeId: number;

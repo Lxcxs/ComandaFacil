@@ -13,8 +13,8 @@ const getCategoryCtrl = new GetCategoryController();
 const getStoreCategoryCtrl = new GetStoreCategoryController();
 
 categoryRouter.post("/", createCategoryCtrl.handle);
-categoryRouter.delete("/", deleteCategoryCtrl.handle);
+categoryRouter.delete("/:id", deleteCategoryCtrl.handle);
 categoryRouter.get("/", getCategoryCtrl.handle);
-categoryRouter.get("/", getStoreCategoryCtrl.handle);
+categoryRouter.get("/:storeId", getStoreCategoryCtrl.handle);
 
 export { categoryRouter };

@@ -12,15 +12,6 @@ export class CreateTableService {
       validateFields({ tableNumber, tablePeopleAmount, storeId });
 
       const existingStore = await validateStore(storeId);
-      validateTable(tableNumber, 1, existingStore.storeTableAmount);
-
-      const occupiedTable = await prismaClient.table.findFirst({
-        where: {
-          tableNumber,
-          tableStatus: CreateTableService.TABLE_STATUS,
-        },
-      });
-      if (occupiedTable) throw new Error("Service: This table is already occupied.");
 
       const tableData = {
         tableNumber,

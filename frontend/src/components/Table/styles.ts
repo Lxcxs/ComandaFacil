@@ -7,7 +7,7 @@ export const GridContainer = styled.div`
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 20px;
   padding: 80px 20px 20px 20px;
   height: 100%;
 

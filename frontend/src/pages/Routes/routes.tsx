@@ -16,11 +16,11 @@ import CustomerCart from "../CustomerCart";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/:storeId",
     element: <Layout />,
     children: [
       {
-        index: true,
+        path: "dashboard",
         element: <Dashboard />,
       },
       {
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "authentication",
+    path: "enter",
     element: <Login />
   },
   {
@@ -57,11 +57,11 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "restaurante/enter",
+    path: ":storeId/enter",
     element: <CustomerSignup />
   },
   {
-    path: "/restaurante/cliente",
+    path: "/:storeId/:costumerId",
     element: <CustomerLayout />,
     children: [
       {

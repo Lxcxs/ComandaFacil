@@ -8,15 +8,15 @@ export const Container = styled.section`
     position: relative;
     display: flex;
     justify-content: center;
+    margin: 0 auto;
 `
 
-export const Content = styled.section`
+export const Content = styled.section<{status: string}>`
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: 1em;
     padding: 0 10px;
-    
     div.header {
         width: 100%;
         text-align: center;
@@ -24,15 +24,23 @@ export const Content = styled.section`
         display: flex;
         flex-direction: column;
         align-items: center;
+        h3 {
+                color:#ddd;
+            }
         div {
             width: fit-content;
             span {
-                color: #00ff00;
+                color: ${(props) => props.status === "online" ? "#00ff00" : "red"};
                 display: flex;
                 align-items: center;
-                
+                text-transform: capitalize;
                 font-size: 12px;
                 gap: 3px;
+            }
+
+            h1 {
+                text-transform: capitalize;
+
             }
         }
     }

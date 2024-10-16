@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { client } from '../../services/axios';
-import { useLogin } from '../../Hooks/login'; 
+import { useLogin } from './login';
 
 interface Store {
   storeName: string;
@@ -38,6 +38,7 @@ export function useRegister() {
       setLoading(true);
       const response = await client.post('/stores', data);
       console.log("Loja criada com sucesso");
+      console.log(response.data);
       return response.data.id; // Retorna o ID da loja para ser usado nas mesas
     } catch (err) {
       setError("Erro ao criar loja");
@@ -56,9 +57,11 @@ export function useRegister() {
           waiterId: null, // Pode ser nulo no início
           storeId: storeId
         });
+        console.log(`Mesa ${i} criada com sucesso.`);
       }
       console.log(`${tableAmount} mesas criadas com sucesso.`);
     } catch (err) {
+      console.error(`Erro ao criar mesa: `, err);
       setError(`Erro ao criar mesas para a loja ID ${storeId}`);
     }
   }
@@ -70,17 +73,26 @@ export function useRegister() {
     storeData = { ...storeData, userId: userResponse.id };
 
     const storeId = await createStore(storeData);
-    if (!storeId) return;
+    const tableAmount = storeData.storeTableAmount;
+    console.log("storeId: ", storeId);
+    console.log("storeTableAmount: ", tableAmount);
 
-    await createTables(storeId, storeData.storeTableAmount); // Cria as mesas após criar a loja
+    if (!storeId) {
+      console.error('Store ID inválido, mesas não serão criadas');
+      return;
+    }
 
+    // Cria as mesas após criar a loja
+    await createTables(storeId, tableAmount);
+
+    // Faz o login após criar o usuário, loja e mesas
     await login({
       loginEmail: email,
       loginPassword: password,
       accountType: 'admin',
     });
 
-    navigate('/');
+    navigate(`/${storeId}/dashboard`);
   }
 
   return {

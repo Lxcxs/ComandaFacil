@@ -1,11 +1,16 @@
 import { useNavigate } from "react-router";
 import { client } from "../../services/axios";
 import React from "react";
+import { JwtPayload, jwtDecode } from "jwt-decode";
 
 interface ILogin {
   loginEmail: string;
   loginPassword: string;
   accountType: string;
+}
+interface DecodedToken extends JwtPayload {
+  storeId: string; 
+  userId: string; 
 }
 
 export function useLogin() {
@@ -24,10 +29,12 @@ export function useLogin() {
       console.log("Login bem-sucedido");
 
       const token = response.data.token;
+      const decodedtoken = jwtDecode<DecodedToken>(token);
+      const storeId = decodedtoken.storeId;
       localStorage.setItem('authorization', token);
 
       if (data.accountType === "admin") {
-        navigate('/');
+        navigate(`/${storeId}/dashboard`);
       }
     } catch (err) {
       console.error("Erro durante o login", err);

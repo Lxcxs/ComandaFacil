@@ -6,7 +6,6 @@ export class CreateCategoryController {
     try {
       const { categoryName, storeId } = req.body;
       const categoryService = new CreateCategoryService()
-      console.log(categoryName)
       const result = await categoryService.execute({ categoryName, storeId});
       return res.status(200).json(result);
     } catch (error) {

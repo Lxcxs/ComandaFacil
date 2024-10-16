@@ -14,6 +14,8 @@ export const Container = styled.div`
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   z-index: 1000;
+  border-top: 1px solid #777;
+
 
   &::-webkit-scrollbar {
     width: 10px;

@@ -27,13 +27,13 @@ export const Container = styled.main`
     color: #f2f2f2;
 `;
 
-export const Header = styled.div`
+export const Header = styled.div<{status?: string}>`
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
-    padding: 4vh 10px;
+    padding: 2vh 10px;
     background-color: #121212F5;
 
     img {
@@ -53,7 +53,7 @@ export const Header = styled.div`
         }
 
         span {
-            color: #01ff01;
+            color: ${(props) => props.status === "online" ? "#01ff01" : "red"};
             display: flex;
             gap: 5px;
             align-items: center;
@@ -78,10 +78,10 @@ export const Categories = styled.nav`
     overflow-x: auto; /* Habilita o scroll horizontal */
     position: sticky;
     justify-content: flex-start;
-    top: 0;
+    top: -1px;
     background-color: #2b2b2b;
     border-bottom: 2px solid #444;
-    padding: 10px 0;
+    padding: 0;
 
     &::-webkit-scrollbar {
         height: 5px;
@@ -98,14 +98,10 @@ export const Categories = styled.nav`
         font-weight: bold;
         text-transform: uppercase;
         font-size: 14px;
-        padding: 8px 20px;
+        padding: 20px;
         white-space: nowrap;
         transition: background-color 0.2s ease-in-out;
         flex-shrink: 0;
-    }
-
-    a:hover {
-        background-color: #444;
     }
 `;
 
@@ -122,6 +118,10 @@ export const MenuList = styled.div`
         display: flex;
         flex-direction: column;
         gap: 0px;
+
+        h2 {
+            margin-top: 1em;
+        }
 
         div.section {
             display: flex;
@@ -147,7 +147,7 @@ export const SearchBar = styled.input`
     }
 `;
 
-export const Item = styled.div`
+export const ItemSelf = styled.div<{itemStatus: string}>`
     width: 100%;
     /* border-radius: 10px; */
     border-bottom: 1px solid #222;
@@ -156,11 +156,11 @@ export const Item = styled.div`
     flex-direction: row-reverse;
     justify-content: space-between;
     gap: 10px;
-    background-color: transparent;
-    transition: background-color 0.3s ease-in-out;
+    background-color: ${(props) => props.itemStatus === "available" ? "transparent" : "#22181a"};
+    transition: background-color 0.1s ease-in-out;
 
     &:hover {
-        background-color: #444;
+        background-color: ${(props) => props.itemStatus === "available" ? "#ffffff07" : "#22181a"};
     }
 
     img {
@@ -178,6 +178,14 @@ export const Item = styled.div`
         font-size: 14px;
         color: #f2f2f2;
 
+        span#sold_out {
+            display: ${(props) => props.itemStatus === "available" ? "none" : "inline"};
+            color: #ce514d;
+            font-style: italic;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
         p {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -188,9 +196,9 @@ export const Item = styled.div`
             color: #aaa;
         }
 
-        h4 {
-            color: #ffffff;
-            font-weight: 600;
+        h3 {
+            text-decoration: ${(props) => props.itemStatus === "available" ? "none" : "line-through"};
+            font-style: ${(props) => props.itemStatus === "available" ? "none" : "italic"};
         }
 
         #price {

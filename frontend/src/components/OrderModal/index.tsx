@@ -2,57 +2,72 @@ import React from "react";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { Modal, ModalContent, Close } from "./styles"; // Supondo que você tenha estilos definidos
 
-type Pedido = {
+interface Order {
   id: number;
-  numero: number;
-  cliente: string;
-  observacao?: string;
-  itens: { nome: string; preco: number; quantidade: number; observacao: string }[];
-};
+  itemName: string;
+  itemImage: string;
+  itemAmount: number;
+  costumerNote: string;
+  orderValue: string;
+  orderStatus: string;
+  createdAt: string; // Ex: "2024-10-16 00:23:56.361"
+  storeId: number;
+  costumerId: number;
+  tableId: number;
+  costumerTabId: number;
+  waiterId: null;
+}
 
 interface ModalOrderProps {
   closeModal: () => void;
-  order?: Pedido | null;
+  order?: Order | null;
+  orders: Order[];
 }
 
-export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order }) => {
+const formatCreatedAt = (createdAt: string): string => {
+  const date = new Date(createdAt); // Cria um objeto Date a partir da string
+  return date.toLocaleString(); // Formata a data e hora de acordo com a localidade do navegador
+};
+
+export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, orders }) => {
   if (!order) return null;
 
-  const total = order.itens.reduce(
-    (acc, item) => acc + item.preco * item.quantidade,
-    0
-  );
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       closeModal();
     }
   };
 
+  // Armazena o horário formatado
+  const createdAtFormatted = formatCreatedAt(order.createdAt);
+
   return (
     <Modal onClick={handleOutsideClick}>
       <ModalContent>
-        <h2>Detalhes do Pedido #{order.numero}</h2>
-        <p><strong>Cliente:</strong> {order.cliente}</p>
+        <h2>Detalhes do Pedido #{order.id}</h2>
+        <p><strong>Cliente:</strong> Lucas</p>
+        <p><strong>Criado em:</strong> {createdAtFormatted}</p> {/* Exibe o horário formatado */}
         <hr />
-        <br></br>
+        <br />
         <div className="itens">
-          {order.itens.map((item, index) => (
-            <div key={index}>
-              {
-                item.observacao !== "" ?
-                  <p id="obs">
-                    {item.quantidade}x {item.nome} - {formatCurrency(item.preco * item.quantidade)}
-                    <p id="desc"><strong>Obs:</strong> {item.observacao}</p>
-                  </p> :
-                  <p>{item.quantidade}x {item.nome} - {formatCurrency(item.preco * item.quantidade)}</p>
-
-              }
-            </div>
-          ))}
-          <br></br>
+          {orders
+            .filter((e) => e.id === order.id)
+            .map((item, index) => (
+              <div key={index}>
+                {
+                  item.costumerNote !== "" ?
+                    <p id="obs">
+                      {item.itemAmount}x {item.itemName} - {formatCurrency(parseFloat(item.orderValue))}
+                      <p id="desc"><strong>Obs:</strong> {item.costumerNote}</p>
+                    </p> :
+                    <p>{item.itemAmount}x {item.itemName} - {formatCurrency(parseFloat(item.orderValue))}</p>
+                }
+              </div>
+            ))}
+          <br />
         </div>
         <hr />
-        <p><strong>Total:</strong> {formatCurrency(total)}</p>
+        <p><strong>Total:</strong> {formatCurrency(parseFloat(order.orderValue))}</p>
         <Close onClick={closeModal}>X</Close>
       </ModalContent>
     </Modal>

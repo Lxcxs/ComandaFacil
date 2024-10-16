@@ -9,8 +9,18 @@ import {
     AddCategoryButton,
     CategoryContainer,
     AddItemButton,
+    ItemRow,
+    ItemList,
+    ItemName,
+    ItemActions,
+    EditButton,
+    Switch,
+    DeleteCategoryButton, // Criei este botão
 } from './styles';
 import { client } from "../../services/axios";
+import { formatCurrency } from "../../utils/formatCurrency";
+import { MdOutlineEdit } from "react-icons/md";
+import ItemModal from "../../components/ItemModal";
 
 type Category = {
     id: number;
@@ -23,7 +33,7 @@ type Item = {
     id: number;
     itemName: string;
     itemDescription: string;
-    itemValue: string; // Alterado para string para representar Decimal
+    itemValue: number;
     itemStatus: string;
     itemImage: string;
     categoryId: number;
@@ -34,8 +44,14 @@ function Cardapio() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [items, setItems] = useState<Item[]>([]);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+    const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+    // const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>(null);
+
     const token = localStorage.getItem('authorization');
     if (!token) throw new Error("token not found");
     const payload = JSON.parse(atob(token.split('.')[1]));
@@ -45,14 +61,12 @@ function Cardapio() {
         const fetchCategoriesAndItems = async () => {
             try {
                 const [categoriesResponse, itemsResponse] = await Promise.all([
-                    client.get('/categories', {
-                        headers: { authorization: token }
-                    }),
-                    client.get(`/items/${storeId}`, {
-                        headers: { authorization: token }
-                    })
+                    client.get(`/categories/${storeId}`),
+                    client.get(`/items/${storeId}`)
                 ]);
+                console.log(categoriesResponse.data)
                 setCategories(categoriesResponse.data);
+                console.log(itemsResponse.data)
                 setItems(itemsResponse.data);
             } catch (error) {
                 console.error(error);
@@ -63,7 +77,7 @@ function Cardapio() {
 
     const handleAddCategory = async (name: string) => {
         try {
-            const categoryResponse = await client.post('/categories', {
+            const categoryResponse = await client.post(`/categories`, {
                 categoryName: name,
                 storeId: payload.storeId,
             });
@@ -72,14 +86,35 @@ function Cardapio() {
             console.error(error);
         }
     };
+    const handleDeleteCategory = async (categoryId: number) => {
+        try {
+            const itemsInCategory = items.filter((item) => item.categoryId === categoryId);
 
-    const handleAddItem = async (itemName: string, itemDescription: string, itemValue: string, itemStatus: string) => {
+            if (itemsInCategory.length > 0) {
+                alert("Não é possível deletar a categoria, pois ainda há itens associados a ela. Exclua os itens primeiro.");
+                return;
+            }
+
+            await client.delete(`/categories/${categoryId}`, {
+                data: { id: categoryId },
+            });
+
+            setCategories((prevCategories) =>
+                prevCategories.filter((category) => category.id !== categoryId)
+            );
+        } catch (error) {
+            console.error("Erro ao deletar categoria:", error);
+        }
+    };
+
+
+    const handleAddItem = async (itemName: string, itemDescription: string, itemValue: number, itemStatus: string) => {
         if (selectedCategoryId === null) return;
         try {
             const itemResponse = await client.post('/items', {
                 itemName,
                 itemDescription,
-                itemValue, // Mantendo como string para representar Decimal
+                itemValue,
                 categoryId: selectedCategoryId,
                 itemStatus,
                 storeId: payload.storeId
@@ -94,9 +129,76 @@ function Cardapio() {
             console.error(error);
         }
     };
+    const fetchItems = async () => {
+        try {
+            const itemsResponse = await client.get(`/items/${storeId}`, {
+                headers: { authorization: token }
+            });
+            setItems(itemsResponse.data);
+        } catch (error) {
+            console.error("Erro ao buscar itens:", error);
+        }
+    };
+
+    const handleRemoveItem = async (itemId: number) => {
+        try {
+            await client.delete(`/items/${itemId}`, {
+                data: { id: itemId, storeId: storeId }
+            });
+            fetchItems();
+            setIsEditModalOpen(false);
+
+        } catch (error) {
+            console.error("Erro ao deletar item:", error);
+        }
+    };
+
+    const handleEditItem = async (id: number, itemName: string, itemDescription: string, itemValue: number) => {
+        try {
+            await client.put(`/items/${id}`, {
+                id,
+                itemName: itemName,
+                itemDescription: itemDescription,
+                itemValue: itemValue,
+                storeId: storeId,
+            });
+            fetchItems();
+            setIsEditModalOpen(false);
+        } catch (error) {
+            console.error("Erro ao editar item:", error);
+        }
+    };
+    const openEditModal = (item: Item) => {
+        setSelectedItemIndex(item.id);
+        setIsEditModalOpen(true);
+    };
+
+    const toggleItemActiveStatus = async (itemId: number) => {
+        try {
+            const itemToToggle = items.find(item => item.id === itemId);
+            if (!itemToToggle) return;
+
+            const newStatus = itemToToggle.itemStatus === "available" ? "sold out" : "available";
+
+            await client.put(`/items/${itemId}/status`, {
+                id: itemId,
+                storeId: storeId,
+                itemStatus: newStatus
+            });
+
+            fetchItems();
+
+        } catch (error) {
+            console.error("Erro ao alterar status do item:", error);
+        }
+    };
 
     const closeCategoryModal = () => setIsCategoryModalOpen(false);
     const closeItemModal = () => setIsItemModalOpen(false);
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedItemIndex(null);
+    };
 
     return (
         <Container>
@@ -104,19 +206,53 @@ function Cardapio() {
                 <Title>Cardápio</Title>
                 <Subtitle>Adicione os melhores pratos de seu restaurante</Subtitle>
                 <AddCategoryButton onClick={() => setIsCategoryModalOpen(!isCategoryModalOpen)}>Adicionar Categoria</AddCategoryButton>
-                <CategoryContainer>
-                    {categories.map((category) => (
-                        <div className="header" style={{ display: 'flex', justifyContent: 'space-between', cursor: "pointer" }} key={category.id}>
+                {categories.map((category) => (
+                    <CategoryContainer key={category.id}>
+                        <div className="header" style={{ display: 'flex', justifyContent: 'space-between', cursor: "pointer" }}>
                             <h2>{category.categoryName}</h2>
-                            <AddItemButton onClick={() => {
-                                setSelectedCategoryId(category.id);
-                                setIsItemModalOpen(true);
-                            }}>
-                                Adicionar item
-                            </AddItemButton>
+                            <DeleteCategoryButton onClick={() => handleDeleteCategory(category.id)}>
+                                Excluir Categoria
+                            </DeleteCategoryButton>
                         </div>
-                    ))}
-                </CategoryContainer>
+
+                        <ItemList>
+                            {items && items.filter((item) => item.categoryId === category.id).map((item) => (
+                                <ItemRow key={item.id}>
+                                    <div className="mobile_field">
+                                        <ItemName>{item.itemName}</ItemName>
+                                        <span id="mobile_price">{formatCurrency(item.itemValue)}</span>
+                                    </div>
+
+                                    <span id="price">{formatCurrency(item.itemValue)}</span>
+
+                                    {item.itemDescription === "no description" ? (
+                                        <span id="no_description">Não possui descrição.</span>
+                                    ) : (
+                                        <span id="description">{item.itemDescription}</span>
+                                    )}
+
+                                    <ItemActions>
+                                        <Switch
+                                            isActive={item.itemStatus} // Converte para booleano
+                                            onClick={() => toggleItemActiveStatus(item.id)}
+                                        />
+                                        <EditButton onClick={() => openEditModal(item)}>
+                                            <MdOutlineEdit size={18} />
+                                        </EditButton>
+                                    </ItemActions>
+                                </ItemRow>
+                            ))}
+                        </ItemList>
+
+                        <AddItemButton onClick={() => {
+                            setSelectedCategoryId(category.id);
+                            setIsItemModalOpen(true);
+                        }}>
+                            Adicionar item
+                        </AddItemButton>
+                    </CategoryContainer>
+                ))}
+
             </Content>
 
             <AddCategoryModal
@@ -129,8 +265,18 @@ function Cardapio() {
                 isOpen={isItemModalOpen}
                 onClose={closeItemModal}
                 onAddItem={handleAddItem}
-                categoryId={selectedCategoryId as number} // Passando o categoryId
+                categoryId={selectedCategoryId as number}
             />
+            {isEditModalOpen && (
+                <ItemModal
+                    isOpen={isEditModalOpen}
+                    onClose={closeEditModal}
+                    item={items.find(item => item.id === selectedItemIndex) || null}
+                    onEditItem={(name, description, value) => handleEditItem(selectedItemIndex!, name, description, value)}
+                    onRemoveItem={() => handleRemoveItem(selectedItemIndex!)}
+                />
+            )}
+
         </Container>
     );
 }

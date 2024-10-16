@@ -10,9 +10,11 @@ import {
 import { IoIosArrowForward } from "react-icons/io";
 import { DMenu } from "./styles";
 import { NavLink } from "react-router-dom";
+import { useAuthorization } from "../Hooks/useAuthorization";
 
 export function Menu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { storeId } = useAuthorization();
 
   return (
     <DMenu menu={isMenuOpen}>
@@ -28,19 +30,19 @@ export function Menu() {
           </div>
         </div>
         <div className="list">
-          <NavLink to="/">
+          <NavLink to={`/${storeId}/dashboard`}>
             <MdHome  className="icon" />
             <span id="text">Início</span>
           </NavLink>
-          <NavLink to="/pedidos">
+          <NavLink to={`/${storeId}/pedidos`}>
             <VscListUnordered className="icon" />
             <span id="text">Pedidos</span>
           </NavLink>
-          <NavLink to="/cardapio">
+          <NavLink to={`/${storeId}/cardapio`}>
             <BiFoodMenu className="icon" />
             <span id="text">Cardápio</span>
           </NavLink>
-          <NavLink to="/mesas">
+          <NavLink to={`/${storeId}/mesas`}>
             <MdOutlineTableBar className="icon" />
             <span id="text">Mesas</span>
           </NavLink>
@@ -48,7 +50,7 @@ export function Menu() {
       </div>
       {isMenuOpen ?
         <span id="comandafacil">Comanda Fácil<IoIosCheckmark size={30} /></span> :
-        <img id="logo" alt="comanda fácil" src="src\assets\comandalogo.png" />
+        <img id="logo" alt="comanda fácil" src="/src/assets/comandalogo.png" />
       }
       
       {/* <div className="footer">

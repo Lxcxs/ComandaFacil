@@ -1,35 +1,28 @@
 import prismaClient from "../../prisma";
 
 interface IStatus {
-  id: number;
-  userId: number;
+  storeId: number;
+  storeStatus: string;
 }
 
 export class UpdateStoreStatusService {
-  async execute({ id, userId }: IStatus) {
+  async execute({ storeId, storeStatus }: IStatus) {
     try {
-      if (!id || !userId) {
+      if (!storeStatus || !storeId) {
         throw new Error("Service: Missing required parameters.");
       }
 
-      const user = await prismaClient.user.findFirst({ where: { id: userId } });
-      if (!user) {
-        throw new Error("Service: User not found.");
-      }
-
-      const store = await prismaClient.store.findUnique({ where: { id } });
+      const store = await prismaClient.store.findFirst({ where: { id: storeId } });
       if (!store) {
         throw new Error("Service: Store not found.");
       }
 
-      const newStatus = store.storeStatus === "offline" ? "online" : "offline";
-
       await prismaClient.store.update({
         where: { id: store.id },
-        data: { storeStatus: newStatus },
+        data: { storeStatus: storeStatus },
       });
 
-      return { message: `The store status has been updated to ${newStatus}.` };
+      return { message: `The store status has been updated to ${storeStatus}.` };
     } catch (error) {
       throw new Error(`Service: ${error instanceof Error ? error.message : 'error updating store status'}`);
     }

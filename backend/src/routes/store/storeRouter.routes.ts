@@ -14,7 +14,7 @@ const storeRouter = Router();
 
 storeRouter.post("/", createStoreCtrl.handle);
 storeRouter.get("/" , getStoreCtrl.handle);
-storeRouter.get("/:userId", authenticateToken ,getStoreByIdCtrl.handle);
-storeRouter.put("/:userId", authenticateToken ,updateStoreStatusCtrl.handle);
+storeRouter.get("/:storeId", getStoreByIdCtrl.handle);
+storeRouter.put("/:storeId", updateStoreStatusCtrl.handle);
 
 export { storeRouter };

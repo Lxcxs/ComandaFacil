@@ -13,8 +13,8 @@ import {
 interface ItemModalProps {
     isOpen: boolean;
     onClose: () => void;
-    item: { name: string; description: string; price: number } | null;
-    onEditItem: (name: string, description: string, price: number) => void;
+    item: { itemName: string; itemDescription: string; itemValue: number } | null;
+    onEditItem: (itemName: string, itemDescription: string, itemValue: number) => void;
     onRemoveItem: () => void;
 }
 
@@ -25,24 +25,35 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item, onEditItem, onRemo
 
     useEffect(() => {
         if (item) {
-            setName(item.name);
-            setDescription(item.description);
-            setPrice(item.price);
+            setName(item.itemName);
+            setDescription(item.itemDescription);
+            setPrice(Number(item.itemValue));
         }
     }, [item]);
 
     const handleEdit = () => {
-        onEditItem(name, description, price);
-        onClose(); // Fechar o modal após editar
+        if (name && price >= 0) { // Validação simples
+            onEditItem(name, description, price);
+            onClose();
+        } else {
+            alert("Por favor, preencha todos os campos obrigatórios.");
+        }
     };
+
     const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
-          onClose();
+            onClose();
         }
-      };
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Escape') {
+            onClose();
+        }
+    };
 
     return (
-        <ModalContainer onClick={handleOutsideClick}>
+        <ModalContainer onClick={handleOutsideClick} onKeyDown={handleKeyDown} tabIndex={0}>
             <ModalContent>
                 <ModalHeader>
                     <h2>{item ? 'Editar Item' : 'Adicionar Item'}</h2>
@@ -69,7 +80,9 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item, onEditItem, onRemo
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={handleEdit}>Salvar</Button>
-                    <Button onClick={onRemoveItem} style={{ backgroundColor: '#ca463d' }}>Remover</Button>
+                    {item && (
+                        <Button onClick={onRemoveItem} style={{ backgroundColor: '#ca463d' }}>Remover</Button>
+                    )}
                 </ModalFooter>
             </ModalContent>
         </ModalContainer>

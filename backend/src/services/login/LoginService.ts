@@ -46,7 +46,7 @@ class AuthenticateUserService {
     const storeId = findStore?.id;
 
     const token = jwt.sign({ userId, storeId }, SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "12h",
     });
 
     return { token, user };
