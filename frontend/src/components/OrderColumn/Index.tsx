@@ -10,7 +10,7 @@ interface Order {
   costumerNote: string;
   orderValue: string;
   orderStatus: string;
-  createdAt: string; // Ex: "2024-10-16 00:23:56.361"
+  createdAt: string;
   storeId: number;
   costumerId: number;
   tableId: number;
@@ -18,11 +18,31 @@ interface Order {
   waiterId: null;
 }
 
+interface Table {
+  id: number;
+  tableNumber: number;
+  tableStatus: string;
+  tablePeopleAmount: number;
+  storeId: number;
+}
+
+interface Costumer {
+  id: number;
+  costumerName: string;
+  costumerTable: number;
+  accountType: string;
+  tableId: number;
+  storeId: number;
+  costumerStatus: string;
+}
+
 interface OrderColumnProps {
   title: string;
   background: string;
   columnStatus: string | undefined;
   orders: Order[];
+  tables: Table[];
+  costumers: Costumer[];
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   renderButtons: (item: Order) => JSX.Element;
@@ -40,6 +60,8 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
   background,
   columnStatus,
   orders,
+  tables,
+  costumers,
   onDrop,
   onDragOver,
   renderButtons,
@@ -50,16 +72,24 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
   const toggleExpand = (orderId: number) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
+  const filteredOrdersLength: number = orders.filter((e) => e.orderStatus === columnStatus).length;
+  function handleTableNumber(tables: Table[], order: Order) {
+    const filteredTable = tables.filter(e => e.id === order.tableId);
 
-  const filteredOrders: number = orders.filter((e) => e.orderStatus === columnStatus).length;
+    return <span>{filteredTable[0].tableNumber}</span>
+  }
+  function handleCostumerName(costumers: Costumer[], order: Order) {
+    const filteredCostumer = costumers.filter(e => e.id === order.costumerId);
 
+    return <span>{filteredCostumer[0].costumerName}</span>
+  }
   return (
     <Column style={{ background }} onDrop={onDrop} onDragOver={onDragOver}>
       <div className="header">
         <div className="title">
           <span>{title}</span>
         </div>
-        <span id="quantity">{filteredOrders}</span>
+        <span id="quantity">{filteredOrdersLength}</span>
       </div>
       <div className="drag_box">
         {orders
@@ -77,11 +107,11 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
                 <div className="order_header">
                   <span id="time">{createdAtFormatted}</span> {/* Exibe apenas a hora formatada */}
                   <span id="order">Pedido #{pedido.id}</span>
-                  <span id="table">MESA 14</span>
+                  <span id="table">MESA {handleTableNumber(tables, pedido)}</span>
                 </div>
                 <div className="item_box">
                   <div className="item">
-                    <span>Lucas</span>
+                    <span>{handleCostumerName(costumers, pedido)}</span>
                     <span>{pedido.itemAmount} itens</span>
                   </div>
 

@@ -18,7 +18,7 @@ export function useAuthorization() {
         const decodedToken = jwtDecode<DecodedToken>(storedToken);
         const decodedUserId = decodedToken.userId;
         const decodedStoreId = decodedToken.storeId;
-        
+        console.log(decodedStoreId)
         setToken(storedToken);
         setStoreId(Number(decodedStoreId));
         setUserId(Number(decodedUserId));

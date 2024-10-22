@@ -4,6 +4,7 @@ import { Close, DetailsContainer, ItemPedido, ModalContainer, Total, FecharConta
 import { MdAttachMoney, MdOutlinePeopleAlt } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 interface selectedTable {
   id: number;
@@ -13,17 +14,33 @@ interface selectedTable {
   storeId: number;
   waiterId: number | null;
 }
+interface Order {
+  id: number;
+  itemName: string;
+  itemImage: string;
+  itemAmount: number;
+  costumerNote: string;
+  orderValue: string;
+  orderStatus: string;
+  createdAt: string;
+  storeId: number;
+  costumerId: number;
+  tableId: number;
+  costumerTabId: number;
+  waiterId: null;
+}
 
 interface ModalOrderProps {
   closeModal: () => void;
   selectedTable: selectedTable | null;
+  order: Order[];
 }
 
 function handleIcons(stts: string) {
   switch (stts) {
     case "waiting":
       return <FaRegCircle />;
-    case "making":
+    case "producing":
       return <BiSolidCircleThreeQuarter />;
     case "finished":
       return <FaCheckCircle />;
@@ -32,7 +49,7 @@ function handleIcons(stts: string) {
   }
 }
 
-const MesaDetails = ({ selectedTable, closeModal }: ModalOrderProps, ) => {
+const MesaDetails = ({ selectedTable, closeModal, order }: ModalOrderProps,) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   if (!selectedTable) return null;
@@ -47,11 +64,14 @@ const MesaDetails = ({ selectedTable, closeModal }: ModalOrderProps, ) => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const handleFecharConta = () => {
-    // Adicione a lógica para fechar a conta aqui
-    alert(`Conta da mesa ${selectedTable.tableNumber} fechada!`);
-    closeModal(); // Fecha o modal após fechar a conta
-  };
+  // const handleFecharConta = () => {
+  //   // Adicione a lógica para fechar a conta aqui
+  //   alert(`Conta da mesa ${selectedTable.tableNumber} fechada!`);
+  //   closeModal(); // Fecha o modal após fechar a conta
+  // };
+  const total = order
+  .filter(e => e.orderStatus === "finished")
+  .reduce((acc, crr) => acc + parseFloat(crr.orderValue), 0); // O acumulador é iniciado em 0
 
   return (
     <ModalContainer onClick={handleOutsideClick}>
@@ -61,48 +81,59 @@ const MesaDetails = ({ selectedTable, closeModal }: ModalOrderProps, ) => {
             <h2>MESA {selectedTable.tableNumber}</h2>
             <h2><MdOutlinePeopleAlt size={29} /> {selectedTable.tablePeopleAmount}</h2>
           </div>
-          <h3>Cliente: </h3>
+          {/* <h3>Cliente: {}</h3> */}
         </div>
+        {order &&
+          <Total>
+            <span>TOTAL: </span>
+            <span>{formatCurrency(total)}</span>
+          </Total>
+        }
 
-        <Total>
-          <span>TOTAL: </span>
-          <span>R$ </span>
-        </Total>
 
         <div className="item_list">
-          {selectedTable.pedidos.map((pedido, index) => (
-            <ItemPedido onClick={handleModal} status={pedido.status} key={index}>
+
+          {order.map(o => (
+            <ItemPedido onClick={handleModal} status={selectedTable.tableStatus} key={selectedTable.id}>
+
               <div className="item_container">
-                <img src="https://osterstatic.reciperm.com/webp/10334.webp" alt={pedido.item} />
+                <img src="https://osterstatic.reciperm.com/webp/10334.webp" />
                 <div className="item_info">
-                  <span id="item_title">{pedido.quantidade}x {pedido.item}</span>
-                  <span id="text">R$ {(pedido.preco * pedido.quantidade).toFixed(2)}</span>
+                  <span id="item_title">{o.itemAmount}x {o.itemName}</span>
+                  <span id="text">R$ {formatCurrency(parseFloat(o.orderValue))}</span>
                   <div>
                     <h4>Observações</h4>
                     <span id="text">
-                      {pedido.review !== "" ? pedido.review : "sem observações."}
+                      {o.costumerNote !== "" ? o.costumerNote : "sem observações."}
                     </span>
                   </div>
                 </div>
               </div>
               <span id="icons">
-                {handleIcons(pedido.status)}
+                {handleIcons(o.orderStatus)}
               </span>
+
+
+
             </ItemPedido>
-          ))}
+          ))
+          }
+
 
         </div>
 
+        {order &&
+          <ButtonsContainer>
+            {/* <FecharContaButton onClick={handleFecharConta}>
+              <MdAttachMoney size={22} />
+              Fechar Conta
+            </FecharContaButton> */}
+            <Close onClick={closeModal}>
+              <span><IoClose size={28} /></span>
+            </Close>
+          </ButtonsContainer>
 
-        <ButtonsContainer>
-          <FecharContaButton onClick={handleFecharConta}>
-            <MdAttachMoney size={22}/>
-            Fechar Conta
-          </FecharContaButton>
-          <Close onClick={closeModal}>
-            <span><IoClose size={28} /></span>
-          </Close>
-        </ButtonsContainer>
+        }
 
       </DetailsContainer>
     </ModalContainer>

@@ -2,7 +2,8 @@
 import styled from 'styled-components';
 
 export const Column = styled.div`
-  min-width: 450px; /* Largura da coluna */
+  width: 450;
+  min-width: 300px; /* Largura da coluna */
   height: 90vh;
   padding: 0; /* Padding interno */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra da coluna */
@@ -12,7 +13,8 @@ export const Column = styled.div`
 
   @media (max-width: 760px) {
     width: 100%;
-    height: auto;
+    min-height: 235px;
+    height: 100%;
   }
 
   .header {

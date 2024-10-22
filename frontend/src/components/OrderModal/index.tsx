@@ -18,10 +18,21 @@ interface Order {
   waiterId: null;
 }
 
+interface Costumer {
+  id: number;
+  costumerName: string;
+  costumerTable: number;
+  accountType: string;
+  tableId: number;
+  storeId: number;
+  costumerStatus: string;
+}
+
 interface ModalOrderProps {
   closeModal: () => void;
   order?: Order | null;
   orders: Order[];
+  costumers: Costumer[];
 }
 
 const formatCreatedAt = (createdAt: string): string => {
@@ -29,7 +40,7 @@ const formatCreatedAt = (createdAt: string): string => {
   return date.toLocaleString(); // Formata a data e hora de acordo com a localidade do navegador
 };
 
-export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, orders }) => {
+export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, orders, costumers }) => {
   if (!order) return null;
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -40,12 +51,13 @@ export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, order
 
   // Armazena o horário formatado
   const createdAtFormatted = formatCreatedAt(order.createdAt);
+  const filteredCostumer = costumers.filter(e => e.id === order.costumerId)
 
   return (
     <Modal onClick={handleOutsideClick}>
       <ModalContent>
         <h2>Detalhes do Pedido #{order.id}</h2>
-        <p><strong>Cliente:</strong> Lucas</p>
+        <p><strong>Cliente:</strong> {filteredCostumer[0].costumerName}</p>
         <p><strong>Criado em:</strong> {createdAtFormatted}</p> {/* Exibe o horário formatado */}
         <hr />
         <br />

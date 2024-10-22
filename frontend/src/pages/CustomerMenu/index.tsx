@@ -4,9 +4,7 @@ import { Container, Header, MenuContent, Categories, MenuList, ItemSelf } from "
 import { client } from "../../services/axios";
 import { formatCurrency } from "../../utils/formatCurrency";
 import ModalSelectItem from "../../components/ModalSelectItem";
-import socket from "../../services/socket"; // Importando o socket
-
-// Interfaces
+import socket from "../../services/socket";
 interface Costumer {
     accountType: string;
     costumerName: string;
@@ -88,7 +86,7 @@ function CustomerMenu() {
                 itemId: item.id,
                 tableId: costumer.tableId,
             });
-            console.log("Pedido criado com sucesso:", response.data);
+            console.log("Pedido criado com sucesso:", response.data.order);
             
             socket.emit("newOrder", response.data);
         } catch (error) {

@@ -41,7 +41,7 @@ export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 1999;
   animation: ${fadeIn} 0.3s ease forwards;
 
   @media (max-width: 760px) {
@@ -190,7 +190,7 @@ export const ButtonsContainer = styled.div`
   position: sticky;
   bottom: 0;
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr;
 `
 export const FecharContaButton = styled.button`
   background-color: #3ec445; /* Verde */

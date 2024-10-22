@@ -68,12 +68,27 @@ export const Content = styled.div`
       }
     }
   }
+  div.orders {
+      div.bloco1 > div.header {
+        background-color: #DA804E;
+      }
+      div.bloco2 > div.header {
+        background-color: #DAC34E;
+      }
+      div.bloco3 > div.header {
+        background-color: #59DA4E;
+      }
+      div.bloco4 > div.header {
+        background-color: #d6313b;
+      }
+    }
 
   @media (max-width: 1200px) {
     padding-left: 15vw;
   }
   @media (max-width: 760px) {
     padding: 0 5vw;
+    margin-bottom: 15vh;
 
     div.statistics {
       justify-content: center;

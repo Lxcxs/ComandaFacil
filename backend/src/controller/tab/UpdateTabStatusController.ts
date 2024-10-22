@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import { UpdateTabValueService } from "../../services/tab/UpdateTabValueService";
+import { UpdateTabStatusService } from "../../services/tab/UpdateTabStatusService";
 
-export class UpdateTabValueController {
+export class UpdateTabStatusController {
   async handle(req: Request, res: Response): Promise<Response> {
-    const { costumerId } = req.body;
-    const updateTabService = new UpdateTabValueService();
+    const { tabId, newStatus } = req.body;
+    console.log(req.body, tabId, newStatus)
+
+    const updateTabService = new UpdateTabStatusService();
 
     try {
-      const result = await updateTabService.execute(Number(costumerId));
+      const result = await updateTabService.execute(tabId, newStatus);
 
       return res.status(200).json(result);
     } catch (error) {

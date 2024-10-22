@@ -4,10 +4,9 @@ import { GetStoreByIdService } from "../../services/store/GetByIdService";
 export class GetStoreByIdController {
   async handle(req: Request, res: Response): Promise<Response> {
     try {
-      const { storeId } = req.params; // Obtém o storeId diretamente dos parâmetros
-      
+      const { storeId } = req.params; // Extração correta de storeId
       const storeService = new GetStoreByIdService();
-      const result = await storeService.execute({ storeId: Number(storeId) }); // Converte para número
+      const result = await storeService.execute(Number(storeId)); // Converte para número
 
       return res.status(200).json(result);
     } catch (error) {
@@ -18,4 +17,3 @@ export class GetStoreByIdController {
     }
   }
 }
-

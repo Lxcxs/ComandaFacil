@@ -18,7 +18,7 @@ export class CreateStoreService {
           storeName,
           storeImage: storeImage || "no image available",
           storeTableAmount,
-          storeStatus: "offline",
+          storeStatus: "online",
           userId,
         },
       });

@@ -81,7 +81,7 @@ const ModalSelectItem: React.FC<ModalProps> = ({ item, isOpen, onClose, onAddIte
               <button onClick={addItem}>+</button>
             </QuantityControl>
           </ItemInfo>
-          <AddButton onClick={handleAddItem}>Adicionar</AddButton>
+          <AddButton onClick={handleAddItem}>Fazer pedido</AddButton>
         </ModalContent>
       </ModalContainer>
     </ModalBackground>

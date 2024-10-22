@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from 'react';
 import { client } from '../services/axios';
 
 interface Store {
+  id: number;
   storeName: string;
   storeStatus: string;
   storeImage: string;
@@ -35,8 +36,11 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchData = async () => {
     const token = localStorage.getItem('authorization');
+    const localCostumer = localStorage.getItem("costumer")
+    ? JSON.parse(localStorage.getItem("costumer")!)
+    : null;
 
-    if (token) {
+    if (token || localCostumer) {
       const payload = JSON.parse(atob(token.split('.')[1]));
 
       try {
@@ -44,18 +48,19 @@ export const AdminProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const realUser = userResponse.data.find((e: { id: number }) => e.id === payload.userId);
         setUserData(realUser);
 
-        const storeResponse = await client.get(`/stores/${payload.userId}`, {
+        const storeResponse = await client.get(`/stores`, {
           headers: {
             Authorization: token,
           },
         });
-        setStoreData(storeResponse.data[0]);
+        setStoreData(storeResponse.data.filter(e => e.userId === realUser.id)[0]);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       } finally {
         setLoading(false);
       }
-    } else {
+    } 
+    else {
       console.log('Token não encontrado no localStorage.');
       setLoading(false);
     }

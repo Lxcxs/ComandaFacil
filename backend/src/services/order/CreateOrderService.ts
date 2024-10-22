@@ -3,7 +3,7 @@ import prismaClient from "../../prisma";
 import { validateStore } from "../../utils/validateStore";
 import { Decimal } from "@prisma/client/runtime/library";
 import { OrderDTO } from "../../DTOs/orderDTO";
-import { UpdateTabValueService } from "../tab/UpdateOrderValueService";
+import { UpdateTabValueService } from "../tab/UpdateTabValueService";
 
 interface DTO {
   itemName: string;
@@ -65,10 +65,7 @@ export class CreateOrderService {
       const order = await prismaClient.order.create({ data: newData });
       if (!order) throw new Error("Service: error creating order.");
 
-      const updateTabValueService = new UpdateTabValueService();
-      const tabValueUpdate = await updateTabValueService.execute(costumerId);
-
-      return { order, tabValueUpdate };
+      return { order };
     } catch (error) {
       throw new Error(
         `Service: ${error instanceof Error ? error.message : "error creating order"}`

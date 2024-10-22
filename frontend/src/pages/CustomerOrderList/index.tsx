@@ -5,8 +5,8 @@ import { BiSolidCircleThreeQuarter } from 'react-icons/bi';
 import { FaRegCircle, FaCheckCircle } from 'react-icons/fa';
 import { IoIosClose } from "react-icons/io";
 import { formatCurrency } from '../../utils/formatCurrency';
-import { useAuthorization } from '../../components/Hooks/useAuthorization';
 import { client } from '../../services/axios';
+import { useSocket } from '../../context/SocketContext';
 
 interface Order {
     id: number;
@@ -24,30 +24,48 @@ interface Order {
     waiterId: null;
 }
 
+interface Costumer {
+    id: number;
+    costumerName: string;
+    costumerTable: number;
+    accountType: string;
+    tableId: number;
+    storeId: number;
+    costumerStatus: string;
+}
+
 const OrderList: React.FC = () => {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
-    const [searchTerm, setSearchTerm] = useState<string>(''); // Estado para armazenar o termo de pesquisa
-    const { storeId } = useAuthorization();
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [costumer, setCostumer] = useState<Costumer | null>(null)
+    const { socket } = useSocket();
+    
+    const fetchAllData = async () => {
+        const localCostumer: Costumer | null = localStorage.getItem("costumer")
+            ? JSON.parse(localStorage.getItem("costumer")!)
+            : null;
+        if (!localCostumer) {
+            console.error("storeId is null");
+            return;
+        }
+        setCostumer(localCostumer);
+        try {
+            const orderResponse = await client.get(`/orders/${localCostumer?.storeId}`);
+            setOrders(orderResponse.data);
+        } catch (error) {
+            console.error("Erro ao buscar os dados:", error);
+        }
+    };
+    useEffect(() => {
+        fetchAllData();
+    }, []);
 
     useEffect(() => {
-        const fetchAllData = async () => {
-            if (!storeId) {
-                console.error("storeId is null");
-                return;
-            }
-
-            try {
-                const orderResponse = await client.get(`/orders/${storeId}`);
-                setOrders(orderResponse.data);
-            } catch (error) {
-                console.error("Erro ao buscar os dados:", error);
-            }
-        };
-
-        // Chame fetchAllData quando storeId for atualizado
-        fetchAllData();
-    }, [storeId]); // Dependência adicionada
+        socket.on("orderUpdated", () => fetchAllData());
+    
+      }, [socket])
+      if (costumer === null) return;
 
     function handleIcons(stts: string) {
         switch (stts) {
@@ -83,9 +101,8 @@ const OrderList: React.FC = () => {
         setSelectedOrder(null);
     }
 
-    // Filtra os pedidos com base no termo de pesquisa
     const filteredOrders = orders.filter(order =>
-        order.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+        order.itemName.toLowerCase().includes(searchTerm.toLowerCase()) && order.costumerId === costumer.id
     );
 
     return (
@@ -95,7 +112,7 @@ const OrderList: React.FC = () => {
                     type="text"
                     placeholder="Pesquisar por item..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o termo de pesquisa
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
             <OrderContainer>

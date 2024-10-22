@@ -83,18 +83,15 @@ export const Column = styled.div`
     border-radius: 5px;
   }
 
-  @media (max-width: 1380px) {
-    height: 500px;
-  }
 
   @media (max-width: 600px) {
-    min-width: 250px;
-    height: 100%;
+    width: 100%;
+    height: auto;
   }
 `;
 
 export const Item = styled.div`
-  cursor: grab;
+  cursor: pointer;
   width: 100%;
   padding: 0.7em 0.5em;
   border-radius: 0.5em;

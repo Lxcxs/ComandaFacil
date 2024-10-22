@@ -5,122 +5,138 @@ import { Container, Content, FormContent } from "./styles";
 import { FaCircle } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
 import { client } from "../../services/axios";
+import { useSocket } from "../../context/SocketContext";
+
+interface Table {
+  id: number;
+  tableNumber: number;
+  tableStatus: string;
+  tablePeopleAmount: number;
+  storeId: number;
+}
+
+interface Store {
+  id: number;
+  storeName: string;
+  storeStatus: string;
+  storeImage: string;
+  storeTableAmount: number;
+  userId: number;
+}
 
 function CustomerSignup() {
-    const { storeId } = useParams();
-    const navigate = useNavigate();
+  const { storeId } = useParams();
+  const navigate = useNavigate();
+  const { socket } = useSocket();
 
-    const [storeName, setStoreName] = useState("");
-    const [storeStatus, setStoreStatus] = useState("");
+  const [store, setStore] = useState<Store | null>(null);
+  const [tables, setTables] = useState<Table[]>([]);
+  const [costumerName, setCostumerName] = useState("");
+  const [costumerTable, setCostumerTable] = useState("");
+  const [tablePeopleAmount, setTablePeopleAmount] = useState("");
 
-    const [costumerName, setCostumerName] = useState("");
-    const [costumerTable, setCostumerTable] = useState("");
-    const [tablePeopleAmount, setTablePeopleAmount] = useState("");
-
-    useEffect(() => {
-        const fetchStoreData = async () => {
-            try {
-                const response = await client.get(`/stores/${storeId}`);
-                setStoreName(response.data.storeName);
-                setStoreStatus(response.data.storeStatus);
-                console.log("Dados da loja:", response.data);
-            } catch (error) {
-                console.error("Erro ao buscar os dados da loja:", error);
-            }
-        };
-
-        fetchStoreData();
-    }, [storeId]);
-
-    const handleForm = async (e: FormEvent) => {
-        e.preventDefault();
-
-        console.log("Dados do formulário:", {
-            costumerName,
-            costumerTable,
-            tablePeopleAmount,
-            storeId
-        });
-
-        try {
-            const response = await client.post("/costumers", {
-                costumerName,
-                tableNumber: costumerTable,
-                tablePeopleAmount,
-                storeId: storeId,
-                waiterId: null,
-            });
-
-            console.log("Resposta da API ao criar cliente:", response.data);
-
-            // Desestruturar os dados retornados pela API
-            const { token, table, costumer, tab } = response.data;
-
-            // Log dos dados retornados
-            console.log("Token:", token);
-            console.log("Table:", table);
-            console.log("Costumer:", costumer);
-            console.log("Tab:", tab);
-
-            // Armazenar os dados no localStorage
-            localStorage.setItem("token", token);
-            localStorage.setItem("costumer", JSON.stringify(costumer));
-            localStorage.setItem("table", JSON.stringify(table));
-            localStorage.setItem("tab", JSON.stringify(tab));
-
-            // Redirecionar para a página do cardápio após criar o cliente
-            const { id: costumerId } = costumer; // Pega o ID do cliente
-            navigate(`/${storeId}/${costumerId}/cardapio`);
-        } catch (error) {
-            console.error("Erro ao criar o cliente:", error);
-        }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [storeRes, tableRes] = await Promise.all([
+          client.get(`/stores/${storeId}`),
+          client.get(`/tables/${storeId}`)
+        ]);
+        setStore(storeRes.data);
+        setTables(tableRes.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
     };
 
-    return (
-        <Container>
-            <Content status={storeStatus}>
-                <div className="header">
-                    <h3>Bem vindo(a) ao</h3>
-                    <div>
-                        <h1>{storeName || "Nome do Restaurante"}</h1>
-                        <span><FaCircle />{storeStatus === "online" ? "aberto" : "fechado"}</span>
-                    </div>
-                </div>
-            </Content>
+    fetchData();
+  }, [storeId]);
 
-            <FormContent onSubmit={handleForm}>
-                <Input
-                    type="text"
-                    name="name"
-                    label="Nome"
-                    required={true}
-                    placeholder="Ex: Fulano da Silva"
-                    value={costumerName}
-                    onChange={(e) => setCostumerName(e.target.value)}
-                />
-                <Input
-                    type="number"
-                    name="table"
-                    label="Qual o número da sua mesa?"
-                    required={true}
-                    placeholder="Ex: 15"
-                    value={costumerTable}
-                    onChange={(e) => setCostumerTable(e.target.value)}
-                />
-                <Input
-                    type="number"
-                    name="peopleAmount"
-                    label="Quantas pessoas estão na mesa?"
-                    required={true}
-                    placeholder="Ex: 4"
-                    value={tablePeopleAmount}
-                    onChange={(e) => setTablePeopleAmount(e.target.value)}
-                />
+  const handleForm = async (e: FormEvent) => {
+    e.preventDefault();
 
-                <Button type="submit">Acessar</Button>
-            </FormContent>
-        </Container>
-    );
+    const tableNumber = parseInt(costumerTable);
+    const peopleAmount = parseInt(tablePeopleAmount);
+    const selectedTable = tables.find(table => table.tableNumber === tableNumber);
+
+    if (!selectedTable) {
+      console.error("Mesa não encontrada.");
+      return;
+    }
+
+    try {
+      const { data: costumerData } = await client.post("/costumers", {
+        costumerName,
+        tableNumber,
+        tablePeopleAmount: peopleAmount,
+        storeId: Number(storeId),
+        waiterId: null,
+      });
+
+      await client.put(`/tables/amount/${storeId}/${selectedTable.id}`, {
+        newAmountValue: peopleAmount,
+      });
+
+      const { token, table, costumer, tab } = costumerData;
+      localStorage.setItem("token", token);
+      localStorage.setItem("costumer", JSON.stringify(costumer));
+      localStorage.setItem("table", JSON.stringify(table));
+      localStorage.setItem("tab", JSON.stringify(tab));
+
+      socket.emit("newCustomerCreated", { costumerId: costumer.id, storeId });
+
+      navigate(`/${storeId}/${costumer.id}/cardapio`);
+    } catch (error) {
+      console.error("Erro ao criar cliente ou atualizar mesa:", error);
+    }
+  };
+
+  return (
+    <Container>
+      <Content status={store?.storeStatus || "offline"}>
+        <div className="header">
+          <h3>Bem vindo(a) ao</h3>
+          <div>
+            <h1>{store?.storeName || "Nome do Restaurante"}</h1>
+            <span>
+              <FaCircle /> {store?.storeStatus === "online" ? "aberto" : "fechado"}
+            </span>
+          </div>
+        </div>
+      </Content>
+
+      <FormContent onSubmit={handleForm}>
+        <Input
+          type="text"
+          name="name"
+          label="Nome"
+          required
+          placeholder="Ex: Fulano da Silva"
+          value={costumerName}
+          onChange={(e) => setCostumerName(e.target.value)}
+        />
+        <Input
+          type="number"
+          name="table"
+          label="Qual o número da sua mesa?"
+          required
+          placeholder="Ex: 15"
+          value={costumerTable}
+          onChange={(e) => setCostumerTable(e.target.value)}
+        />
+        <Input
+          type="number"
+          name="peopleAmount"
+          label="Quantas pessoas estão na mesa?"
+          required
+          placeholder="Ex: 4"
+          value={tablePeopleAmount}
+          onChange={(e) => setTablePeopleAmount(e.target.value)}
+        />
+        <Button type="submit">Acessar</Button>
+      </FormContent>
+    </Container>
+  );
 }
 
 export { CustomerSignup };

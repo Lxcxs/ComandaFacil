@@ -1,60 +1,149 @@
-import React, { useContext, useEffect, useState } from "react";
-import { ButtonStatus, Content } from "./styles";
+import { useContext, useEffect, useState } from "react";
+import { Content } from "./styles";
 import { AdminContext } from "../../context/AdminContext";
 import { client } from "../../services/axios"; 
 import { useAuthorization } from "../../components/Hooks/useAuthorization";
-import socket from "../../services/socket";
+import { useSocket } from "../../context/SocketContext";
+import { formatCurrency } from "../../utils/formatCurrency";
+
+interface Order {
+  id: number;
+  itemName: string;
+  itemImage: string;
+  itemAmount: number;
+  costumerNote: string;
+  orderValue: string;
+  orderStatus: string;
+  createdAt: string;
+  storeId: number;
+  costumerId: number;
+  tableId: number;
+  costumerTabId: number;
+  waiterId: null;
+}
+interface Table {
+  id: number;
+  tableNumber: number;
+  tableStatus: string;
+  tablePeopleAmount: number;
+  storeId: number;
+}
+interface Store {
+  id: number;
+  storeName: string;
+  storeStatus: string;
+  storeImage: string;
+  storeTableAmount: number;
+  userId: number;
+}
+interface Costumer {
+  id: number;
+  costumerName: string;
+  costumerTable: number;
+  accountType: string;
+  tableId: number;
+  storeId: number;
+  costumerStatus: string;
+}
+
+interface Tab {
+  id: number;
+  tabValue: string;
+  tabStatus: string;
+  costumerId: number;
+  storeId: number;
+  tableId: number
+}
 
 function Dashboard() {
   const context = useContext(AdminContext);
-  const [status, setStatus] = useState("offline");
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [tables, setTables] = useState<Table[]>([]);
+  const [costumers, setCostumers] = useState<Costumer[]>([]);
+  const [store, setStore] = useState<Store | null>(null);
+  const [tabs, setTabs] = useState<Tab[]>([]);
+  const { socket } = useSocket();
 
   if (!context) {
     throw new Error("useAdminToken must be used within an AdminProvider");
   }
-
+  
   const { userData, storeData, loading, fetchData } = context;
   const { storeId, token } = useAuthorization();
+  const isSameDay = (date1: Date, date2: Date) => {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  };
+
+  const fetchAllData = async () => {
+    if (!storeId) {
+      console.error("storeId is null.");
+      return;
+    }
+    try {
+      const [tableResponse, costumerResponse, orderResponse, tabRes] = await Promise.allSettled([
+        client.get(`/tables/${storeId}`),
+        client.get(`/costumers/${storeId}`),
+        client.get(`/orders/${storeId}`),
+        client.get(`/tabs/store/${storeId}`),
+      ]);
+  
+      const currentDate = new Date();
+      
+      // Verifica se as requisições foram bem-sucedidas antes de acessar os dados
+      if (tableResponse.status === "fulfilled") {
+        setTables(tableResponse.value.data);
+      } else {
+        console.error("Erro ao buscar mesas:", tableResponse.reason);
+      }
+  
+      if (costumerResponse.status === "fulfilled") {
+        setCostumers(costumerResponse.value.data);
+      } else {
+        console.error("Erro ao buscar clientes:", costumerResponse.reason);
+      }
+  
+      if (orderResponse.status === "fulfilled") {
+        const filteredOrders = orderResponse.value.data.filter((order: Order) => {
+          const orderDate = new Date(order.createdAt);
+          return isSameDay(orderDate, currentDate);
+        });
+        setOrders(filteredOrders);
+      } else {
+        console.error("Erro ao buscar pedidos:", orderResponse.reason);
+      }
+  
+      if (tabRes.status === "fulfilled") {
+        setTabs(tabRes.value.data);
+      } else {
+        console.error("Erro ao buscar comandas:", tabRes.reason);
+      }
+  
+      setStore(storeData);
+    } catch (error) {
+      console.error("Erro ao buscar os dados:", error);
+    }
+  };
+  
 
   useEffect(() => {
     const loadData = async () => {
       if (token) {
         await fetchData();
       }
-      if (storeData) {
-        setStatus(storeData.storeStatus);
-      }
     };
 
     loadData();
-  }, [fetchData, storeData]);
-
+    fetchAllData();
+  }, [storeId]);
   useEffect(() => {
-    socket.on("updateStoreStatus", (data) => {
-      console.log("Status da loja atualizado recebido: ", data);
-    });
+    socket.on("orderUpdated", () => fetchAllData());
+    socket.on("newOrderCreated", () => fetchAllData());
 
-    return () => {
-      socket.off("updateStoreStatus");
-    };
-  }, []);
-
-  const handleToggleStatus = async () => {
-    const newStatus = status === "online" ? "offline" : "online";
-
-    try {
-      setIsUpdating(true);
-      await client.put(`/stores/${storeId}`, { storeStatus: newStatus, storeId: storeId });
-      setStatus(newStatus); 
-
-      socket.emit("updateStoreStatus", { storeId, storeStatus: newStatus });
-    } catch (error) {
-      console.error("Erro ao atualizar status da loja:", error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
+  }, [socket])
 
   if (loading) return <p>Loading...</p>;
 
@@ -62,10 +151,7 @@ function Dashboard() {
     <Content>
       <div className="introduce">
         <h2>Olá {userData?.userName}</h2>
-        <span>Sua loja está: {status}</span>
-        <ButtonStatus storeStatus={status} onClick={handleToggleStatus} disabled={isUpdating}>
-          {isUpdating ? "Aguarde..." : status === "online" ? "Ficar Offline" : "Ficar Online"}
-        </ButtonStatus>
+        <span>Acompanhe as atividades do(a) <span id="storeName">{store?.storeName}</span> hoje:</span>
       </div>
       <div className="container">
         <div className="performance">
@@ -76,7 +162,7 @@ function Dashboard() {
                 <p>Número de pedidos:</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{orders.length}</p>
               </div>
             </div>
             <div className="bloco2">
@@ -84,7 +170,7 @@ function Dashboard() {
                 <p>Faturamento:</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{formatCurrency(tabs.filter(e => e.tabStatus === "closed").reduce((acc, tab) => acc + parseFloat(tab.tabValue), 0))}</p>
               </div>
             </div>
             <div className="bloco3">
@@ -92,7 +178,7 @@ function Dashboard() {
                 <p>Total de clientes:</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{costumers.filter(e => e.storeId === storeId).length}</p>
               </div>
             </div>
             <div className="bloco4">
@@ -100,7 +186,7 @@ function Dashboard() {
                 <p>Mesas disponíveis:</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{tables.filter(e => e.tableStatus === "available").length}</p>
               </div>
             </div>
           </div>
@@ -111,34 +197,34 @@ function Dashboard() {
           <div className="statistics">
             <div className="bloco1">
               <div className="header">
-                <p>Em análise:</p>
+                <p>Em análise</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{orders.filter(e => e.orderStatus === "waiting").length}</p>
               </div>
             </div>
             <div className="bloco2">
               <div className="header">
-                <p>Em produção:</p>
+                <p>Em produção</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{orders.filter(e => e.orderStatus === "producing").length}</p>
               </div>
             </div>
             <div className="bloco3">
               <div className="header">
-                <p>Finalizados:</p>
+                <p>Finalizados</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{orders.filter(e => e.orderStatus === "finished").length}</p>
               </div>
             </div>
             <div className="bloco4">
               <div className="header">
-                <p>Comandas em aberto:</p>
+                <p>Comandas em aberto</p>
               </div>
               <div className="content">
-                <p>10</p>
+                <p>{tabs.filter(e => e.tabStatus === "open").length}</p>
               </div>
             </div>
           </div>
