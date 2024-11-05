@@ -9,18 +9,18 @@ import { useSocket } from "../../context/SocketContext";
 
 interface Table {
   id: number;
-  tableNumber: number;
-  tableStatus: string;
-  tablePeopleAmount: number;
+  number: number;
+  status: string;
+  tableCount: number;
   storeId: number;
 }
 
 interface Store {
   id: number;
-  storeName: string;
-  storeStatus: string;
-  storeImage: string;
-  storeTableAmount: number;
+  name: string;
+  status: string;
+  image: string;
+  tableCount: number;
   userId: number;
 }
 
@@ -57,7 +57,7 @@ function CustomerSignup() {
 
     const tableNumber = parseInt(costumerTable);
     const peopleAmount = parseInt(tablePeopleAmount);
-    const selectedTable = tables.find(table => table.tableNumber === tableNumber);
+    const selectedTable = tables.find(table => table.number === tableNumber);
 
     if (!selectedTable) {
       console.error("Mesa não encontrada.");
@@ -77,15 +77,13 @@ function CustomerSignup() {
         newAmountValue: peopleAmount,
       });
 
-      const { token, table, costumer, tab } = costumerData;
+      const { token, customer } = costumerData;
       localStorage.setItem("token", token);
-      localStorage.setItem("costumer", JSON.stringify(costumer));
-      localStorage.setItem("table", JSON.stringify(table));
-      localStorage.setItem("tab", JSON.stringify(tab));
+      localStorage.setItem("customer", JSON.stringify(customer));
 
-      socket.emit("newCustomerCreated", { costumerId: costumer.id, storeId });
+      socket.emit("newCustomerCreated", { costumerId: customer.id, storeId });
 
-      navigate(`/${storeId}/${costumer.id}/cardapio`);
+      navigate(`/${storeId}/${customer.id}/cardapio`);
     } catch (error) {
       console.error("Erro ao criar cliente ou atualizar mesa:", error);
     }
@@ -93,13 +91,13 @@ function CustomerSignup() {
 
   return (
     <Container>
-      <Content status={store?.storeStatus || "offline"}>
+      <Content status={store?.status || "offline"}>
         <div className="header">
           <h3>Bem vindo(a) ao</h3>
           <div>
-            <h1>{store?.storeName || "Nome do Restaurante"}</h1>
+            <h1>{store?.name || "Nome do Restaurante"}</h1>
             <span>
-              <FaCircle /> {store?.storeStatus === "online" ? "aberto" : "fechado"}
+              <FaCircle /> {store?.status === "online" ? "aberto" : "fechado"}
             </span>
           </div>
         </div>

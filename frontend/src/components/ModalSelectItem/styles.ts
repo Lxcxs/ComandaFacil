@@ -30,10 +30,10 @@ export const ModalBackground = styled.div`
   align-items: center;
   z-index: 999;
   animation: ${fadeIn} 0.3s ease forwards;
-
 `;
 
 export const ModalContainer = styled.div`
+z-index: 1000;
   width: 100%;
   max-height: 90vh;
   background-color: #222222;
@@ -46,7 +46,6 @@ export const ModalContainer = styled.div`
   bottom: 40px;
   overflow: auto;
   animation: ${slideInMobile} 0.3s ease forwards;
-
 `;
 
 export const CloseButton = styled.button`
@@ -64,7 +63,7 @@ export const CloseButton = styled.button`
   z-index: 1000;
 `;
 
-export const ItemImage = styled.div<{imgSrc: string}>`
+export const ItemImage = styled.div<{ imgSrc: string }>`
   width: 100%;
   height: 230px;
   object-fit: cover;
@@ -109,6 +108,22 @@ export const ModalContent = styled.div`
     color: #fff;
     margin-bottom: 20px;
     resize: none;
+  }
+`;
+export const Individual = styled.label`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  label {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+
+    input.checkBox {
+      
+    }
   }
 `;
 

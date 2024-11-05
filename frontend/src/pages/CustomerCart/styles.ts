@@ -2,10 +2,10 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-width: 100%;
-  background-color: #222; 
+  width: 100%;
+  background-color: #222;
   min-height: 100vh;
-  color: #fff; 
+  color: #fff;
   padding: 20px 10px;
   border-radius: 10px;
   max-width: 800px;
@@ -20,84 +20,98 @@ width: 100%;
   }
 `;
 export const OrderItem = styled.div<{ status: string }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px;
+  border: ${({ status }) =>
+    status === "canceled" ? "1px solid #333" : "none"};
+  background-color: ${({ status }) =>
+    status === "canceled" ? "#transparent" : "#333"};
+  border-radius: 8px;
+  cursor: pointer;
+
+  .item_container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 10px;
-    border: ${({ status }) =>
-        status === 'canceled' ? '1px solid #333' :
-            'none'};
-    background-color: ${({ status }) =>
-        status === 'canceled' ? '#transparent' :
-            '#333'};
-    border-radius: 8px;
-    cursor: pointer;
+    gap: 16px;
 
-    .item_container {
-        display: flex;
-        gap: 16px;
-
-        img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .item_info {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-
-            #item_title {
-                font-weight: bold;
-                font-size: 14px;
-            }
-
-            #text {
-                font-size: 14px;
-                color: #cccccc;
-            }
-
-            h4 {
-                margin: 0;
-                font-size: 14px;
-                margin-top: 5px;
-                font-weight: 500;
-            }
-        }
+    img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
     }
 
-    #icons {
+    .item_info {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      #item_title {
+        font-weight: bold;
+        font-size: 14px;
         display: flex;
-        align-items: center;
-        color: ${({ status }) =>
-        status === "waiting"
-            ? "#DA804E"
-            : status === "making"
-                ? "#DAC34E"
-                : status === "finished"
-                    ? "#59DA4E"
-                    : "#fff"};
+        gap: 4px;
+      }
+
+      #guestName {
+        font-style: italic;
+        font-weight: bold;
+        position: relative;
+        /* padding: 0 5px; */
+        /* color: #2c81ff; */
+        /* background-color: #fff; */
+      }
+
+      #text {
+        font-size: 14px;
+        color: #cccccc;
+      }
+
+      h4 {
+        margin: 0;
+        font-size: 14px;
+        margin-top: 5px;
+        font-weight: 500;
+      }
     }
+  }
+
+  #icons {
+    display: flex;
+    align-items: center;
+    color: ${({ status }) =>
+      status === "waiting"
+        ? "#DA804E"
+        : status === "making"
+        ? "#DAC34E"
+        : status === "finished"
+        ? "#59DA4E"
+        : "#fff"};
+  }
+  div.individual {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
 `;
 
 export const Header = styled.div`
+  display: flex;
+  height: 5em;
+  flex-direction: column;
+  background-color: #202020;
+
+  div.title {
     display: flex;
-    height: 5em;
-    flex-direction: column;
-    background-color: #202020;
+    justify-content: space-between;
+  }
 
-    div.title {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    h2 {
-      color: #0099ff;
-      display: flex;
-      align-items: center;
-    }
+  h2 {
+    color: #0099ff;
+    display: flex;
+    align-items: center;
+  }
 `;
 
 export const ItemList = styled.div`
@@ -142,9 +156,7 @@ export const BtnPayment = styled.div`
   align-items: center;
   background-color: #32b132;
   padding: 15px;
-  font-size: 24px; 
-
-
+  font-size: 24px;
 
   &:hover {
     background-color: #298629;

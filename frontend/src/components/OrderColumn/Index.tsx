@@ -6,34 +6,36 @@ interface Order {
   id: number;
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: string;
-  orderStatus: string;
+  quantity: number;
+  customerNote: string;
+  price: string;
+  status: string;
   createdAt: string;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
-  costumerTabId: number;
+  customerTabId: number;
   waiterId: null;
+  guestName: string;
+  isIndividual: boolean;
 }
 
 interface Table {
   id: number;
-  tableNumber: number;
-  tableStatus: string;
-  tablePeopleAmount: number;
+  number: number;
+  status: string;
+  peopleCount: number;
   storeId: number;
 }
 
 interface Costumer {
   id: number;
-  costumerName: string;
-  costumerTable: number;
+  name: string;
+  tableNumber: number;
   accountType: string;
   tableId: number;
   storeId: number;
-  costumerStatus: string;
+  status: string;
 }
 
 interface OrderColumnProps {
@@ -42,11 +44,8 @@ interface OrderColumnProps {
   columnStatus: string | undefined;
   orders: Order[];
   tables: Table[];
-  costumers: Costumer[];
-  onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+  customers: Costumer[];
   renderButtons: (item: Order) => JSX.Element;
-  onDragStart: (e: React.DragEvent<HTMLDivElement>, item: Order) => void;
 }
 
 // Formata a data para retornar apenas a hora
@@ -61,30 +60,33 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
   columnStatus,
   orders,
   tables,
-  costumers,
-  onDrop,
-  onDragOver,
+  customers,
   renderButtons,
-  onDragStart,
 }) => {
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
 
   const toggleExpand = (orderId: number) => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
-  const filteredOrdersLength: number = orders.filter((e) => e.orderStatus === columnStatus).length;
+  const filteredOrdersLength: number = orders.filter((e) => e.status === columnStatus).length;
   function handleTableNumber(tables: Table[], order: Order) {
     const filteredTable = tables.filter(e => e.id === order.tableId);
 
-    return <span>{filteredTable[0].tableNumber}</span>
+    return <span>{filteredTable[0].number}</span>
   }
-  function handleCostumerName(costumers: Costumer[], order: Order) {
-    const filteredCostumer = costumers.filter(e => e.id === order.costumerId);
+  function handleCostumerName(costumers: Costumer[], order: Order, isIndividual: boolean, guestName?: string) {
 
-    return <span>{filteredCostumer[0].costumerName}</span>
+    if (isIndividual) {
+      return <span>{guestName}</span>
+
+    } else {
+      const filteredCostumer = costumers.filter(e => e.id === order.customerId);
+      return <span>{filteredCostumer[0].name}</span>
+
+    }
   }
   return (
-    <Column style={{ background }} onDrop={onDrop} onDragOver={onDragOver}>
+    <Column style={{ background }}>
       <div className="header">
         <div className="title">
           <span>{title}</span>
@@ -93,15 +95,13 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
       </div>
       <div className="drag_box">
         {orders
-          .filter((e) => e.orderStatus === columnStatus)
+          .filter((e) => e.status === columnStatus)
           .map((pedido) => {
             const createdAtFormatted = formatCreatedAt(pedido.createdAt); // Formata a data criada
 
             return (
               <Item
                 key={pedido.id}
-                draggable
-                onDragStart={(event) => onDragStart(event, pedido)}
                 onClick={() => toggleExpand(pedido.id)}
               >
                 <div className="order_header">
@@ -111,8 +111,8 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
                 </div>
                 <div className="item_box">
                   <div className="item">
-                    <span>{handleCostumerName(costumers, pedido)}</span>
-                    <span>{pedido.itemAmount} itens</span>
+                    <span>{handleCostumerName(customers, pedido, pedido.isIndividual, pedido.guestName)}</span>
+                    <span>{pedido.quantity} itens</span>
                   </div>
 
                   <>
@@ -121,17 +121,17 @@ const OrderColumn: React.FC<OrderColumnProps> = ({
                       .map((item, index) => (
                         <div className="item list" key={index}>
                           <span>
-                            {item.itemAmount}x {item.itemName}
+                            {item.quantity}x {item.itemName}
                           </span>
-                          {item.costumerNote && (
+                          {item.customerNote && (
                             <span style={{ fontStyle: "italic", fontWeight: "200" }}>Possui observação.</span>
                           )}
-                          <span>{formatCurrency(parseFloat(item.orderValue))}</span>
+                          <span>{formatCurrency(parseFloat(item.price))}</span>
                         </div>
                       ))}
                     <div style={{ textAlign: "right", display: "flex", justifyContent: "space-between" }}>
                       <span>Total:</span>
-                      <span>{formatCurrency(parseFloat(pedido.orderValue))}</span>
+                      <span>{formatCurrency(parseFloat(pedido.price))}</span>
                     </div>
                   </>
 

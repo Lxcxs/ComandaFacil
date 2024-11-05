@@ -29,7 +29,9 @@ export function useLogin() {
       console.log("Login bem-sucedido");
 
       const token = response.data.token;
+      console.log(token)
       const decodedtoken = jwtDecode<DecodedToken>(token);
+      console.log(decodedtoken)
       const storeId = decodedtoken.storeId;
       localStorage.setItem('authorization', token);
 

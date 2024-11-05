@@ -14,38 +14,41 @@ import { MdBlock, MdOutlinePeopleAlt } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { client } from "../../services/axios";
 import { useNavigate } from "react-router";
+// import { BsPersonBoundingBox } from "react-icons/bs";
 
 interface Order {
   id: number;
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: string;
-  orderStatus: string;
+  quantity: number;
+  customerNote: string;
+  price: string;
+  status: string;
   createdAt: string;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
-  costumerTabId: number;
+  customerTabId: number;
   waiterId: null;
+  guestName: string;
+  isIndividual: boolean;
 }
 
 interface Costumer {
   id: number;
-  costumerName: string;
-  costumerTable: number;
+  name: string;
+  tableNumber: number;
   accountType: string;
   tableId: number;
   storeId: number;
-  costumerStatus: string;
+  status: string;
 }
 
 interface Table {
   id: number;
-  tableNumber: number;
-  tableStatus: string;
-  tablePeopleAmount: number;
+  number: number;
+  status: string;
+  peopleCount: number;
   storeId: number;
 }
 
@@ -61,7 +64,7 @@ interface Tab {
 const OrderPage: React.FC = () => {
   const [orders, setOrders] = React.useState<Order[] | null>([]);
   const [tables, setTables] = React.useState<Table[] | null>([]);
-  const [costumer, setCostumer] = React.useState<Costumer | null>(null);
+  const [customer, setCustomer] = React.useState<Costumer | null>(null);
   const [costumerTab, setCostumerTab] = React.useState<Tab | null>(null);
   const navigate = useNavigate();
 
@@ -96,16 +99,15 @@ const OrderPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const localCostumer: Costumer | null = localStorage.getItem("costumer")
-      ? JSON.parse(localStorage.getItem("costumer")!)
-      : null;
+    const localCustomer = JSON.parse(localStorage.getItem("customer") || '{}') as Costumer;
 
-    if (!localCostumer) {
+
+    if (!localCustomer) {
       console.error("local costumer is null.");
       return;
     }
-    setCostumer(localCostumer);
-    fetchAllData(localCostumer.storeId, localCostumer.id);
+    setCustomer(localCustomer);
+    fetchAllData(localCustomer.storeId, localCustomer.id);
   }, []);
 
   function handleIcons(stts: string) {
@@ -135,34 +137,34 @@ const OrderPage: React.FC = () => {
         newStatus: "closed",
       });
 
-      navigate(`/${costumer?.storeId}/enter`);
+      navigate(`/${customer?.storeId}/enter`);
     } catch (error) {
       console.error("Erro ao fechar conta:", error);
     }
   }
 
-  const filteredTable = tables?.find((e) => e.id === costumer?.tableId);
-  const isTabOpen = costumerTab && costumerTab.tableId === filteredTable?.id && costumerTab.tabStatus === "open";
+  const filteredTable = tables?.find((e) => e.id === customer?.tableId);
+  // const isTabOpen = costumerTab && costumerTab.tableId === filteredTable?.id && costumerTab.tabStatus === "open";
   const total = orders
-  ?.filter(e => e.orderStatus === "finished")
-  .reduce((acc, crr) => acc + parseFloat(crr.orderValue), 0);
+    ?.filter(e => e.status === "finished" && e.customerId === customer?.id)
+    .reduce((acc, crr) => acc + parseFloat(crr.price), 0);
 
   return (
     <Container>
       <Header>
         <div className="title">
-          <h2>MESA {filteredTable?.tableNumber}</h2>
+          <h2>MESA {filteredTable?.number}</h2>
           <h2>
-            <MdOutlinePeopleAlt size={29} /> {filteredTable?.tablePeopleAmount}
+            <MdOutlinePeopleAlt size={29} /> {filteredTable?.peopleCount}
           </h2>
         </div>
-        <h3>Cliente: {costumer?.costumerName}</h3>
+        <h3>Cliente: {customer?.name}</h3>
       </Header>
       <ItemList>
         {orders
-          ?.filter((e) => e.orderStatus === "finished")
+          ?.filter((e) => e.status === "finished" && e.customerId === customer?.id)
           .map((order) => (
-            <OrderItem key={order.id} status={order.orderStatus}>
+            <OrderItem key={order.id} status={order.status}>
               <div className="item_container">
                 <img
                   src={
@@ -172,22 +174,26 @@ const OrderPage: React.FC = () => {
                 />
                 <div className="item_info">
                   <span id="item_title">
-                    {order.itemAmount}x {order.itemName}
+                    {order.quantity}x {order.itemName}
+                    {order.isIndividual && <p id="guestName">- {order.guestName}</p>}
+
                   </span>
                   <span id="text">
-                    R$ {formatCurrency(parseFloat(order.orderValue) * order.itemAmount)}
+                    R$ {formatCurrency(parseFloat(order.price) * order.quantity)}
                   </span>
                   <div>
                     <h4>Observações</h4>
                     <span id="text">
-                      {order.costumerNote !== ""
-                        ? order.costumerNote
+                      {order.customerNote !== ""
+                        ? order.customerNote
                         : "sem observações."}
                     </span>
                   </div>
                 </div>
               </div>
-              <span id="icons">{handleIcons(order.orderStatus)}</span>
+              <div className="individual">
+                <span id="icons">{handleIcons(order.status)}</span>
+              </div>
             </OrderItem>
           ))}
       </ItemList>
@@ -196,7 +202,7 @@ const OrderPage: React.FC = () => {
         <Total>
           <span>TOTAL:</span>
           <span>
-            {formatCurrency(total)}
+            {formatCurrency(total as number)}
           </span>
         </Total>
         <BtnPayment onClick={handleModal}>

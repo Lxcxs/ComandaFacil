@@ -7,9 +7,9 @@ import ModalSelectItem from "../../components/ModalSelectItem";
 import socket from "../../services/socket";
 interface Costumer {
     accountType: string;
-    costumerName: string;
-    costumerStatus: string;
-    costumerTable: number;
+    name: string;
+    status: string;
+    tableNumber: number;
     id: number;
     storeId: number;
     tableId: number;
@@ -17,49 +17,47 @@ interface Costumer {
 
 interface Store {
     id: number;
-    storeImage: string;
-    storeName: string;
-    storeStatus: string;
-    storeTableAmount: number;
+    image: string;
+    name: string;
+    status: string;
+    tableCount: number;
     userId: number;
 }
 
 type Category = {
     id: number;
-    categoryName: string;
+    name: string;
     storeId: number;
 };
 
 interface Item {
     id: number;
-    itemName: string;
-    itemDescription: string;
-    itemValue: number;
-    itemStatus: string;
-    itemImage: string;
+    name: string;
+    description: string;
+    price: number;
+    status: string;
+    image: string;
     categoryId: number;
     storeId: number;
 }
 
 function CustomerMenu() {
-    const [costumer, setCostumer] = useState<Costumer>({} as Costumer);
     const [store, setStore] = useState<Store | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [items, setItems] = useState<Item[]>([]);
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const customer = JSON.parse(localStorage.getItem("customer") || '{}') as Costumer;
 
     useEffect(() => {
-        const localCostumer = JSON.parse(localStorage.getItem("costumer") || '{}') as Costumer;
-        setCostumer(localCostumer);
 
-        if (localCostumer.storeId) {
+        if (customer) {
             const fetchAllData = async () => {
                 try {
                     const [storeResponse, categoryResponse, itemResponse] = await Promise.all([
-                        client.get(`/stores/${localCostumer.storeId}`),
-                        client.get(`/categories/${localCostumer.storeId}`),
-                        client.get(`/items/${localCostumer.storeId}`)
+                        client.get(`/stores/${customer.storeId}`),
+                        client.get(`/categories/${customer.storeId}`),
+                        client.get(`/items/${customer.storeId}`)
                     ]);
                     setStore(storeResponse.data);
                     setCategories(categoryResponse.data);
@@ -73,18 +71,20 @@ function CustomerMenu() {
         }
     }, []);
 
-    const handleAddItem = async (item: Item, quantity: number, costumerNote: string) => {
+    const handleAddItem = async (item: Item, quantity: number, costumerNote: string, guestName?: string) => {
         try {
             const response = await client.post("/orders", {
-                itemName: item.itemName,
-                itemImage: item.itemImage,
+                itemName: item.name,
+                itemImage: item.image,
                 itemAmount: quantity,
-                orderValue: item.itemValue * quantity,
-                costumerNote: costumerNote,
-                costumerId: costumer.id,
-                storeId: costumer.storeId,
+                price: item.price * quantity,
+                customerNote: costumerNote,
+                customerId: customer.id,
+                storeId: customer.storeId,
                 itemId: item.id,
-                tableId: costumer.tableId,
+                tableId: customer.tableId,
+                isIndividual: guestName !== "" ? true : false,
+                guestName: guestName
             });
             console.log("Pedido criado com sucesso:", response.data.order);
             
@@ -121,18 +121,18 @@ function CustomerMenu() {
 
     return (
         <Container>
-            <Header status={store?.storeStatus}>
+            <Header status={store?.status}>
                 <img src="https://www.shutterstock.com/image-vector/image-icon-600nw-211642900.jpg" alt="Restaurant Logo" />
                 <div className="header_info">
-                    <h3>{store?.storeName}</h3>
-                    <span id="storeStatus"><FaCircle /> {store?.storeStatus === "online" ? "Aberto" : "Fechado"}</span>
+                    <h3>{store?.name}</h3>
+                    <span id="storeStatus"><FaCircle /> {store?.status === "online" ? "Aberto" : "Fechado"}</span>
                 </div>
             </Header>
 
             <Categories>
                 {categories.map(category => (
                     <a key={category.id} href={`#category${category.id}`}>
-                        {category.categoryName}
+                        {category.name}
                     </a>
                 ))}
             </Categories>
@@ -141,18 +141,18 @@ function CustomerMenu() {
                 <MenuList>
                     {categories.map(category => (
                         <div id={`category${category.id}`} className="categories" key={category.id}>
-                            <h2>{category.categoryName}</h2>
+                            <h2>{category.name}</h2>
                             <div className="section">
                                 {items
                                     .filter(item => item.categoryId === category.id)
                                     .map(item => (
-                                        <ItemSelf itemStatus={item.itemStatus} key={item.id} onClick={() => handleItemAction(store?.storeStatus, item.itemStatus, item)}>
+                                        <ItemSelf itemStatus={item.status} key={item.id} onClick={() => handleItemAction(store?.status, item.status, item)}>
                                             <div className="item_info">
-                                                <h3>{item.itemName} <span id="sold_out">Esgotado</span></h3>
-                                                <p>{item.itemDescription === "no description" ? "Sem descrição" : item.itemDescription}</p>
-                                                <h3 id="price">{formatCurrency(item.itemValue)}</h3>
+                                                <h3>{item.name} <span id="sold_out">Esgotado</span></h3>
+                                                <p>{item.description === "no description" ? "Sem descrição" : item.description}</p>
+                                                <h3 id="price">{formatCurrency(item.price)}</h3>
                                             </div>
-                                            <img src="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" alt={item.itemName} />
+                                            <img src="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" alt={item.name} />
                                         </ItemSelf>
                                     ))}
                             </div>

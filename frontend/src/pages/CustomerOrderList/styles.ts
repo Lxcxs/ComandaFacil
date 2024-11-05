@@ -99,10 +99,22 @@ export const OrderItem = styled.div<{ status: string }>`
       }
     }
   }
-
+  div.individual {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    #iperson {
+      color: #3a85e9;
+    }
+    #guestName {
+      font-style: italic;
+      font-size: 12px;
+    }
+  }
   #icons {
     display: flex;
     align-items: center;
+    font-style: italic;
     color: ${({ status }) =>
       status === "waiting"
         ? "#DA804E"
@@ -165,6 +177,9 @@ export const ModalContent = styled.div<{ itemImage: string; status: string }>`
     #price {
       margin-bottom: 5px;
       color: #e9abb5;
+    }
+    h4 {
+      margin-bottom: 15px;
     }
     #status {
       display: flex;

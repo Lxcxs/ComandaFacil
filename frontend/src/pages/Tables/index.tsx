@@ -8,9 +8,9 @@ import { useSocket } from "../../context/SocketContext";
 
 interface ITable {
   id: number;
-  tableNumber: number;
-  tableStatus: string;
-  tablePeopleAmount: number;
+  number: number;
+  status: string;
+  peopleCount: number;
   storeId: number;
   waiterId: number | null;
 }
@@ -20,14 +20,14 @@ interface Order {
   itemName: string;
   itemImage: string;
   itemAmount: number;
-  costumerNote: string;
-  orderValue: string;
-  orderStatus: string;
+  customerNote: string;
+  price: string;
+  status: string;
   createdAt: string;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
-  costumerTabId: number;
+  customerTabId: number;
   waiterId: null;
 }
 
@@ -82,10 +82,10 @@ function Mesas() {
   
 
   const handleMesaClick = (tableNumber: number, tablePeopleAmount: number) => {
-    const mesa = tables.find((m) => m.tableNumber === tableNumber && m.tablePeopleAmount === tablePeopleAmount);
+    const mesa = tables.find((m) => m.number === tableNumber && m.peopleCount === tablePeopleAmount);
     console.log(mesa)
     
-    if (mesa && mesa.tableStatus === "occupied") {
+    if (mesa && mesa.status === "occupied") {
       const filteredOrder = orders.find(e => e.tableId === mesa.id);
       console.log(filteredOrder)
       setSelectedTable(mesa);

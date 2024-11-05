@@ -8,17 +8,19 @@ import {
   ItemImage,
   ItemInfo,
   AddButton,
-  QuantityControl
+  QuantityControl,
+  Individual
 } from "./styles";
 import { formatCurrency } from "../../utils/formatCurrency";
+import Input from "../Forms/Input";
 
 interface Item {
   id: number;
-  itemName: string;
-  itemDescription: string;
-  itemValue: number;
-  itemStatus: string;
-  itemImage: string;
+  name: string;
+  description: string;
+  price: number;
+  status: string;
+  image: string;
   categoryId: number;
   storeId: number;
 }
@@ -27,12 +29,14 @@ interface ModalProps {
   item: Item;
   isOpen: boolean;
   onClose: () => void;
-  onAddItem: (item: Item, quantity: number, costumerNote: string) => void;
+  onAddItem: (item: Item, quantity: number, costumerNote: string, guestName?: string) => void;
 }
 
 const ModalSelectItem: React.FC<ModalProps> = ({ item, isOpen, onClose, onAddItem }) => {
   const [count, setCount] = useState<number>(1);
-  const [costumerNote, setCostumerNote] = useState<string>(""); // Estado para armazenar a observação
+  const [costumerNote, setCostumerNote] = useState<string>("");
+  const [isIndividual, setIsIndividual] = useState<boolean>(false);
+  const [guestName, setGuestName] = useState<string>("");
 
   if (!isOpen) return null;
 
@@ -53,7 +57,7 @@ const ModalSelectItem: React.FC<ModalProps> = ({ item, isOpen, onClose, onAddIte
   }
 
   function handleAddItem() {
-    onAddItem(item, count, costumerNote);
+    onAddItem(item, count, costumerNote, guestName);
     onClose();
   }
 
@@ -65,16 +69,41 @@ const ModalSelectItem: React.FC<ModalProps> = ({ item, isOpen, onClose, onAddIte
         </CloseButton>
         <ItemImage imgSrc="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" />
         <ModalContent>
-          <h3>{item.itemName}</h3>
-          <p>{item.itemDescription}</p>
+          <h3>{item.name}</h3>
+          <p>{item.description}</p>
           <label>Alguma observação?</label>
           <textarea
             placeholder="Ex: Retirar passas, ponto da carne..."
             value={costumerNote}
             onChange={(e) => setCostumerNote(e.target.value)}
           />
+          <Individual>
+            <label>
+              <input
+                type="checkbox"
+                checked={isIndividual}
+                onChange={() => setIsIndividual(!isIndividual)}
+                className="checkBox"
+                />
+                <span>Pedido individual?</span>
+            </label>
+          </Individual>
+          {isIndividual && (
+            <div>
+              <label>Nome do cliente:</label>
+              <Input
+                label=""
+                name="guest"
+                required={false}
+                type="text"
+                placeholder="Digite o nome do cliente"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+              />
+            </div>
+          )}
           <ItemInfo>
-            <h3>{formatCurrency(item.itemValue * count)}</h3>
+            <h3>{formatCurrency(item.price * count)}</h3>
             <QuantityControl>
               <button onClick={removeItem}>-</button>
               <span>{count}</span>

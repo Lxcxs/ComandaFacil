@@ -13,7 +13,7 @@ export const DMenu = styled.div<IMenu>`
   gap: 1em;
   position: fixed;
   left: 0;
-  background-color: #2a2a2a; /* Cor de fundo mais clara */
+  background-color: #222; /* Cor de fundo mais clara */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Sombra mais suave */
   transition: width 0.3s ease; /* Transição suave para a largura */
   overflow-y: auto;

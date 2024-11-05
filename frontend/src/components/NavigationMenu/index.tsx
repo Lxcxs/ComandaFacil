@@ -20,11 +20,8 @@ export function NavigationMenu() {
   const [costumer, setCostumer] = useState<Costumer>({} as Costumer);
 
   useEffect(() => {
-    // Acessar e armazenar os dados do localStorage quando o componente carregar
-    const localCostumer = JSON.parse(localStorage.getItem("costumer") || '{}') as Costumer;
-
-    // Atualizar os estados com os dados obtidos
-    setCostumer(localCostumer);
+    const localCustomer = JSON.parse(localStorage.getItem("customer") || '{}') as Costumer;
+    setCostumer(localCustomer);
   }, []);
 
   return (

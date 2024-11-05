@@ -13,8 +13,8 @@ import {
 interface ItemModalProps {
     isOpen: boolean;
     onClose: () => void;
-    item: { itemName: string; itemDescription: string; itemValue: number } | null;
-    onEditItem: (itemName: string, itemDescription: string, itemValue: number) => void;
+    item: { name: string; description: string; price: number } | null;
+    onEditItem: (name: string, description: string, price: number) => void;
     onRemoveItem: () => void;
 }
 
@@ -25,9 +25,9 @@ const ItemModal: React.FC<ItemModalProps> = ({ onClose, item, onEditItem, onRemo
 
     useEffect(() => {
         if (item) {
-            setName(item.itemName);
-            setDescription(item.itemDescription);
-            setPrice(Number(item.itemValue));
+            setName(item.name);
+            setDescription(item.description);
+            setPrice(Number(item.price));
         }
     }, [item]);
 

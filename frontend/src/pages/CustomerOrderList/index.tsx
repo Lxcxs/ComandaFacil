@@ -7,51 +7,54 @@ import { IoIosClose } from "react-icons/io";
 import { formatCurrency } from '../../utils/formatCurrency';
 import { client } from '../../services/axios';
 import { useSocket } from '../../context/SocketContext';
+import { BsPersonBoundingBox } from 'react-icons/bs';
 
 interface Order {
     id: number;
     itemName: string;
     itemImage: string;
-    itemAmount: number;
-    costumerNote: string;
-    orderValue: string;
-    orderStatus: string;
+    quantity: number;
+    customerNote: string;
+    price: string;
+    status: string;
     createdAt: string;
     storeId: number;
-    costumerId: number;
+    customerId: number;
     tableId: number;
-    costumerTabId: number;
+    customerTabId: number;
     waiterId: null;
+    guestName: string;
+    isIndividual: boolean;
 }
 
 interface Costumer {
     id: number;
-    costumerName: string;
-    costumerTable: number;
+    name: string;
+    tableNumber: number;
     accountType: string;
     tableId: number;
     storeId: number;
-    costumerStatus: string;
+    status: string;
 }
 
 const OrderList: React.FC = () => {
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    console.log(selectedOrder)
     const [orders, setOrders] = useState<Order[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [costumer, setCostumer] = useState<Costumer | null>(null)
+    const [customer, setCustomer] = useState<Costumer | null>(null)
     const { socket } = useSocket();
-    
+
     const fetchAllData = async () => {
-        const localCostumer: Costumer | null = localStorage.getItem("costumer")
-            ? JSON.parse(localStorage.getItem("costumer")!)
-            : null;
-        if (!localCostumer) {
+        const localCustomer = JSON.parse(localStorage.getItem("customer") || '{}') as Costumer;
+
+        if (!localCustomer) {
             console.error("storeId is null");
             return;
         }
-        setCostumer(localCostumer);
+        setCustomer(localCustomer);
         try {
-            const orderResponse = await client.get(`/orders/${localCostumer?.storeId}`);
+            const orderResponse = await client.get(`/orders/${localCustomer?.storeId}`);
             setOrders(orderResponse.data);
         } catch (error) {
             console.error("Erro ao buscar os dados:", error);
@@ -63,9 +66,9 @@ const OrderList: React.FC = () => {
 
     useEffect(() => {
         socket.on("orderUpdated", () => fetchAllData());
-    
-      }, [socket])
-      if (costumer === null) return;
+
+    }, [socket])
+    if (customer === null) return;
 
     function handleIcons(stts: string) {
         switch (stts) {
@@ -102,7 +105,7 @@ const OrderList: React.FC = () => {
     }
 
     const filteredOrders = orders.filter(order =>
-        order.itemName.toLowerCase().includes(searchTerm.toLowerCase()) && order.costumerId === costumer.id
+        order.itemName.toLowerCase().includes(searchTerm.toLowerCase()) && order.customerId === customer.id
     );
 
     return (
@@ -117,36 +120,45 @@ const OrderList: React.FC = () => {
             </div>
             <OrderContainer>
                 {filteredOrders.map(order => (
-                    <OrderItem key={order.id} status={order.orderStatus} onClick={() => setSelectedOrder(order)}>
+                    <OrderItem key={order.id} status={order.status} onClick={() => setSelectedOrder(order)}>
                         <div className="item_container">
                             <img src="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" alt={order.itemName} />
                             <div className="item_info">
-                                <span id="item_title">{order.itemAmount}x {order.itemName}</span>
-                                <span id="text">{formatCurrency(parseFloat(order.orderValue))}</span>
+                                <span id="item_title">{order.quantity}x {order.itemName}</span>
+                                <span id="text">{formatCurrency(parseFloat(order.price))}</span>
                                 <div>
                                     <h4>Observações</h4>
                                     <span id="text">
-                                        {order.costumerNote !== "" ? order.costumerNote : "sem observações."}
+                                        {order.customerNote !== "" ? order.customerNote : "sem observações."}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                        <span id="icons">
-                            {handleIcons(order.orderStatus)}
-                        </span>
+                        <div className='individual'>
+                            {order.isIndividual &&
+                                <>
+                                    <span id='iperson'><BsPersonBoundingBox /></span>
+                                </>
+
+                            }
+                            <span id="icons">
+                                {handleIcons(order.status)}
+                            </span>
+                        </div>
                     </OrderItem>
                 ))}
             </OrderContainer>
 
             {selectedOrder && (
                 <ModalContainer onClick={handleCloseModal}>
-                    <ModalContent onClick={(e) => e.stopPropagation()} itemImage="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" status={selectedOrder.orderStatus}>
+                    <ModalContent onClick={(e) => e.stopPropagation()} itemImage="https://images.tcdn.com.br/img/img_prod/832602/noticia_17733781276603f26fd6998.png" status={selectedOrder.status}>
                         <CloseButton onClick={handleCloseModal}><IoIosClose size={32} /></CloseButton>
                         <div className='itemImage' />
                         <div className='itemInfo'>
-                            <h3><span>{selectedOrder.itemAmount}x {selectedOrder.itemName}</span> <span id='status'>{handleIcons(selectedOrder.orderStatus)}{handleStatus(selectedOrder.orderStatus)}</span></h3>
-                            <p>{formatCurrency((parseFloat(selectedOrder.orderValue)))}</p>
-                            <p>{selectedOrder.costumerNote}</p>
+                            <h4>Pedido de: <span>{selectedOrder.guestName}</span></h4>
+                            <h3><span>{selectedOrder.quantity}x {selectedOrder.itemName}</span> <span id='status'>{handleIcons(selectedOrder.status)}{handleStatus(selectedOrder.status)}</span></h3>
+                            <p>{formatCurrency((parseFloat(selectedOrder.price)))}</p>
+                            <p>{selectedOrder.customerNote}</p>
                         </div>
                     </ModalContent>
                 </ModalContainer>

@@ -21,26 +21,28 @@ import { client } from "../../services/axios";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { MdOutlineEdit } from "react-icons/md";
 import ItemModal from "../../components/ItemModal";
+import { useAuthorization } from "../../components/Hooks/useAuthorization";
 
 type Category = {
     id: number;
-    categoryName: string;
+    name: string;
     storeId: number;
     items: Item[];
 };
 
 type Item = {
     id: number;
-    itemName: string;
-    itemDescription: string;
-    itemValue: number;
-    itemStatus: string;
-    itemImage: string;
+    name: string;
+    description: string;
+    price: number;
+    status: string;
+    image: string;
     categoryId: number;
     storeId: number;
 };
 
 function Cardapio() {
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [items, setItems] = useState<Item[]>([]);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -54,9 +56,10 @@ function Cardapio() {
 
     const token = localStorage.getItem('authorization');
     if (!token) throw new Error("token not found");
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const storeId = payload.storeId;
+    // const payload = JSON.parse(atob(token.split('.')[1]));
+    // const storeId = payload.storeId;
 
+    const { storeId } = useAuthorization()
     useEffect(() => {
         const fetchCategoriesAndItems = async () => {
             try {
@@ -64,9 +67,9 @@ function Cardapio() {
                     client.get(`/categories/${storeId}`),
                     client.get(`/items/${storeId}`)
                 ]);
-                console.log(categoriesResponse.data)
+                // console.log(categoriesResponse.data)
                 setCategories(categoriesResponse.data);
-                console.log(itemsResponse.data)
+                // console.log(itemsResponse.data)
                 setItems(itemsResponse.data);
             } catch (error) {
                 console.error(error);
@@ -79,7 +82,7 @@ function Cardapio() {
         try {
             const categoryResponse = await client.post(`/categories`, {
                 categoryName: name,
-                storeId: payload.storeId,
+                storeId: storeId,
             });
             setCategories((prevCategories) => [...prevCategories, categoryResponse.data]);
         } catch (error) {
@@ -117,7 +120,7 @@ function Cardapio() {
                 itemValue,
                 categoryId: selectedCategoryId,
                 itemStatus,
-                storeId: payload.storeId
+                storeId: storeId
             }, {
                 headers: {
                     authorization: token
@@ -178,7 +181,7 @@ function Cardapio() {
             const itemToToggle = items.find(item => item.id === itemId);
             if (!itemToToggle) return;
 
-            const newStatus = itemToToggle.itemStatus === "available" ? "sold out" : "available";
+            const newStatus = itemToToggle.status === "available" ? "sold out" : "available";
 
             await client.put(`/items/${itemId}/status`, {
                 id: itemId,
@@ -209,7 +212,7 @@ function Cardapio() {
                 {categories.map((category) => (
                     <CategoryContainer key={category.id}>
                         <div className="header" style={{ display: 'flex', justifyContent: 'space-between', cursor: "pointer" }}>
-                            <h2>{category.categoryName}</h2>
+                            <h2>{category.name}</h2>
                             <DeleteCategoryButton onClick={() => handleDeleteCategory(category.id)}>
                                 Excluir Categoria
                             </DeleteCategoryButton>
@@ -219,21 +222,21 @@ function Cardapio() {
                             {items && items.filter((item) => item.categoryId === category.id).map((item) => (
                                 <ItemRow key={item.id}>
                                     <div className="mobile_field">
-                                        <ItemName>{item.itemName}</ItemName>
-                                        <span id="mobile_price">{formatCurrency(item.itemValue)}</span>
+                                        <ItemName>{item.name}</ItemName>
+                                        <span id="mobile_price">{formatCurrency(item.price)}</span>
                                     </div>
 
-                                    <span id="price">{formatCurrency(item.itemValue)}</span>
+                                    <span id="price">{formatCurrency(item.price)}</span>
 
-                                    {item.itemDescription === "no description" ? (
+                                    {item.description === "no description" ? (
                                         <span id="no_description">Não possui descrição.</span>
                                     ) : (
-                                        <span id="description">{item.itemDescription}</span>
+                                        <span id="description">{item.description}</span>
                                     )}
 
                                     <ItemActions>
                                         <Switch
-                                            isActive={item.itemStatus} // Converte para booleano
+                                            isActive={item.status} // Converte para booleano
                                             onClick={() => toggleItemActiveStatus(item.id)}
                                         />
                                         <EditButton onClick={() => openEditModal(item)}>

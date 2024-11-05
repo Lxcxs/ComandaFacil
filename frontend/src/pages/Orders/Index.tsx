@@ -10,39 +10,43 @@ interface Order {
   id: number;
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: string;
-  orderStatus: string;
+  quantity: number;
+  customerNote: string;
+  price: string;
+  status: string;
   createdAt: string;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
-  costumerTabId: number;
+  customerTabId: number;
   waiterId: null;
+  guestName: string;
+  isIndividual: boolean;
 }
 interface Table {
   id: number;
-  tableNumber: number;
-  tableStatus: string;
-  tablePeopleAmount: number;
+  number: number;
+  status: string;
+  peopleCount: number;
   storeId: number;
 }
 interface Costumer {
   id: number;
-  costumerName: string;
-  costumerTable: number;
+  name: string;
+  tableNumber: number;
   accountType: string;
   tableId: number;
   storeId: number;
-  costumerStatus: string;
+  status: string;
 }
 
 function Pedidos() {
   const { storeId } = useAuthorization();
+  console.log("id da loja: ", storeId)
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [tables, setTables] = React.useState<Table[]>([]);
   const [costumers, setCostumers] = React.useState<Costumer[]>([]);
+  console.log("pedidos: ", orders)
   const [columns, setColumns] = React.useState({
     waiting: [] as Order[],
     producing: [] as Order[],
@@ -86,9 +90,9 @@ function Pedidos() {
   
         // Atualiza as colunas com as ordens filtradas
         const updatedColumns = {
-          waiting: filteredOrders.filter((order: Order) => order.orderStatus === "waiting"),
-          producing: filteredOrders.filter((order: Order) => order.orderStatus === "producing"),
-          finished: filteredOrders.filter((order: Order) => order.orderStatus === "finished"),
+          waiting: filteredOrders.filter((order: Order) => order.status === "waiting"),
+          producing: filteredOrders.filter((order: Order) => order.status === "producing"),
+          finished: filteredOrders.filter((order: Order) => order.status === "finished"),
         };
         setColumns(updatedColumns);
       } else {
@@ -119,35 +123,6 @@ function Pedidos() {
   useEffect(() => {
     fetchAllData();
   }, [storeId]);
-
-
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: Order, column: string) => {
-    e.dataTransfer.setData("item", JSON.stringify(item));
-    e.dataTransfer.setData("column", column);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, destinationColumn: string) => {
-    const item = JSON.parse(e.dataTransfer.getData("item")) as Order;
-    const sourceColumn = e.dataTransfer.getData("column");
-
-    if (sourceColumn === destinationColumn) return;
-
-    const sourceItems = columns[sourceColumn as keyof typeof columns];
-    const destinationItems = columns[destinationColumn as keyof typeof columns];
-
-    const updatedSourceItems = sourceItems.filter((i) => i.id !== item.id);
-    const updatedDestinationItems = [...destinationItems, item];
-
-    setColumns({
-      ...columns,
-      [sourceColumn]: updatedSourceItems,
-      [destinationColumn]: updatedDestinationItems,
-    });
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
 
   const emitOrderUpdate = (order: Order, newStatus: string) => {
     socket.emit("orderUpdated", {
@@ -182,7 +157,7 @@ function Pedidos() {
       });
 
       await client.put(`/tabs`, {
-        costumerId: order.costumerId
+        costumerId: order.customerId
       })
 
       emitOrderUpdate(order, "finished");
@@ -226,11 +201,8 @@ function Pedidos() {
           columnStatus="waiting"
           orders={orders}
           tables={tables}
-          costumers={costumers}
-          onDrop={(e) => handleDrop(e, "waiting")}
-          onDragOver={handleDragOver}
+          customers={costumers}
           renderButtons={renderButtons}
-          onDragStart={(e, item) => handleDragStart(e, item, "waiting")}
         />
         <OrderColumn
           title="Em produção..."
@@ -238,11 +210,8 @@ function Pedidos() {
           columnStatus="producing"
           orders={orders}
           tables={tables}
-          costumers={costumers}
-          onDrop={(e) => handleDrop(e, "producing")}
-          onDragOver={handleDragOver}
+          customers={costumers}
           renderButtons={renderButtons}
-          onDragStart={(e, item) => handleDragStart(e, item, "producing")}
         />
         <OrderColumn
           title="Finalizado."
@@ -250,11 +219,8 @@ function Pedidos() {
           columnStatus="finished"
           orders={orders}
           tables={tables}
-          costumers={costumers}
-          onDrop={(e) => handleDrop(e, "finished")}
-          onDragOver={handleDragOver}
+          customers={costumers}
           renderButtons={renderButtons}
-          onDragStart={(e, item) => handleDragStart(e, item, "finished")}
         />
       </Content>
       {isModalOpen && (

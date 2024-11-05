@@ -6,26 +6,28 @@ interface Order {
   id: number;
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: string;
-  orderStatus: string;
-  createdAt: string; // Ex: "2024-10-16 00:23:56.361"
+  quantity: number;
+  customerNote: string;
+  price: string;
+  status: string;
+  createdAt: string;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
-  costumerTabId: number;
+  customerTabId: number;
   waiterId: null;
+  guestName: string;
+  isIndividual: boolean;
 }
 
 interface Costumer {
   id: number;
-  costumerName: string;
-  costumerTable: number;
+  name: string;
+  tableNumber: number;
   accountType: string;
   tableId: number;
   storeId: number;
-  costumerStatus: string;
+  status: string;
 }
 
 interface ModalOrderProps {
@@ -51,13 +53,19 @@ export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, order
 
   // Armazena o horário formatado
   const createdAtFormatted = formatCreatedAt(order.createdAt);
-  const filteredCostumer = costumers.filter(e => e.id === order.costumerId)
+  const filteredCostumer = costumers.filter(e => e.id === order.customerId)
 
   return (
     <Modal onClick={handleOutsideClick}>
       <ModalContent>
         <h2>Detalhes do Pedido #{order.id}</h2>
-        <p><strong>Cliente:</strong> {filteredCostumer[0].costumerName}</p>
+        <p>
+          <strong>Cliente: </strong> 
+          {
+            order.isIndividual ? order.guestName :
+            filteredCostumer[0].name
+          }
+        </p>
         <p><strong>Criado em:</strong> {createdAtFormatted}</p> {/* Exibe o horário formatado */}
         <hr />
         <br />
@@ -67,19 +75,19 @@ export const ModalOrder: React.FC<ModalOrderProps> = ({ closeModal, order, order
             .map((item, index) => (
               <div key={index}>
                 {
-                  item.costumerNote !== "" ?
+                  item.customerNote !== "" ?
                     <p id="obs">
-                      {item.itemAmount}x {item.itemName} - {formatCurrency(parseFloat(item.orderValue))}
-                      <p id="desc"><strong>Obs:</strong> {item.costumerNote}</p>
+                      {item.quantity}x {item.itemName} - {formatCurrency(parseFloat(item.price))}
+                      <p id="desc"><strong>Obs:</strong> {item.customerNote}</p>
                     </p> :
-                    <p>{item.itemAmount}x {item.itemName} - {formatCurrency(parseFloat(item.orderValue))}</p>
+                    <p>{item.quantity}x {item.itemName} - {formatCurrency(parseFloat(item.price))}</p>
                 }
               </div>
             ))}
           <br />
         </div>
         <hr />
-        <p><strong>Total:</strong> {formatCurrency(parseFloat(order.orderValue))}</p>
+        <p><strong>Total:</strong> {formatCurrency(parseFloat(order.price))}</p>
         <Close onClick={closeModal}>X</Close>
       </ModalContent>
     </Modal>

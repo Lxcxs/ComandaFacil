@@ -3,19 +3,19 @@ import { client } from '../services/axios';
 
 interface Store {
   id: number;
-  storeName: string;
-  storeStatus: string;
-  storeImage: string;
-  storeTableAmount: number;
+  name: string;
+  status: string;
+  image: string;
+  tableCount: number;
   userId: number;
 }
 
 interface User {
   id: number;
-  userName: string;
-  userEmail: string;
-  userPassword: string;
-  userDocument: string;
+  name: string;
+  email: string;
+  password: string;
+  documento: string;
   accountType: string;
   createdAt: string;
 }

@@ -4,7 +4,14 @@ export const Content = styled.div`
   width: 100%;
   height: 100vh;
   padding-left: 200px;
+  padding-right: 10vw;
   background-color: #121212;
+
+  div.info_container {
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+  }
 
   div.introduce {
     padding: 5em 0;
@@ -23,65 +30,6 @@ export const Content = styled.div`
       text-shadow: 0 2px 3px #000;
     }
   }
-  .container {
-    display: flex;
-    flex-direction: column;
-    gap: 2em;
-  }
-  div.performance,
-  div.orders {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1em;
-
-    div.statistics {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1em;
-    }
-    div.bloco1,
-    div.bloco2,
-    div.bloco3,
-    div.bloco4 {
-      width: 250px;
-      border-radius: 0.5em;
-      overflow: hidden;
-      .header {
-        width: 100%;
-        padding: 0.5em 0.5em;
-        background-color: #4aa7ff;
-        p {
-          color: #000;
-          font-weight: bold;
-        }
-      }
-      .content {
-        padding: 0.5em 0;
-        background-color: #212121;
-        text-align: center;
-        p {
-          font-size: 2em;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-  div.orders {
-      div.bloco1 > div.header {
-        background-color: #DA804E;
-      }
-      div.bloco2 > div.header {
-        background-color: #DAC34E;
-      }
-      div.bloco3 > div.header {
-        background-color: #59DA4E;
-      }
-      div.bloco4 > div.header {
-        background-color: #d6313b;
-      }
-    }
 
   @media (max-width: 1200px) {
     padding-left: 15vw;
@@ -117,6 +65,125 @@ export const Content = styled.div`
   }
 `;
 
+export const Statistics = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+
+  div.performance,
+  div.orders {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1em;
+
+    div.statistics {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1em;
+    }
+    div.bloco1,
+    div.bloco2,
+    div.bloco3,
+    div.bloco4 {
+      flex: 1;
+      border-radius: 0.5em;
+      overflow: hidden;
+      .header {
+        width: 100%;
+        padding: 0.5em 0.5em;
+        background-color: #4aa7ff;
+        p {
+          color: #000;
+          font-weight: bold;
+        }
+      }
+      .content {
+        padding: 0.5em 0;
+        background-color: #212121;
+        text-align: center;
+        p {
+          font-size: 2em;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  div.orders {
+    div.bloco1 > div.header {
+      background-color: #da804e;
+    }
+    div.bloco2 > div.header {
+      background-color: #dac34e;
+    }
+    div.bloco3 > div.header {
+      background-color: #59da4e;
+    }
+    div.bloco4 > div.header {
+      background-color: #d6313b;
+    }
+  }
+
+  @media (max-width: 760px) {
+    padding: 0 5vw;
+    margin-bottom: 15vh;
+
+    div.statistics {
+      justify-content: center;
+    }
+    div.performance,
+    div.orders {
+      div.bloco1,
+      div.bloco2,
+      div.bloco3,
+      div.bloco4 {
+        width: 150px;
+
+        .header {
+          padding: 0.4em;
+          p {
+            font-size: 0.7em;
+          }
+        }
+        .content {
+          p {
+            font-size: 1.5em;
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const OrdersList = styled.section`
+  width: auto;
+  max-height: 200px;
+  background-color: #1d1d1d;
+  border-radius: 10px;
+  overflow: auto;
+
+  table{
+    width: 100%;
+    border: none;
+
+    tr#table_header  {
+      background-color: #222;
+    }
+    tr {
+      transition: 1s;
+    }
+    th {
+      padding: 10px 0;
+    }
+    td {
+      border-right: 1px solid #222;
+      padding: 10px 0;
+      text-align: center;
+    }
+  }
+`
+
 export const ButtonStatus = styled.button<{ storeStatus: string }>`
   cursor: pointer;
   width: fit-content;
@@ -142,4 +209,3 @@ export const ButtonStatus = styled.button<{ storeStatus: string }>`
     transform: translateY(0);
   }
 `;
-
