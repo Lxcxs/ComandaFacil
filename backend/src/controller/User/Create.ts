@@ -6,7 +6,7 @@ export class CreateUserController {
     try {
       const { userName, userEmail, userPassword, userDocument } = req.body;
       const accountService = new CreateUserService();
-      const account = await accountService.execute({ userName, userEmail, userPassword, userDocument });
+      const account = await accountService.execute({ name:userName, email:userEmail, password:userPassword, document:userDocument });
 
       return res.status(201).json(account);
     } catch (error) {

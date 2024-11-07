@@ -10,11 +10,11 @@ export class CreateItemController {
       const itemService = new CreateItemService();
 
       const result = await itemService.execute({
-        itemName,
-        itemDescription,
-        itemValue,
-        itemStatus,
-        itemImage,
+        name:itemName,
+        description:itemDescription,
+        price:itemValue,
+        status:itemStatus,
+        image:itemImage,
         categoryId,
         storeId: parseInt(token.storeId),
       });

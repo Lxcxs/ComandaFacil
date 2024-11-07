@@ -7,16 +7,16 @@ import { validateTable } from "../../utils/validateTable";
 export class CreateTableService {
   private static readonly TABLE_STATUS = "available";
 
-  async execute({ tableNumber, tablePeopleAmount, storeId, waiterId }: CreateTableDTO) {
+  async execute({ number, peopleCount, storeId, waiterId }: CreateTableDTO) {
     try {
-      validateFields({ tableNumber, tablePeopleAmount, storeId });
+      validateFields({ number, peopleCount, storeId });
 
       const existingStore = await validateStore(storeId);
 
       const tableData = {
-        tableNumber,
-        tablePeopleAmount,
-        tableStatus: CreateTableService.TABLE_STATUS,
+        number,
+        peopleCount,
+        status: CreateTableService.TABLE_STATUS,
         storeId: existingStore.id,
         waiterId,
       };

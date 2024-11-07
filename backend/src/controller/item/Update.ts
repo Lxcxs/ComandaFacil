@@ -10,9 +10,9 @@ export class UpdateItemController {
 
       const result = await itemService.execute({
         id: id,
-        itemName: itemName,
-        itemDescription: itemDescription,
-        itemValue: itemValue,
+        name: itemName,
+        description: itemDescription,
+        price: itemValue,
         storeId: storeId,
       });
 

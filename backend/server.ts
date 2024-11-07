@@ -49,6 +49,9 @@ io.on("connection", (socket) => {
 
     io.emit("costumerCreated", costumerData)
   })
+  socket.on("CustomerTabClosed", async (tabData) => {
+    console.log("Conta fechada:", tabData)
+  })
 
   socket.on("disconnect", () => {
     console.log("Cliente desconectado: ", socket.id);

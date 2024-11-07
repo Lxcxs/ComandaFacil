@@ -5,8 +5,8 @@ export class UpdateItemStatusService {
   async execute({
     id,
     storeId,
-    itemStatus
-  }: { id: number; storeId: number, itemStatus: string }) {
+    status
+  }: { id: number; storeId: number, status: string }) {
     try {
       validateStore(storeId);
 
@@ -19,7 +19,7 @@ export class UpdateItemStatusService {
       const updatedItem = await prismaClient.item.update({
         where: { id },
         data: {
-          itemStatus: itemStatus
+          status: status
         }
       });
 

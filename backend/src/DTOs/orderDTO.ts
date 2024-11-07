@@ -1,18 +1,18 @@
 import { Decimal } from "@prisma/client/runtime/library";
 
 interface OrderDTO {
+  price: number;
   id: number;
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: number;
-  orderStatus: string;
+  quantity: number;
+  customerNote: string;
+  status: string;
   createdAt: Date;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number | null;
-  costumerTabId: number | null;
+  customerTabId: number | null;
   waiterId: number | null;
 }
 export { OrderDTO };

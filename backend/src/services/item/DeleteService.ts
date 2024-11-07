@@ -27,7 +27,7 @@ export class DeleteItemService {
         }
       });
 
-      return `Item ${findItem.itemName} was deleted successfully.`;
+      return `Item ${findItem.name} was deleted successfully.`;
     } catch (error) {
       throw new Error(`Service: ${error instanceof Error ? error.message : 'Error deleting item'}`);
     }

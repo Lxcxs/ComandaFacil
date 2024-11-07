@@ -27,7 +27,7 @@ export class UpdateOrderStatusService {
       // Atualiza o status do pedido
       await prismaClient.order.update({
         where: { id: orderId },
-        data: { orderStatus: newStatus },
+        data: { status: newStatus },
       });
 
       return { message: `Order status has been updated to "${newStatus}".` };

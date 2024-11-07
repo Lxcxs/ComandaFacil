@@ -7,135 +7,137 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id           Int       @id @default(autoincrement())
-  userName     String
-  userEmail    String    @unique(map: "User_userEmail_key")
-  userPassword String
-  userDocument String    @unique(map: "User_userDocument_key")
+  name         String
+  email        String    @unique
+  password     String
+  document     String    @unique
   accountType  String
   createdAt    DateTime? @default(now())
-  store        store[]
+  stores       Store[]
 }
 
-model waiter {
+model Waiter {
   id             Int     @id @default(autoincrement())
-  waiterName     String
-  waiterEmail    String  @unique()
-  waiterPassword String
+  name           String
+  email          String  @unique
+  password       String
   accountType    String
   storeId        Int
-  orders         order[]
-  tables         table[]
-  store          store   @relation(fields: [storeId], references: [id])
+  orders         Order[]
+  tables         Table[]
+  store          Store   @relation(fields: [storeId], references: [id])
 }
 
-model store {
-  id               Int           @id @default(autoincrement())
-  storeName        String
-  storeStatus      String
-  storeImage       String
-  storeTableAmount Int
-  userId           Int
-  categories       category[]
-  costumers        costumer[]
-  items            item[]
-  orders           order[]
-  tables           table[]
-  storeTabs        costumerTab[]
-  waiters          waiter[]
-  user             user          @relation(fields: [userId], references: [id])
+model Store {
+  id              Int            @id @default(autoincrement())
+  name            String
+  status          String
+  image           String
+  tableCount      Int
+  userId          Int
+  categories      Category[]
+  customers       Customer[]
+  items           Item[]
+  orders          Order[]
+  tables          Table[]
+  customerTabs    CustomerTab[]
+  waiters         Waiter[]
+  owner           User           @relation(fields: [userId], references: [id])
 }
 
-model category {
+model Category {
   id           Int    @id @default(autoincrement())
-  categoryName String
+  name         String
   storeId      Int
-  item         item[]
-  store        store  @relation(fields: [storeId], references: [id], map: "Category_storeId_fkey")
+  items        Item[]
+  store        Store  @relation(fields: [storeId], references: [id])
 
-  @@index([storeId], map: "Category_storeId_fkey")
+  @@index([storeId])
 }
 
-model item {
+model Item {
   id              Int      @id @default(autoincrement())
-  itemName        String
-  itemDescription String
-  itemValue       Decimal  @db.Decimal(10, 2)
-  itemStatus      String
-  itemImage       String
+  name            String
+  description     String
+  price           Decimal  @db.Decimal(10, 2)
+  status          String
+  image           String
   categoryId      Int
   storeId         Int
-  category        category @relation(fields: [categoryId], references: [id], map: "Item_categoryId_fkey")
-  store           store    @relation(fields: [storeId], references: [id], map: "Item_storeId_fkey")
+  category        Category @relation(fields: [categoryId], references: [id])
+  store           Store    @relation(fields: [storeId], references: [id])
 
-  @@index([categoryId], map: "Item_categoryId_fkey")
-  @@index([storeId], map: "Item_storeId_fkey")
+  @@index([categoryId])
+  @@index([storeId])
 }
 
-model table {
-  id                Int           @id @default(autoincrement())
-  tableNumber       Int
-  tableStatus       String
-  tablePeopleAmount Int
-  storeId           Int
-  costumer          costumer[]
-  order             order[]
-  store             store         @relation(fields: [storeId], references: [id])
-  waiter            waiter?       @relation(fields: [waiterId], references: [id])
-  waiterId          Int?
-  costumerTab       costumerTab[]
+model Table {
+  id              Int           @id @default(autoincrement())
+  number          Int
+  status          String
+  peopleCount     Int
+  storeId         Int
+  waiterId        Int?
+  customers       Customer[]
+  orders          Order[]
+  store           Store         @relation(fields: [storeId], references: [id])
+  waiter          Waiter?       @relation(fields: [waiterId], references: [id])
+  customerTabs    CustomerTab[]
 }
 
-model costumer {
-  id             Int           @id @default(autoincrement())
-  costumerName   String
-  costumerTable  Int
-  accountType    String
-  tableId        Int?
-  storeId        Int
-  costumerStatus String
-  order          order[]
-  tab            costumerTab[]
-  table          table?        @relation(fields: [tableId], references: [id])
-  store          store         @relation(fields: [storeId], references: [id], map: "Costumer_storeId_fkey")
+model Customer {
+  id              Int            @id @default(autoincrement())
+  name            String
+  tableNumber     Int
+  accountType     String
+  tableId         Int?
+  storeId         Int
+  status          String
+  orders          Order[]
+  tabs            CustomerTab[]
+  table           Table?         @relation(fields: [tableId], references: [id])
+  store           Store          @relation(fields: [storeId], references: [id])
 
-  @@index([storeId], map: "Costumer_storeId_fkey")
+  @@index([storeId])
 }
 
-model costumerTab {
-  id         Int      @id @default(autoincrement())
-  tabValue   Decimal  @db.Decimal(10, 2)
-  tabStatus  String
-  costumerId Int
-  storeId    Int
-  tableId    Int?
-  orders     order[]
-  table      table?   @relation(fields: [tableId], references: [id])
-  costumer   costumer @relation(fields: [costumerId], references: [id])
-  store      store    @relation(fields: [storeId], references: [id])
+model CustomerTab {
+  id            Int      @id @default(autoincrement())
+  value         Decimal  @db.Decimal(10, 2)
+  status        String
+  customerId    Int
+  storeId       Int
+  tableId       Int?
+  orders        Order[]
+  table         Table?   @relation(fields: [tableId], references: [id])
+  customer      Customer @relation(fields: [customerId], references: [id])
+  store         Store    @relation(fields: [storeId], references: [id])
 }
 
-model order {
-  id            Int          @id @default(autoincrement())
+model Order {
+  id            Int           @id @default(autoincrement())
   itemName      String
   itemImage     String
-  itemAmount    Int
-  costumerNote  String
-  orderValue    Decimal      @db.Decimal(10, 2)
-  orderStatus   String
-  createdAt     DateTime     @default(now())
+  quantity      Int
+  customerNote  String
+  price         Decimal       @db.Decimal(10, 2)
+  status        String
+  isIndividual  Boolean
+  guestName     String?
+  createdAt     DateTime      @default(now())
   storeId       Int
-  costumerId    Int
+  customerId    Int
   tableId       Int?
-  costumerTabId Int?
-  costumer      costumer     @relation(fields: [costumerId], references: [id])
-  table         table?       @relation(fields: [tableId], references: [id])
-  store         store        @relation(fields: [storeId], references: [id])
-  costumerTab   costumerTab? @relation(fields: [costumerTabId], references: [id])
-  waiter        waiter?      @relation(fields: [waiterId], references: [id])
+  customerTabId Int?
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  table         Table?        @relation(fields: [tableId], references: [id])
+  store         Store         @relation(fields: [storeId], references: [id])
+  customerTab   CustomerTab?  @relation(fields: [customerTabId], references: [id])
   waiterId      Int?
+  waiter        Waiter?       @relation(fields: [waiterId], references: [id])
 
-  @@index([costumerId], map: "order_costumerId_fkey")
-  @@index([storeId], map: "order_storeId_fkey")
+  @@index([customerId])
+  @@index([storeId])
 }

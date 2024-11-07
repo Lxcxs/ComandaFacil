@@ -5,9 +5,8 @@ export class UpdateOrderStatusController {
   async handle(req: Request, res: Response) {
     try {
       const { newStatus, storeId, orderId } = req.body;
-      console.log({ newStatus, storeId, orderId }); // Verificação dos valores recebidos
+      console.log({ newStatus, storeId, orderId });
       const orderService = new UpdateOrderStatusService();
-      // Chamar o método com a ordem correta dos parâmetros
       const result = await orderService.execute(storeId, newStatus, orderId); 
 
       return res.status(200).json(result);

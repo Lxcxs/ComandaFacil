@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { GetStoreCostumerService } from "../../services/costumer/GetStoreCostumerService";
+import { GetStoreCustomerService } from "../../services/customer/GetStoreCostumerService";
 
 export class GetStoreCostumerController {
   async handle(req: Request, res: Response) {
-    const costumerService = new GetStoreCostumerService();
+    const costumerService = new GetStoreCustomerService();
 
     try {
       const storeId = Number(req.params.storeId); // Converte storeId para número

@@ -17,7 +17,7 @@ export class DeleteCategoryService {
         where: { id: existingCategory.id }
       });
 
-      return `Category "${existingCategory.categoryName}" was deleted successfully.`;
+      return `Category "${existingCategory.name}" was deleted successfully.`;
     } catch (error) {
       throw new Error(`Service: ${error instanceof Error ? error.message : 'error deleting category'}`);
     }

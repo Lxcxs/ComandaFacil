@@ -19,9 +19,9 @@ class AuthenticateUserService {
 
   private async findUserByEmail(accountType: "admin" | "employee", email: string) {
     if (accountType === "admin") {
-      return prismaClient.user.findUnique({ where: { userEmail: email } });
+      return prismaClient.user.findUnique({ where: { email: email } });
     } else if (accountType === "employee") {
-      return prismaClient.waiter.findUnique({ where: { waiterEmail: email } });
+      return prismaClient.waiter.findUnique({ where: { email: email } });
     }
     throw new Error("Invalid account type");
   }
@@ -35,7 +35,7 @@ class AuthenticateUserService {
       throw new Error("Invalid email or password");
     }
 
-    const passwordEntered = accountType === "admin" ? (user as any).userPassword : (user as any).waiterPassword;
+    const passwordEntered = accountType === "admin" ? (user as any).password : (user as any).password;
 
     if (!passwordEntered || !(await bcrypt.compare(loginPassword, passwordEntered))) {
       throw new Error("Invalid password");

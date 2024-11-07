@@ -2,7 +2,7 @@ import { categoryDTO } from "../../DTOs/categoryDTO";
 import prismaClient from "../../prisma";
 
 export class CreateCategoryService {
-  async execute({ categoryName, storeId }: categoryDTO) {
+  async execute({ name, storeId }: categoryDTO) {
     try {
       const existingStore = await prismaClient.store.findUnique({
         where: {
@@ -14,7 +14,7 @@ export class CreateCategoryService {
 
       return await prismaClient.category.create({
         data: {
-          categoryName,
+          name,
           storeId: existingStore.id,
         }
       });

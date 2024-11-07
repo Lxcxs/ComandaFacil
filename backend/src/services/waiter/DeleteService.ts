@@ -23,7 +23,7 @@ export class DeleteWaiterService {
         where: { id: findWaiter.id },
       });
 
-      return { message: `Waiter ${findWaiter.waiterName} deleted successfully.` };
+      return { message: `Waiter ${findWaiter.name} deleted successfully.` };
     } catch (error) {
       throw new Error(`Service: ${error instanceof Error ? error.message : 'error deleting waiter'}`);
     }

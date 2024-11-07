@@ -17,7 +17,7 @@ export class SigninCostumerService {
     tablePeopleAmount,
     waiterId,
     storeId,
-    costumerName,
+    name,
   }: CreateCostumerDTO) {
     try {
       const store = await validateStore(storeId);
@@ -26,34 +26,31 @@ export class SigninCostumerService {
 
       const table = await prismaClient.table.findFirst({
         where: {
-          tableNumber,
+          number: tableNumber,
         },
       });
 
-      if (!table || table.tableStatus === "occupied") {
+      if (!table || table.status === "occupied") {
         throw new Error("error finding table or table occupied.");
       }
 
-      // Criar Costumer
-      const costumer = await prismaClient.costumer.create({
+      const customer = await prismaClient.customer.create({
         data: {
-          costumerName,
-          costumerTable: table.tableNumber,
-          costumerStatus: SigninCostumerService.COSTUMER_STATUS,
+          name,
+          tableNumber: table.number,
+          status: SigninCostumerService.COSTUMER_STATUS,
           accountType: SigninCostumerService.ACCOUNT_TYPE,
           tableId: table.id,
           storeId: store.id,
         },
       });
+      console.log(customer)
 
-      // Atualizar o status da mesa para "ocupada"
       await updateTableStatusService.execute(store.id, table.id, "occupied");
 
-      // Criar Comanda (costumerTab)
-      const tab = await tabService.execute(costumer.id, storeId, table.id);
+      const tab = await tabService.execute(customer.id, storeId, table.id);
       
-      // Procurar Comanda
-      const findTab = await prismaClient.costumerTab.findFirst({
+      const findTab = await prismaClient.customerTab.findFirst({
         where: { id: tab.id },
       });
       if (findTab) console.log("comanda criada.");
@@ -62,16 +59,16 @@ export class SigninCostumerService {
       // Criar token login
       const token = jwt.sign(
         {
-          costumerId: costumer.id,
-          costumerName: costumerName,
+          customerId: customer.id,
+          customerName: name,
           table: table.id,
-          peopleAmount: tablePeopleAmount,
+          storeId: storeId
         },
         SECRET_KEY,
-        { expiresIn: "2h" }
+        { expiresIn: "5h" }
       );
 
-      return { token, table, costumer, tab };
+      return { token, customer };
     } catch (error) {
       throw new Error(
         `Service: ${

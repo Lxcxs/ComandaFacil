@@ -6,7 +6,7 @@ export class CreateStoreController {
     try {
       const { storeName, storeImage, storeTableAmount, userId } = req.body;
       const storeService = new CreateStoreService();
-      const result = await storeService.execute({ storeName, storeImage, storeTableAmount, userId });
+      const result = await storeService.execute({ name:storeName, image:storeImage, tableCount:storeTableAmount, userId });
 
       return res.status(201).json(result);
     } catch (error) {

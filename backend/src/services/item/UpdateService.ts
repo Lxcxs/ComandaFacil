@@ -7,13 +7,13 @@ import { validateStore } from "../../utils/validateStore";
 export class UpdateItemService {
   async execute({
     id,
-    itemName,
-    itemDescription,
-    itemValue,
+    name,
+    description,
+    price,
     storeId
   }: Partial<itemDTO> & { id: number }) {
     try {
-      validateFields({ itemName, itemValue, storeId });
+      validateFields({ name, price, storeId });
       await validateStore(storeId as number);
 
       const existingItem = await prismaClient.item.findFirst({
@@ -25,9 +25,9 @@ export class UpdateItemService {
       const updatedItem = await prismaClient.item.update({
         where: { id },
         data: {
-          itemName,
-          itemDescription: itemDescription || existingItem.itemDescription,
-          itemValue: itemValue !== undefined ? new Decimal(itemValue) : existingItem.itemValue
+          name,
+          description: description || existingItem.description,
+          price: price !== undefined ? new Decimal(price) : existingItem.price
         }
       });
 

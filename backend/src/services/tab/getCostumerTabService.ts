@@ -1,11 +1,11 @@
 import prismaClient from "../../prisma";
 
 export class GetCostumerTabService {
-    async execute( costumerId: number) {
+    async execute( customerId: number) {
         try {
-            const tab = await prismaClient.costumerTab.findMany({
+            const tab = await prismaClient.customerTab.findMany({
                 where: {
-                    costumerId,
+                    customerId,
                 }
             });
             

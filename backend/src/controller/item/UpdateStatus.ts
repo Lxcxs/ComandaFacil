@@ -10,7 +10,7 @@ class UpdateItemStatusController {
       const result = updatedItem.execute({
         id: id,
         storeId: storeId,
-        itemStatus: itemStatus,
+        status: itemStatus,
       });
       return res.status(200).json(result);
     } catch (error) {

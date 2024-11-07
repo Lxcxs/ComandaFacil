@@ -1,52 +1,52 @@
 import { validateFields } from "../../utils/validateFields";
 import prismaClient from "../../prisma";
 
-interface UpdateCostumerStatusDTO {
-  costumerId: number;
+interface UpdateCustomerStatusDTO {
+  customerId: number;
 }
 
-export class UpdateCostumerStatusService {
-  private static readonly COSTUMER_STATUS = "offline";
+export class UpdateCustomerStatusService {
+  private static readonly CuSToMER_STATUS = "offline";
 
-  async execute({ costumerId }: UpdateCostumerStatusDTO) {
+  async execute({ customerId }: UpdateCustomerStatusDTO) {
     try {
-      validateFields({ costumerId });
+      validateFields({ customerId });
 
-      const costumer = await prismaClient.costumer.findUnique({
-        where: { id: costumerId },
+      const customer = await prismaClient.customer.findUnique({
+        where: { id: customerId },
       });
 
-      if (!costumer) {
+      if (!customer) {
         throw new Error("Customer not found");
       }
       const findTable = await prismaClient.table.findFirst({
         where: {
-          id: costumer.tableId as number,
+          id: customer.tableId as number,
         },
       });
       if (!findTable) {
         throw new Error("table not found");
       }
 
-      const updatedCostumer = await prismaClient.costumer.update({
-        where: { id: costumerId },
+      const updatedCustomer = await prismaClient.customer.update({
+        where: { id: customerId },
         data: {
-          costumerStatus: UpdateCostumerStatusService.COSTUMER_STATUS,
+          status: UpdateCustomerStatusService.CuSToMER_STATUS,
           tableId: null,
         },
       });
 
-      const findCostumerTab = await prismaClient.costumerTab.findFirst({
+      const findCustomerTab = await prismaClient.customerTab.findFirst({
         where: {
           tableId: findTable.id,
         },
       });
-      if (!findCostumerTab) {
+      if (!findCustomerTab) {
         throw new Error("Order not found");
       }
 
-      const updateCostumerTab = await prismaClient.costumerTab.update({
-        where: { id: findCostumerTab.id },
+      const updateCustomerTab = await prismaClient.customerTab.update({
+        where: { id: findCustomerTab.id },
         data: {
           tableId: null,
         },
@@ -54,11 +54,11 @@ export class UpdateCostumerStatusService {
       const updateTable = await prismaClient.table.update({
         where: { id: findTable.id },
         data: {
-          tableStatus: "available",
+          status: "available",
         },
       });
 
-      return { updatedCostumer, updateTable, updateCostumerTab };
+      return { updatedCustomer, updateTable, updateCustomerTab };
     } catch (error) {
       throw new Error(
         `Service: ${

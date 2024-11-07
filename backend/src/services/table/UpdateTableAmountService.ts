@@ -15,7 +15,7 @@ export class UpdateTableAmountService {
 
       const updatedTable = await prismaClient.table.update({
         where: { id: tableId },
-        data: { tablePeopleAmount: newAmountValue },
+        data: { peopleCount: newAmountValue },
       });
 
       return updatedTable;

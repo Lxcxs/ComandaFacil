@@ -6,16 +6,16 @@ import { validateStore } from "../../utils/validateStore";
 
 export class CreateItemService {
   async execute({
-    itemName,
-    itemDescription,
-    itemValue,
-    itemStatus,
-    itemImage,
+    name,
+    description,
+    price,
+    status,
+    image,
     categoryId,
     storeId
   }: itemDTO) {
     try {
-      validateFields({ itemName, itemValue, itemStatus, categoryId, storeId });
+      validateFields({ name, price, status, categoryId, storeId });
       await validateStore(storeId);
 
       const existingCategory = await prismaClient.category.findFirst({
@@ -26,11 +26,11 @@ export class CreateItemService {
 
       const item = await prismaClient.item.create({
         data: {
-          itemName,
-          itemDescription: itemDescription || "no description",
-          itemImage: itemImage || "no image available",
-          itemStatus,
-          itemValue: new Decimal(itemValue),
+          name,
+          description: description || "no description",
+          image: image || "no image available",
+          status,
+          price: new Decimal(price),
           storeId,
           categoryId
         }

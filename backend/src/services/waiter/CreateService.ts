@@ -8,9 +8,9 @@ export class CreateWaiterService {
   private static readonly SALT_ROUNDS = 10;
   private static readonly ACCOUNT_TYPE = "employee";
 
-  async execute({ waiterName, waiterEmail, waiterPassword, storeId, token }: CreateWaiterDTO) {
+  async execute({ name, email, password, storeId, token }: CreateWaiterDTO) {
     try {
-      validateFields({ waiterName, waiterEmail, waiterPassword, storeId });
+      validateFields({ name, email, password, storeId });
 
       const existingStore = await validateStore(storeId);
 
@@ -22,13 +22,13 @@ export class CreateWaiterService {
         throw new Error("Service: This store isn't from this user.");
       }
 
-      const hashedPassword = await bcrypt.hash(waiterPassword, CreateWaiterService.SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(password, CreateWaiterService.SALT_ROUNDS);
       
       return prismaClient.waiter.create({
         data: {
-          waiterName,
-          waiterEmail,
-          waiterPassword: hashedPassword,
+          name,
+          email,
+          password: hashedPassword,
           storeId: existingStore.id,
           accountType: CreateWaiterService.ACCOUNT_TYPE,
         },

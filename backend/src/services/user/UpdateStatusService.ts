@@ -2,10 +2,10 @@ import prismaClient from "../../prisma";
 import { UpdateUserDTO } from "../../DTOs/userDTO";
 
 export class UpdateUserService {
-  async execute({ id, userEmail }: UpdateUserDTO) {
+  async execute({ id, email }: UpdateUserDTO) {
     try {
       const emailAlreadyExists = await prismaClient.user.findFirst({
-        where: { userEmail },
+        where: { email },
       });
 
       if (emailAlreadyExists) {
@@ -14,7 +14,7 @@ export class UpdateUserService {
 
       await prismaClient.user.update({
         where: { id },
-        data: { userEmail },
+        data: { email },
       });
 
       return { message: "Email updated!" };

@@ -1,13 +1,13 @@
 export interface CreateUserDTO {
-  userName: string;
-  userEmail: string;
-  userPassword: string;
-  userDocument: string;
+  name: string;
+  email: string;
+  password: string;
+  document: string;
 }
 export interface DeleteUserDTO {
   id: number;
 }
 export interface UpdateUserDTO {
   id: number,
-  userEmail: string,
+  email: string,
 }

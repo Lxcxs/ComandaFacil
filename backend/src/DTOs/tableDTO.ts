@@ -1,6 +1,6 @@
 export interface CreateTableDTO {
-  tableNumber: number;
-  tablePeopleAmount: number;
+  number: number;
+  peopleCount: number;
   storeId: number;
   waiterId: number | null;
 }

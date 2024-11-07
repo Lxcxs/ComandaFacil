@@ -2,23 +2,23 @@ import { validateFields } from "../../utils/validateFields";
 import prismaClient from "../../prisma";
 
 interface CreateStoreDTO {
-  storeName: string;
-  storeImage: string;
-  storeTableAmount: number;
+  name: string;
+  image: string;
+  tableCount: number;
   userId: number;
 }
 
 export class CreateStoreService {
-  async execute({ storeName, storeImage, storeTableAmount, userId }: CreateStoreDTO) {
+  async execute({ name, image, tableCount, userId }: CreateStoreDTO) {
     try {
-      validateFields({ storeName, storeImage, storeTableAmount, userId });
+      validateFields({ name, image, tableCount, userId });
 
       const store = await prismaClient.store.create({
         data: {
-          storeName,
-          storeImage: storeImage || "no image available",
-          storeTableAmount,
-          storeStatus: "online",
+          name,
+          image: image || "no image available",
+          tableCount,
+          status: "online",
           userId,
         },
       });

@@ -6,7 +6,7 @@ export class UpdateUserController {
     try {
       const { id, userEmail } = req.body;
       const accountService = new UpdateUserService();
-      const result = await accountService.execute({ id, userEmail });
+      const result = await accountService.execute({ id, email:userEmail });
 
       return res.status(200).json(result);
     } catch (error) {

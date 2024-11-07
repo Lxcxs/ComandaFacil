@@ -8,19 +8,21 @@ import { UpdateTabValueService } from "../tab/UpdateTabValueService";
 interface DTO {
   itemName: string;
   itemImage: string;
-  itemAmount: number;
-  costumerNote: string;
-  orderValue: number;
+  quantity: number;
+  customerNote: string;
+  price: number;
   storeId: number;
-  costumerId: number;
+  customerId: number;
   tableId: number;
   itemId: number;
+  isIndividual: boolean;
+  guestName: string | null;
 }
 
 export class CreateOrderService {
   private sumValues(items: OrderDTO[]): Decimal {
     return items.reduce(
-      (total: Decimal, item) => total.plus(new Decimal(item.orderValue)),
+      (total: Decimal, item) => total.plus(new Decimal(item.price)),
       new Decimal(0)
     );
   }
@@ -28,38 +30,42 @@ export class CreateOrderService {
   async execute({
     itemName,
     itemImage,
-    itemAmount,
-    costumerNote,
+    quantity,
+    customerNote,
     itemId,
     storeId,
-    costumerId,
+    customerId,
     tableId,
+    isIndividual,
+    guestName,
   }: DTO) {
     try {
-      validateFields({ itemAmount, itemName, storeId, costumerId, tableId });
+      validateFields({ quantity, itemName, storeId, customerId, tableId, isIndividual });
       await validateStore(storeId);
 
-      const costumerTab = await prismaClient.costumerTab.findFirst({
-        where: { costumerId },
+      const customerTab = await prismaClient.customerTab.findFirst({
+        where: { customerId },
       });
       const item = await prismaClient.item.findFirst({
         where: { id: itemId },
       });
 
       if (!item) throw new Error("Service: item not found.");
-      if (!costumerTab) throw new Error("Service: tab not found.");
+      if (!customerTab) throw new Error("Service: tab not found.");
 
       const newData = {
         itemName,
         itemImage,
-        itemAmount,
-        costumerNote,
-        orderStatus: "waiting",
-        orderValue: new Decimal(item.itemValue).mul(new Decimal(itemAmount)),
+        quantity,
+        customerNote,
+        status: "waiting",
+        price: new Decimal(item.price).mul(new Decimal(quantity)),
         storeId,
-        costumerId,
+        customerId,
         tableId,
-        costumerTabId: costumerTab.id,
+        customerTabId: customerTab.id,
+        isIndividual,
+        guestName: isIndividual === true ? guestName : null,
       };
 
       const order = await prismaClient.order.create({ data: newData });

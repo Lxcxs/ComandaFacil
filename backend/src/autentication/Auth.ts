@@ -20,9 +20,9 @@ export const verifyToken = (token: string): JwtPayload | null => {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY) as JwtPayload;
-    // console.log(decoded)
-    return decoded;
+    const decodedToken = jwt.verify(token, SECRET_KEY) as JwtPayload;
+    // console.log(decodedToken)
+    return decodedToken;
   } catch (error) {
     console.error("Token inválido:", error);
     return null;

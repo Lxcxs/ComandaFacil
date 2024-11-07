@@ -19,7 +19,7 @@ export class UpdateStoreStatusService {
 
       await prismaClient.store.update({
         where: { id: store.id },
-        data: { storeStatus: storeStatus },
+        data: { status: storeStatus },
       });
 
       return { message: `The store status has been updated to ${storeStatus}.` };

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { SigninCostumerService } from '../../services/costumer/CreateService';
+import { SigninCostumerService } from '../../services/customer/CreateService';
 
 export class CreateCostumerController {
   async handle(req: Request, res: Response) {
@@ -7,20 +7,20 @@ export class CreateCostumerController {
       const costumerService = new SigninCostumerService();
       
       // Desestruturar os valores do corpo da requisição
-      const { tableNumber, tablePeopleAmount, waiterId, costumerName, storeId } = req.body;
+      const { tableNumber, tableCount, waiterId, costumerName, storeId } = req.body;
 
       // Converter os valores para números
       const tableNumberNumber = parseInt(tableNumber, 10);
-      const tablePeopleAmountNumber = parseInt(tablePeopleAmount, 10);
+      const tableCountNumber = parseInt(tableCount, 10);
       const storeIdNumber = parseInt(storeId, 10);
 
       // Chamar o serviço com os valores convertidos
       const result = await costumerService.execute({ 
         tableNumber: tableNumberNumber, 
-        tablePeopleAmount: tablePeopleAmountNumber, 
+        tablePeopleAmount: tableCountNumber, 
         waiterId, 
         storeId: storeIdNumber, 
-        costumerName 
+        name: costumerName
       });
 
       return res.status(201).json(result);

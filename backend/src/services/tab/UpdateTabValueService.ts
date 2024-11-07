@@ -5,34 +5,34 @@ import prismaClient from "../../prisma";
 export class UpdateTabValueService {
   private sumValues(items: OrderDTO[]): number {
     return items.reduce((total, item) => {
-      const orderValue = typeof item.orderValue === 'string'
-        ? parseFloat(item.orderValue)
-        : item.orderValue || 0;
+      const orderValue = typeof item.price === 'string'
+        ? parseFloat(item.price)
+        : item.price || 0;
       return total + orderValue;
     }, 0);
   }
 
-  async execute(costumerId: number) {
+  async execute(customerId: number) {
     try {
       const items = await prismaClient.order.findMany({
-        where: { costumerId },
+        where: { customerId },
       });
 
       if (!items.length) throw new Error("Service: No orders found.");
 
-      const tabId = items[0].costumerTabId;
+      const tabId = items[0].customerTabId;
       if (!tabId) throw new Error("Service: Tab ID not found.");
 
       const normalizedItems = items.map(item => ({
         ...item,
-        orderValue: (item.orderValue as Prisma.Decimal).toNumber(),
+        price: (item.price as Prisma.Decimal).toNumber(),
       }));
 
       const tabValue = new Prisma.Decimal(this.sumValues(normalizedItems));
 
-      const result = await prismaClient.costumerTab.update({
+      const result = await prismaClient.customerTab.update({
         where: { id: tabId },
-        data: { tabValue },
+        data: { value: tabValue },
       });
 
       return result;

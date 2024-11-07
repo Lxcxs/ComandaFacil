@@ -8,35 +8,35 @@ export class CreateUserService {
   private static readonly ACCOUNT_TYPE = "admin";
 
   async execute({
-    userName,
-    userEmail,
-    userPassword,
-    userDocument,
+    name,
+    email,
+    password,
+    document,
   }: CreateUserDTO) {
     try {
-      validateFields({ userName, userEmail, userPassword, userDocument });
+      validateFields({ name, email, password, document });
 
       const existingUser = await prismaClient.user.findFirst({
-        where: { OR: [{ userDocument }, { userEmail }] },
+        where: { OR: [{ document }, { email }] },
       });
 
       if (existingUser) {
-        if (existingUser.userDocument === userDocument) {
+        if (existingUser.document === document) {
           throw new Error("Service: This document is already in use.");
         }
-        if (existingUser.userEmail === userEmail) {
+        if (existingUser.email === email) {
           throw new Error("Service: This email is already in use.");
         }
       }
 
-      const hashedPassword = await bcrypt.hash(userPassword, CreateUserService.SALT_ROUNDS);
+      const hashedPassword = await bcrypt.hash(password, CreateUserService.SALT_ROUNDS);
 
       return await prismaClient.user.create({
         data: {
-          userName,
-          userEmail,
-          userPassword: hashedPassword,
-          userDocument,
+          name,
+          email,
+          password: hashedPassword,
+          document,
           accountType: CreateUserService.ACCOUNT_TYPE,
         },
       });

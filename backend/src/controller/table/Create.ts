@@ -6,14 +6,14 @@ export class CreateTableController {
     try {
       console.log(req.body);
       const { tableNumber, tablePeopleAmount, waiterId, storeId } = req.body;
-      console.log(tableNumber, tablePeopleAmount, waiterId, storeId)
+      // console.log(tableNumber, tablePeopleAmount, waiterId, storeId)
 
       if (!storeId) {
         return res.status(401).json({ error: "Controller: Unauthorized access, storeId is required." });
       }
 
       const tableService = new CreateTableService();
-      const result = await tableService.execute({ tableNumber, tablePeopleAmount, waiterId, storeId });
+      const result = await tableService.execute({ number:tableNumber, peopleCount:tablePeopleAmount, waiterId, storeId });
 
       return res.status(201).json(result);
     } catch (error) {

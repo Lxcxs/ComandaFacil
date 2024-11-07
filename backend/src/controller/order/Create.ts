@@ -6,18 +6,20 @@ import { Decimal } from "@prisma/client/runtime/library";
 export class CreateOrderController {
   async handle(req: Request, res: Response) {
     try {
-      const { itemName, itemImage, itemAmount, costumerNote, itemId, storeId, costumerId, tableId, orderValue } = req.body;
+      const { itemName, itemImage, itemAmount, customerNote, itemId, storeId, customerId, tableId, orderValue, isIndividual, guestName } = req.body;
       const orderService = new CreateOrderService();
       const result = await orderService.execute({
         itemName,
         itemImage,
-        itemAmount,
-        costumerNote,
+        quantity: itemAmount,
+        customerNote: customerNote,
         storeId,
-        costumerId,
+        customerId: customerId,
         tableId,
-        orderValue,
-        itemId
+        price: orderValue,
+        itemId,
+        isIndividual,
+        guestName
       });
 
       return res.status(201).json(result);

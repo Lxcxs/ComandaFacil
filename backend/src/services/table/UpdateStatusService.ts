@@ -15,7 +15,7 @@ export class UpdateTableStatusService {
 
       const updatedTable = await prismaClient.table.update({
         where: { id: tableId },
-        data: { tableStatus: newStatus },
+        data: { status: newStatus },
       });
 
       return updatedTable;
