@@ -22,6 +22,7 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import { MdOutlineEdit } from "react-icons/md";
 import ItemModal from "../../components/ItemModal";
 import { useAuthorization } from "../../components/Hooks/useAuthorization";
+import { FaTrashAlt } from "react-icons/fa";
 
 type Category = {
     id: number;
@@ -214,7 +215,7 @@ function Cardapio() {
                         <div className="header" style={{ display: 'flex', justifyContent: 'space-between', cursor: "pointer" }}>
                             <h2>{category.name}</h2>
                             <DeleteCategoryButton onClick={() => handleDeleteCategory(category.id)}>
-                                Excluir Categoria
+                                <FaTrashAlt />
                             </DeleteCategoryButton>
                         </div>
 

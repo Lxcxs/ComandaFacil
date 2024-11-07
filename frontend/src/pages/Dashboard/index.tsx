@@ -50,7 +50,7 @@ interface Costumer {
 
 interface Tab {
   id: number;
-  tabValue: string;
+  value: string;
   status: string;
   customerId: number;
   storeId: number;
@@ -165,7 +165,7 @@ function Dashboard() {
             <div className="statistics">
               <div className="bloco1">
                 <div className="header">
-                  <p>Número de pedidos:</p>
+                  <p>Total de pedidos:</p>
                 </div>
                 <div className="content">
                   <p>{orders.length}</p>
@@ -176,7 +176,7 @@ function Dashboard() {
                   <p>Faturamento:</p>
                 </div>
                 <div className="content">
-                  <p>{formatCurrency(tabs.filter(e => e.status === "closed").reduce((acc, tab) => acc + parseFloat(tab.tabValue), 0))}</p>
+                  <p>{formatCurrency(tabs.filter(e => e.status === "closed").reduce((acc, tab) => acc + parseFloat(tab.value), 0))}</p>
                 </div>
               </div>
               <div className="bloco3">
@@ -184,7 +184,7 @@ function Dashboard() {
                   <p>Total de clientes:</p>
                 </div>
                 <div className="content">
-                  <p>{costumers.filter(e => e.storeId === storeId).length}</p>
+                  <p>{costumers.filter(e => e.storeId === storeId && e.status === "online").length}</p>
                 </div>
               </div>
               <div className="bloco4">

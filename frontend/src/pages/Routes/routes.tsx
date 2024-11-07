@@ -13,8 +13,13 @@ import CustomerLayout from "../CustomerLayout/Index";
 import OrderList from "../CustomerOrderList";
 import WaiterLayout from "../WaiterLayout";
 import CustomerCart from "../CustomerCart";
+import Wellcome from "../Wellcome";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Wellcome />
+  },
   {
     path: "/:storeId",
     element: <Layout />,

@@ -291,7 +291,7 @@ export const DeleteCategoryButton = styled.button`
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   transition: background-color 0.3s ease;
 
   &:hover {

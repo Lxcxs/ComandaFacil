@@ -14,6 +14,7 @@ import { MdBlock, MdOutlinePeopleAlt } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { client } from "../../services/axios";
 import { useNavigate } from "react-router";
+import socket from "../../services/socket";
 // import { BsPersonBoundingBox } from "react-icons/bs";
 
 interface Order {
@@ -54,9 +55,9 @@ interface Table {
 
 interface Tab {
   id: number;
-  tabValue: string;
-  tabStatus: string;
-  costumerId: number;
+  value: number;
+  status: string;
+  customerId: number;
   storeId: number;
   tableId: number;
 }
@@ -66,6 +67,7 @@ const OrderPage: React.FC = () => {
   const [tables, setTables] = React.useState<Table[] | null>([]);
   const [customer, setCustomer] = React.useState<Costumer | null>(null);
   const [costumerTab, setCostumerTab] = React.useState<Tab | null>(null);
+  console.log(costumerTab)
   const navigate = useNavigate();
 
   const fetchAllData = async (storeId: number | undefined, costumerId: number | undefined) => {
@@ -76,7 +78,7 @@ const OrderPage: React.FC = () => {
     ];
 
     const results = await Promise.allSettled(promises);
-
+    
     results.forEach((result, index) => {
       if (result.status === "fulfilled") {
         switch (index) {
@@ -87,7 +89,8 @@ const OrderPage: React.FC = () => {
             setTables(result.value.data);
             break;
           case 2:
-            setCostumerTab(result.value.data);
+            setCostumerTab(result.value.data[0]);
+            console.log(result.value.data)
             break;
           default:
             break;
@@ -101,7 +104,7 @@ const OrderPage: React.FC = () => {
   useEffect(() => {
     const localCustomer = JSON.parse(localStorage.getItem("customer") || '{}') as Costumer;
 
-
+    console.log(costumerTab)
     if (!localCustomer) {
       console.error("local costumer is null.");
       return;
@@ -125,23 +128,33 @@ const OrderPage: React.FC = () => {
     }
   }
 
-  async function handleModal() {
-    try {
-      if (!costumerTab) {
-        console.error("Erro ao encontrar comanda");
-        return;
-      }
-
-      await client.put(`tabs/desassociate`, {
-        tabId: costumerTab.id,
-        newStatus: "closed",
-      });
-
-      navigate(`/${customer?.storeId}/enter`);
-    } catch (error) {
-      console.error("Erro ao fechar conta:", error);
-    }
+  async function handleCloseTab() {
+    if(!costumerTab?.id) throw new Error("tab not found")
+    const response = await client.put("/tabs/desassociate", {
+      tabId: costumerTab.id,
+      newStatus: "closed"
+  });
+  navigate(`/${costumerTab.storeId}/enter`)
+  socket.emit("CustomerTabClosed", response.data);
   }
+
+  // async function handleModal() {
+  //   try {
+  //     if (!costumerTab) {
+  //       console.error("Erro ao encontrar comanda");
+  //       return;
+  //     }
+
+  //     await client.put(`tabs/desassociate`, {
+  //       tabId: costumerTab.id,
+  //       newStatus: "closed",
+  //     });
+
+  //     navigate(`/${customer?.storeId}/enter`);
+  //   } catch (error) {
+  //     console.error("Erro ao fechar conta:", error);
+  //   }
+  // }
 
   const filteredTable = tables?.find((e) => e.id === customer?.tableId);
   // const isTabOpen = costumerTab && costumerTab.tableId === filteredTable?.id && costumerTab.tabStatus === "open";
@@ -205,7 +218,7 @@ const OrderPage: React.FC = () => {
             {formatCurrency(total as number)}
           </span>
         </Total>
-        <BtnPayment onClick={handleModal}>
+        <BtnPayment onClick={handleCloseTab}>
           <MdAttachMoney size={30} />
           Pagar
         </BtnPayment>

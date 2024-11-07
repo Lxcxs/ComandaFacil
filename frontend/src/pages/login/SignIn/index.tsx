@@ -7,10 +7,11 @@ import React from "react";
 function SignIn() {
   const { login, loading } = useLogin();
   const [error, setNewError] = React.useState<string | null>(null);
-  const [accountType, setAccountType] = React.useState<string>('admin');
-  const handleAccountTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setAccountType(event.target.value);
-  };
+  const accountType = "admin"
+  // const [accountType, setAccountType] = React.useState<string>('admin');
+  // const handleAccountTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setAccountType(event.target.value);
+  // };
   const fields = {
     email: useForm(null),
     password: useForm(null),
@@ -43,7 +44,8 @@ function SignIn() {
       </TitleForm>
 
       <div style={{ color: "yellow", fontStyle: "italic", fontSize: "12px" }}>
-        O acesso à garçons apenas se o estabelecimento estiver online no sistema!
+        <p>email: teste@gmail.com</p>
+        <p>senha: Comandafacil24</p>
       </div>
 
       <InputContent>
@@ -52,7 +54,7 @@ function SignIn() {
         {error && <NoticeError>{error}</NoticeError>}
       </InputContent>
 
-      <div id="select">
+      {/* <div id="select">
         <h3>Você é:</h3>
         <select
           name="account"
@@ -64,7 +66,7 @@ function SignIn() {
         </select>
 
 
-      </div>
+      </div> */}
 
       <Button type="submit">
         {loading ? "Entrando" : "Entrar"}

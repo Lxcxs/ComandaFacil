@@ -6,7 +6,7 @@ import { Container, Content, ToggleBtn } from "./styles";
 
 function Login() {
 
-  const [accessType, setAccessType] = React.useState<true | false>(false);
+  const [accessType, setAccessType] = React.useState<true | false>(true);
 
   function toggleAccess() {
     setAccessType(!accessType);

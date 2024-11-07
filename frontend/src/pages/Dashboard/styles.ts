@@ -37,31 +37,6 @@ export const Content = styled.div`
   @media (max-width: 760px) {
     padding: 0 5vw;
     margin-bottom: 15vh;
-
-    div.statistics {
-      justify-content: center;
-    }
-    div.performance,
-    div.orders {
-      div.bloco1,
-      div.bloco2,
-      div.bloco3,
-      div.bloco4 {
-        width: 150px;
-
-        .header {
-          padding: 0.4em;
-          p {
-            font-size: 0.7em;
-          }
-        }
-        .content {
-          p {
-            font-size: 1.5em;
-          }
-        }
-      }
-    }
   }
 `;
 
@@ -126,7 +101,6 @@ export const Statistics = styled.section`
   }
 
   @media (max-width: 760px) {
-    padding: 0 5vw;
     margin-bottom: 15vh;
 
     div.statistics {
@@ -138,8 +112,8 @@ export const Statistics = styled.section`
       div.bloco2,
       div.bloco3,
       div.bloco4 {
-        width: 150px;
-
+        flex: none;
+        width: 100%;
         .header {
           padding: 0.4em;
           p {
